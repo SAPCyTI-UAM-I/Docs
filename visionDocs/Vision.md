@@ -39,7 +39,7 @@ La creación de un sistema que automatice parcialmente los procesos permitiría 
 | ID | Descripción del objetivo de negocio |
 | --- | --- |
 | **ON-1** | Formar investigadores, profesores y profesionales de alto nivel en el área de CyTI.
-|
+
 
 ### 1.4 Necesidades del Cliente 
 
