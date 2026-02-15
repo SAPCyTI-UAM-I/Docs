@@ -1,0 +1,167 @@
+
+---
+
+# SISTEMA DE ADMINISTRACIÓN DEL POSGRADO EN CIENCIAS Y TECNOLOGÍAS DE LA INFORMACIÓN (SAPCyTI)
+
+**Documento de Visión y Alcance** 
+
+* **Autor:** Humberto Cervantes Maceda 
+
+
+*  **Fecha:**  
+
+
+
+---
+
+## 1. Requerimientos de Negocio 
+
+### 1.1 Antecedentes 
+
+La Universidad Autónoma Metropolitana (UAM) ofrece actualmente 62 posgrados. El proceso de administración del posgrado en Ciencias y Tecnologías de la Información es principalmente manual y se apoya en herramientas como Excel, lo que genera los siguientes problemas:
+
+* Necesidad de dedicar mucho tiempo a aspectos administrativos.
+
+
+* Dificultad para disponer de información veraz y oportuna en distintos sistemas (Sitio Web, Excel, Conacyt).
+
+
+* Requerimiento de generar paquetes de evidencia para evaluaciones continuas del Conacyt.
+
+
+
+### 1.2 Oportunidad de Negocio 
+
+La creación de un sistema que automatice parcialmente los procesos permitiría reducir tiempos administrativos y mejorar la toma de decisiones. No existe un producto comercial que se adapte a las características particulares de operación de este posgrado.
+
+### 1.3 Objetivos de Negocio 
+
+| ID | Descripción del objetivo de negocio |
+| --- | --- |
+| **ON-1** | Formar investigadores, profesores y profesionales de alto nivel en el área de CyTI.
+|
+
+### 1.4 Necesidades del Cliente 
+
+| ID | Descripción de la necesidad |
+| ---- | ---- |
+| **NEC-1** | Información precisa y actualizada sobre estudiantes y el posgrado.|
+| **NEC-2** | Portal para alumnos y profesores para realizar actividades asociadas al programa.
+| **NEC-3** | Reducir el esfuerzo administrativo.
+| **NEC-4** | Facilitar la generación de evidencias para el PNPC de Conacyt.
+
+
+
+### 1.5 Riesgos de Negocio 
+
+* **Tiempo de desarrollo:** Debido a que será realizado por alumnos de licenciatura con poca experiencia y estancias cortas, el cronograma podría extenderse.
+
+
+
+
+
+## 2. Visión de la Solución 
+
+### 2.1 Frase de Visión 
+
+Para la comunidad del PCyTI que no dispone de un sistema de soporte, **SAPCyTI** es un portal web que gestiona centralizadamente las actividades del posgrado, diferenciándose de herramientas genéricas por ser un sistema hecho a la medida.
+
+### 2.2 Características Principales 
+
+### 2.2.1 Características funcionales
+
+| ID | Descripción | Prioridad | Necesidad asociada |
+| :--- | :--- | :--- | :--- |
+| **CAR-1** | El sistema debe generar páginas o reportes bajo el formato que solicita Conacyt para que alguna persona pueda llenarlo de forma simple (copy/paste) | Media | ON-1 |
+| **CAR-2** | El sistema debe proporcionar mecanismos que permitan a los estudiantes, profesores y asistentes administrativos subir los productos de trabajo que se requieren como evidencia de Conacyt | Alta | ON-1 |
+| **CAR-3** | El sistema debe proporcionar mecanismos para respaldar la información. | Media | ON-1 |
+| **CAR-4** | El sistema debe proporcionar mecanismos de seguridad para evitar accesos o modificaciones indeseados. | Alta | ON-1 |
+| **CAR-5** | El sistema debe automatizar los procesos de organización del posgrado. | Baja | ON-2 <br> ON-8 |
+| **CAR-6** | El sistema debe proporcionar mecanismos para administrar el seminario de CyTI incluyendo envío de correos, generación de carteles y reconocimientos, invitar ponentes, calendarizar ponentes. | Alta | |
+| **CAR-7** | El sistema debe permitir editar las páginas con contenido estático de forma simple y generar las demás de forma automática | Alta / Media | ON-2 |
+| **CAR-8** | El sistema debe proporcionar mecanismos que permitan a los usuarios actualizar los datos relacionados con sus productos de trabajo y subirlos al sistema | Alta | ON-3 |
+| **CAR-9** | El sistema debe permitir hacer predicciones sobre la disponibilidad del personal académico para la dirección de tesis en el proceso de admisión. | Media | ON-4 |
+| **CAR-10** | El sistema debe permitir administrar los recursos como lugares de trabajo y equipos de computo | Alta | ON-5 |
+| **CAR-11** | El sistema debe permitir gestionar el presupuesto del posgrado y administrar solicitudes de apoyo. | Media | ON-6 <br> ON-2 |
+| **CAR-12** | El sistema debe generar un sitio que sea fácil de navegar (intuitivo) | Baja | ON-9 |
+| **CAR-13** | El sistema debe poder ser adecuado a necesidades de otros posgrados de forma simple | Baja | ON-7 |
+| **CAR-14** | El sistema debe permitir automatizar tareas “mecánicas” de la coordinación que incluyen:<br>• Comunicar seminarios<br>• Generar tablas y gráficas para reportes diversos<br>• Enviar avisos a todos los participantes o grupos específicos<br>• Organización de presentaciones trimestrales<br>• Organización de exámenes (maestría, predoctoral, doctorado)<br>• Autorizaciones de materias<br>• Administración de los gastos | Alta | ON-2 |
+| **CAR-15** | El sistema debe generar y publicar las siguientes páginas de la página web de forma automática:<br>• Planeación<br>• Profesores<br>• Alumnos<br>• Seminarios<br>• Publicaciones | Alta | ON-2 <br> ON-3 <br> ON-9 |
+| **CAR-16** | La generación de las partes dinámicas de la página debe hacerse en un tiempo aceptable (TBD) | Media | |
+| **CAR-17** | El sistema debe soportar una carga aceptable (TBD) durante los momentos pico | Media | |
+| **CAR-18** | El sistema debe poder cargar información de fuentes diversas como pueden ser:<br>• Reportes generados por páginas del conacyt<br>• Reportes generados por sistemas escolares | Alta | ON-1 |
+| **CAR-19** | El sistema debe ser accesible desde dispositivos móviles | Baja | ON-9 |
+| **CAR-20** | El sistema debe permitir adecuar las partes variables asociadas a otros posgrados de forma simple | Media | ON-7 |
+
+### 2.2.2 Atributos de calidad
+
+| Categoría | Descripción |
+| :--- | :--- |
+| **Seguridad** | El sistema deberá no ser vulnerable a ninguno de los errores de la lista siguiente: [http://cwe.mitre.org/top25/#Listing](http://cwe.mitre.org/top25/#Listing) |
+| **Seguridad** | El sistema deberá almacenar toda información sensible de forma encriptada |
+| **Seguridad** | El sistema deberá permitir distintos tipos de usuario y niveles de acceso |
+| **Desempeño** | Las páginas web dinámicas se deberán generar en un tiempo no mayor a 3 segundos (o lo que se considere razonable en términos de usabilidad) |
+| **Desempeño** | El sistema deberá soportar a un mínimo de 50 usuarios conectados de forma concurrente |
+| **Modificabilidad** | El sistema deberá permitir cambiar parámetros de reglas de negocio de forma simple, es decir, en un solo punto de la aplicación. |
+| **Modificabilidad** | El sistema deberá poder ser usado en otros posgrados de la UAM que sigan el mismo esquema del posgrado divisional |
+| **Mantenibilidad** | El sistema deberá generar una bitácora de errores para permitir entender por qué falló |
+| **Disponibilidad** | El sistema deberá respaldar la información de la base de datos de manera periódica y, en caso de fallo, deberá ser posible recuperar información con a lo más 24 horas de antigüedad. |
+
+
+
+### 2.2.3 Restricciones 
+
+* Desarrollo en **Java** (lenguaje familiar para los alumnos).
+
+
+* Uso de librerías **Open Source** solamente.
+
+
+* Hospedaje en una PC de escritorio de bajos recursos.
+
+
+
+## 3. Alcance y Limitaciones 
+
+### 3.1 Plan de Liberaciones 
+
+| Entrega | Tema Principal | Características |
+| --- | --- | --- |
+| **1.0** | Reducción de tiempo y colecta de evidencias PNPC | CAR-2, 4, 6, 8, 10 
+| **2.0** | Generación de reportes PNPC | CAR-7, 14, 15, 18, 1 
+| **3.0** | Facilitar transición de coordinador | CAR-3, 9, 11, 16, 5 
+| **4.0** | Transición a otros posgrados | CAR-17, 20, 12, 13, 19 
+
+
+## 4. Contexto de Negocio 
+
+### 4.1 Perfiles de involucrados
+
+### Resumen de Involucrados
+
+| Nombre | Descripción | Responsabilidades |
+| :--- | :--- | :--- |
+| Humberto Cervantes | Coordinador del Posgrado en CyTI | • Aprobar visión<br>• Validar requerimientos<br>• Proporcionar documentación requerida por el Conacyt.<br>• Aprobar entregas del proyecto. |
+| | Profesores | • Proporcionar requerimientos<br>• Validar prototipos de interfaz de usuario |
+| | Alumnos | • Proporcionar requerimientos<br>• Validar prototipos de interfaz de usuario |
+| Iseo | Asistente administrativa del posgrado | • Proporcionar requerimientos<br>• Validar prototipos de interfaz de usuario |
+| Tere | Coordinadora divisional | • Proporcionar requerimientos<br>• Validar prototipos de interfaz de usuario |
+| | Coordinador de otro posgrado | • Proporcionar requerimientos<br>• Validar prototipos de interfaz de usuario |
+| José Antonio de los Reyes | Director de la división | • Proporcionar recursos y apoyo |
+| Paulina Valencia | Líder de proyecto | • Participar en todas las actividades del desarrollo |
+
+
+### 4.2 Prioridades del proyecto
+
+### 4.3 Entorno de Operación 
+
+El sistema será utilizado por el personal académico de la coordinación del posgrado mediante computadoras y otros dispositivos conectados a la red inalámbrica del posgrado de CyTI. El sistema se ejecutará en el servidor existente.
+
+El sistema será utilizado mediante un navegador web (Opera 10+, Firefox 3+, IE7+).  En el futuro sería apropiado considerar el uso a través de dispositivos móviles
+
+Diagrama de contexto:
+
+![Diagrama de Contexto SAPCyTI](diagramaContexto.PNG)
+
+
+
