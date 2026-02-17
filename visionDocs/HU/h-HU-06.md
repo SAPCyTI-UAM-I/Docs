@@ -1,28 +1,25 @@
-## 4.11.2 Estadísticas en la página web del posgrado
+# Estadísticas en la página web del posgrado
 
-### 1. Tarjeta
+## Tarjeta
 
 **ID:** h-HU-06
 
-**Título:** Publicación automática de indicadores en el sitio web institucional. 
+**Nombre:** Publicación automática de indicadores en el sitio web institucional
 
-**Como:** Sistema SAPCyTI (en representación del Coordinador). 
+**Como** Sistema SAPCyTI (en representación del Coordinador)
 
-**Quiero:** Sincronizar periódicamente los datos estadísticos internos con la página oficial del posgrado. 
+**Quiero** sincronizar periódicamente los datos estadísticos internos con la página oficial
 
-**Para:** Proporcionar información transparente y actualizada a la comunidad sobre candidatos, ingresos y egresos. 
+**Para** proporcionar información transparente y actualizada a la comunidad
 
-### 2. Conversación
+## Conversación
 
-- **Sistema:** Los datos capturados en SAPCyTI sirven como fuente única para el portal `http://pcyti.izt.uam.mx`. 
+* Los datos capturados en SAPCyTI sirven como fuente única para el portal web.
+* Al realizar cambios internos (actas, egresos), la actualización en la web es automática/periódica.
+* La información se refleja en gráficas de candidatos y relaciones ingreso/egreso.
+* Los usuarios web pueden ver el total de alumnos graduados y en tesis.
 
-- **Coordinador:** Al realizar cambios en las actas o egresos dentro del sistema administrativo, no necesito actualizar manualmente la web. 
-
-- **Sistema:** Refleja la información en gráficas dinámicas de candidatos registrados vs. aceptados y relaciones ingreso/egreso. 
-
-- **Usuario Web:** Al entrar a la sección "Información estadística", visualiza el total de alumnos graduados (ej. 71) y los que están en tesis (ej. 31). 
-
-### 3. Criterios de Aceptación
+## Criterios de Aceptación
 
 ```gherkin
 Feature: Sincronización de datos con portal externo
@@ -32,5 +29,4 @@ Feature: Sincronización de datos con portal externo
     When el proceso de sincronización periódica se ejecuta
     Then el portal externo debe actualizar las gráficas de "Relación de candidatos registrados/aceptados"
     And actualizar las métricas de "Información estadística: Maestría" (Graduados total, En Tesis, etc.)
-
 ```

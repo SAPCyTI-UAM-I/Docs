@@ -1,32 +1,28 @@
-## 4.12 Configuración del sistema (Sólo correos electronicos)
+# Configuración del sistema
 
-### 1. Tarjeta
+## Tarjeta
 
 **ID:** h-HU-07
 
-**Título:** Control de envío de notificaciones por correo electrónico. 
+**Nombre:** Control de envío de notificaciones por correo electrónico
 
-**Como:** Coordinador del posgrado (Administrador). 
+**Como** Coordinador del posgrado
 
-**Quiero:** Habilitar o deshabilitar globalmente el envío de correos desde el sistema. 
+**Quiero** habilitar o deshabilitar globalmente el envío de correos desde el sistema
 
-**Para:** Realizar pruebas de desarrollo o mantenimiento sin enviar correos reales a los usuarios. 
+**Para** realizar pruebas de desarrollo o mantenimiento sin enviar correos reales
 
-### 2. Conversación
+## Conversación
 
-- **Coordinador:** Entro a la opción **Cambiar estado de envío de correos** en el menú de configuración. 
+* El coordinador entra a la opción "Cambiar estado de envío de correos".
+* El sistema informa el estado actual (ej. "Desactivados").
+* Se puede elegir entre tres modos:
+  * **Desactivados**: No se envían correos.
+  * **De Prueba**: Se envían a cuentas fijas de prueba.
+  * **Activados**: Funcionamiento normal con correos reales.
+* Al presionar "Modificar", se aplica el cambio.
 
-- **Sistema:** Me informa el estado actual (ej. "Desactivados" en letras rojas). 
-
-- **Coordinador:** Abro la lista desplegable de "Cambiar el estado actual" para elegir un modo. 
-
-- **Sistema:** Ofrece tres opciones: **Desactivados** (nada sale), **De Prueba** (sale a correos fijos de Gmail) o **Activados** (funcionamiento normal). 
-
-- **Coordinador:** Si elijo **De Prueba**, los correos irán a `sapcytialumno@gmail.com` o `sapcytiprofesor@gmail.com`. 
-
-- **Coordinador:** Presiono el botón **Modificar** para aplicar el cambio. 
-
-### 3. Criterios de Aceptación
+## Criterios de Aceptación
 
 ```gherkin
 Feature: Configuración de pasarela de correos

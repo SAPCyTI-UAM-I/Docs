@@ -1,30 +1,26 @@
-## 4.9.2 Ver proyectos de investigación
+# Ver proyectos de investigación
 
-### 1. Tarjeta
+## Tarjeta
 
 **ID:** h-HU-02
 
-**Título:** Visualización y consulta de proyectos registrados. 
+**Nombre:** Visualización y consulta de proyectos registrados
 
-**Como:** Coordinador del posgrado. 
+**Como** Coordinador del posgrado
 
-**Quiero:** Consultar la lista completa de proyectos de investigación dados de alta. 
+**Quiero** consultar la lista completa de proyectos de investigación dados de alta
 
-**Para:** Supervisar los temas de investigación activos y gestionar la información histórica del posgrado. 
+**Para** supervisar los temas de investigación activos y gestionar la información histórica
 
-### 2. Conversación
+## Conversación
 
-- **Coordinador:** Selecciono la opción **Ver proyectos de investigación** en el menú lateral. 
+* El coordinador selecciona la opción "Ver proyectos de investigación".
+* El sistema despliega una tabla con una columna para el nombre de cada proyecto.
+* Se pueden visualizar proyectos sobre diversos temas (algoritmos, gestión semántica, etc.).
+* Es posible configurar la paginación para ver 5, 10, 15, 20 o 25 resultados por página.
+* Se utilizan controles de navegación para avanzar entre las páginas.
 
-- **Sistema:** Despliega una tabla titulada "Listar Proyecto Investigación" que contiene una columna con el nombre de cada proyecto. 
-
-- **Coordinador:** Puedo ver de forma rápida proyectos sobre algoritmos, gestión semántica o sistemas de recomendación. 
-
-- **Sistema:** Permite configurar cuántos resultados ver por página (5, 10, 15, 20 o 25). 
-
-- **Coordinador:** Navego entre las páginas utilizando los controles de navegación al final de la tabla. 
-
-### 3. Criterios de Aceptación
+## Criterios de Aceptación
 
 ```gherkin
 Feature: Consulta de listado de proyectos
@@ -34,5 +30,5 @@ Feature: Consulta de listado de proyectos
     When el coordinador accede a "Ver proyectos de investigación"
     Then el sistema muestra la tabla con la columna "Nombre Proyecto"
     And permite cambiar el tamaño de la página a 10 o 25 registros
-    And habilita los botones de navegación para avanzar entre las 8 páginas de resultados
+    And habilita los botones de navegación para avanzar entre las páginas de resultados
 ```

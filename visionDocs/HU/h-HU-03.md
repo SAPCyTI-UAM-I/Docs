@@ -1,30 +1,26 @@
-## 4.10.1 Agregar programa de doctorado a alumno de maestría
+# Agregar programa de doctorado a alumno de maestría
 
-### 1. Tarjeta
+## Tarjeta
 
 **ID:** h-HU-03
 
-**Título:** Alta de programa de doctorado para egresados de maestría. 
+**Nombre:** Alta de programa de doctorado para egresados de maestría
 
-**Como:** Coordinador del posgrado. 
+**Como** Coordinador del posgrado
 
-**Quiero:** Registrar el nuevo programa de doctorado para un alumno que ya cursó la maestría en el PCyTI. 
+**Quiero** registrar el nuevo programa de doctorado para un alumno que ya cursó la maestría
 
-**Para:** Mantener la continuidad del expediente académico del alumno en el sistema al subir de nivel. 
+**Para** mantener la continuidad del expediente académico del alumno en el sistema
 
-### 2. Conversación
+## Conversación
 
-- **Coordinador:** Accedo a la opción **Agregar programa de doctorado a alumno de maestría**. 
+* El coordinador accede a la opción "Agregar programa de doctorado a alumno de maestría".
+* El sistema muestra el formulario "Crear Programa" con campos para matrícula y tipo de programa.
+* El coordinador ingresa la matrícula, selecciona el tipo "DOCTORADO", el área y la institución.
+* Al presionar "GUARDAR", el sistema solicita elegir al alumno y su tutor.
+* El coordinador selecciona el alumno y el profesor responsable de las listas desplegables.
 
-- **Sistema:** Muestra el formulario "Crear Programa" con campos para matrícula, tipo de programa y fechas. 
-
-- **Coordinador:** Ingreso la matrícula, selecciono el tipo "DOCTORADO", el área (ej. REDES) y la institución de procedencia (ej. UAMI). 
-
-- **Sistema:** Al presionar **GUARDAR**, me solicita elegir específicamente al alumno y su tutor asignado. 
-
-- **Coordinador:** Selecciono el nombre del alumno y el profesor responsable de una lista desplegable. 
-
-### 3. Criterios de Aceptación
+## Criterios de Aceptación
 
 ```gherkin
 Feature: Registro de doctorado para ex-alumnos de maestría
@@ -41,5 +37,4 @@ Feature: Registro de doctorado para ex-alumnos de maestría
     And selecciona a un tutor (ej. Aguilar Cornejo Manuel)
     And presiona nuevamente "GUARDAR"
     Then el sistema vincula exitosamente el nuevo programa de nivel doctorado al alumno seleccionado
-
 ```
