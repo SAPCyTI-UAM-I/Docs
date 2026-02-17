@@ -1,0 +1,45 @@
+# Creación de profesor
+
+## Tarjeta
+
+**ID:** g-HU-11
+
+**Nombre:** Registro de nuevos profesores
+
+**Como** Coordinador del posgrado
+
+**Quiero** dar de alta a un profesor en el sistema
+
+**Para** que pueda impartir materias y asesorar alumnos
+
+## Conversación
+
+* El coordinador ingresa a la opción "Crear profesor".
+* Debe completar los siguientes campos obligatorios:
+  * Apellido Paterno
+  * Apellido Materno
+  * Nombre
+  * Email
+  * Password (autogenerado por el sistema)
+  * Número de empleado
+
+## Criterios de Aceptación
+
+```gherkin
+Feature: Alta de profesores en el sistema
+
+  Scenario: Registro exitoso de profesor con datos obligatorios
+    Given que el coordinador se encuentra en el formulario "Crear profesor"
+    When ingresa los apellidos y nombre
+    And ingresa un email válido
+    And ingresa el "Número de empleado"
+    And guarda el registro
+    Then el sistema crea la cuenta del profesor
+    And genera una contraseña automática para el acceso
+
+  Scenario: Intento de registro con datos faltantes
+    Given que el coordinador intenta registrar un profesor
+    When deja vacío alguno de los campos obligatorios
+    Then el sistema impide el guardado
+    And solicita completar la información requerida
+```
