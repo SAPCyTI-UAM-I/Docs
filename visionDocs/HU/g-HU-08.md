@@ -1,24 +1,21 @@
-# Editar información de alumno
+# Modificación de datos del alumno
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-08
 
-**Nombre:** Modificación de datos del alumno
+**Título:** Modificación de datos del alumno
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** editar la información personal de un alumno
+**Quiero:** editar la información personal de un alumno
 
-**Para** mantener actualizados sus datos en el sistema
+**Para:** mantener actualizados sus datos en el sistema
 
-## Conversación
-
+## 2. Conversación
 * Desde la pantalla de detalles, se puede acceder a la edición.
 * El sistema permite modificar los datos del alumno (excepto aquellos que sean inmutables por regla de negocio, si los hubiera).
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Actualización de datos del alumno
 

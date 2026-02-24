@@ -1,24 +1,21 @@
-# Editar información de profesor
+# Modificación de datos del profesor
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-14
 
-**Nombre:** Modificación de datos del profesor
+**Título:** Modificación de datos del profesor
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** editar la información de un profesor
+**Quiero:** editar la información de un profesor
 
-**Para** corregir o actualizar sus datos registrados
+**Para:** corregir o actualizar sus datos registrados
 
-## Conversación
-
+## 2. Conversación
 * Desde la pantalla de detalles del profesor, se presiona "Editar".
 * El sistema permite modificar diversas informaciones relacionadas con el profesor.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Edición de datos de profesor
 

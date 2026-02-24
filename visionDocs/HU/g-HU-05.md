@@ -1,19 +1,17 @@
-# Alta de alumno
+# Registro de nuevos alumnos en el sistema
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-05
 
-**Nombre:** Registro de nuevos alumnos en el sistema
+**Título:** Registro de nuevos alumnos en el sistema
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** dar de alta a un alumno con sus datos personales y académicos
+**Quiero:** dar de alta a un alumno con sus datos personales y académicos
 
-**Para** administrar su expediente y permitir su acceso al sistema
+**Para:** administrar su expediente y permitir su acceso al sistema
 
-## Conversación
-
+## 2. Conversación
 * El coordinador selecciona la opción "Crear alumno".
 * Debe ingresar obligatoriamente:
   * Apellido Paterno, Materno y Nombre
@@ -26,8 +24,7 @@
   * Tipo de programa (Maestría/Doctorado)
   * Fecha de ingreso
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Registro de información de alumnos
 

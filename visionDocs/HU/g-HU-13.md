@@ -1,24 +1,21 @@
-# Ver detalles de profesor
+# Consulta de información detallada del profesor
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-13
 
-**Nombre:** Consulta de información detallada del profesor
+**Título:** Consulta de información detallada del profesor
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** ver los detalles de un profesor seleccionado
+**Quiero:** ver los detalles de un profesor seleccionado
 
-**Para** revisar su información personal y académica
+**Para:** revisar su información personal y académica
 
-## Conversación
-
+## 2. Conversación
 * Al seleccionar el ícono "ver" en la lista de resultados de búsqueda, se muestran los detalles del profesor.
 * Desde esta pantalla se puede acceder a la edición o a la lista de alumnos asesorados.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Visualización de detalles del profesor
 

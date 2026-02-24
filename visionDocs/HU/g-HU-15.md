@@ -1,19 +1,17 @@
-# Ver alumnos asesorados
+# Consulta de alumnos asesorados y tutorados
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-15
 
-**Nombre:** Consulta de alumnos asesorados y tutorados
+**Título:** Consulta de alumnos asesorados y tutorados
 
-**Como** Coordinador del posgrado (o Profesor)
+**Como:** Coordinador del posgrado (o Profesor)
 
-**Quiero** ver la lista de alumnos que asesora o tutora un profesor
+**Quiero:** ver la lista de alumnos que asesora o tutora un profesor
 
-**Para** dar seguimiento a su actividad académica
+**Para:** dar seguimiento a su actividad académica
 
-## Conversación
-
+## 2. Conversación
 * Se puede acceder desde los detalles del profesor (para el coordinador) o desde el menú principal (para el profesor).
 * La pantalla despliega:
   * Alumnos anteriormente asesorados.
@@ -22,8 +20,7 @@
   * Alumnos anteriormente tutorados.
 * Al presionar "ver" junto al nombre de un alumno, se muestran sus detalles.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Listado de alumnos a cargo de un profesor
 

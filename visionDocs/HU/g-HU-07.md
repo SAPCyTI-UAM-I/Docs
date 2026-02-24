@@ -1,27 +1,24 @@
-# Detalles del alumno
+# Consulta de detalles del alumno
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-07
 
-**Nombre:** Consulta de detalles del alumno
+**Título:** Consulta de detalles del alumno
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** ver la información completa de un alumno seleccionado
+**Quiero:** ver la información completa de un alumno seleccionado
 
-**Para** revisar sus datos personales y académicos
+**Para:** revisar sus datos personales y académicos
 
-## Conversación
-
+## 2. Conversación
 * Al seleccionar un alumno de la búsqueda, se muestran sus detalles.
 * Se visualiza la información personal y de contacto.
 * El sistema ofrece opciones para:
   * Editar la información del alumno.
   * Ver detalles del programa (o programas) en los que está inscrito.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Visualización del expediente del alumno
 

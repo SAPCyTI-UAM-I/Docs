@@ -1,24 +1,21 @@
-# Editar programa
+# Asignación de tutores y asesores al programa
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-10
 
-**Nombre:** Asignación de tutores y asesores al programa
+**Título:** Asignación de tutores y asesores al programa
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** editar los detalles del programa académico de un alumno
+**Quiero:** editar los detalles del programa académico de un alumno
 
-**Para** asignar o cambiar su tutor y asesores
+**Para:** asignar o cambiar su tutor y asesores
 
-## Conversación
-
+## 2. Conversación
 * Desde los detalles del programa, se puede ingresar a la edición.
 * Esta funcionalidad permite asignar asesores o tutor al alumno.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Gestión de tutores y asesores
 

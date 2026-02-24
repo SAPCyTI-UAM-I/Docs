@@ -1,19 +1,17 @@
-# Registro de seminarios
+# Registro y edición de seminarios
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-02
 
-**Nombre:** Registro y edición de seminarios
+**Título:** Registro y edición de seminarios
 
-**Como** usuario del sistema (alumno o profesor)
+**Como:** usuario del sistema (alumno o profesor)
 
-**Quiero** registrar un nuevo seminario o editar uno existente
+**Quiero:** registrar un nuevo seminario o editar uno existente
 
-**Para** participar como ponente en las fechas habilitadas
+**Para:** participar como ponente en las fechas habilitadas
 
-## Conversación
-
+## 2. Conversación
 * Una vez realizada la planeación, los usuarios pueden registrar seminarios.
 * Se debe capturar:
   * Título de la ponencia
@@ -21,8 +19,7 @@
 * El usuario debe marcar la opción "Formato terminado" al finalizar.
 * Si no se marca "Formato terminado", el sistema enviará recordatorios semanales.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Registro de información de seminarios
 

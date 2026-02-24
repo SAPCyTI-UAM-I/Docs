@@ -1,6 +1,6 @@
-## 4.9.2 Ver proyectos de investigación
+# Ver proyectos de investigación
 
-### 1. Tarjeta
+## 1. Tarjeta
 
 **ID:** h-HU-02
 
@@ -12,7 +12,7 @@
 
 **Para:** Supervisar los temas de investigación activos y gestionar la información histórica del posgrado. 
 
-### 2. Conversación
+## 2. Conversación
 
 - **Coordinador:** Selecciono la opción **Ver proyectos de investigación** en el menú lateral. 
 
@@ -24,7 +24,7 @@
 
 - **Coordinador:** Navego entre las páginas utilizando los controles de navegación al final de la tabla. 
 
-### 3. Criterios de Aceptación
+## 3. Criterios de Aceptación
 
 ```gherkin
 Feature: Consulta de listado de proyectos

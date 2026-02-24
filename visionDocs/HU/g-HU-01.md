@@ -1,25 +1,23 @@
-# Planeación de seminarios
+# Planeación de fechas y ponentes para seminarios
 
-## Tarjeta
+## 1. Tarjeta
 
 **ID:** g-HU-01
 
-**Nombre:** Planeación de fechas y ponentes para seminarios
+**Título:** Planeación de fechas y ponentes para seminarios
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** elegir las semanas del trimestre y el número de ponentes por fecha
+**Quiero:** elegir las semanas del trimestre y el número de ponentes por fecha
 
-**Para** organizar el calendario de seminarios del trimestre
+**Para:** organizar el calendario de seminarios del trimestre
 
-## Conversación
-
+## 2. Conversación
 * El coordinador selecciona las semanas del trimestre en las que se realizarán seminarios.
 * Para cada fecha seleccionada, define el número de ponentes que presentarán.
 * Esta planeación es necesaria antes de que los usuarios puedan registrar sus seminarios.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Planeación de seminarios del trimestre
 

@@ -1,6 +1,6 @@
-## 4.10.2 Listar programas
+# Listar programas
 
-### 1. Tarjeta
+## 1. Tarjeta
 
 **ID:** h-HU-04
 
@@ -12,7 +12,7 @@
 
 **Para:** Revisar promedios, créditos cubiertos y fechas de egreso de los alumnos. 
 
-### 2. Conversación
+## 2. Conversación
 
 - **Coordinador:** Entro a la opción **Ver lista de programas** en el menú **PROGRAMA**. 
 
@@ -22,7 +22,7 @@
  
 - **Sistema:** Indica las fechas exactas de ingreso y egreso de cada programa. 
 
-### 3. Criterios de Aceptación
+## 3. Criterios de Aceptación
 
 ```gherkin
 Feature: Visualización del desempeño por programa académico

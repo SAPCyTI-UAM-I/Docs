@@ -1,19 +1,17 @@
-# Creación de profesor
+# Registro de nuevos profesores
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-11
 
-**Nombre:** Registro de nuevos profesores
+**Título:** Registro de nuevos profesores
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** dar de alta a un profesor en el sistema
+**Quiero:** dar de alta a un profesor en el sistema
 
-**Para** que pueda impartir materias y asesorar alumnos
+**Para:** que pueda impartir materias y asesorar alumnos
 
-## Conversación
-
+## 2. Conversación
 * El coordinador ingresa a la opción "Crear profesor".
 * Debe completar los siguientes campos obligatorios:
   * Apellido Paterno
@@ -23,8 +21,7 @@
   * Password (autogenerado por el sistema)
   * Número de empleado
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Alta de profesores en el sistema
 

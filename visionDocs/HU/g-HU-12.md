@@ -1,25 +1,22 @@
-# Búsqueda de profesores
+# Búsqueda y filtrado de profesores
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-12
 
-**Nombre:** Búsqueda y filtrado de profesores
+**Título:** Búsqueda y filtrado de profesores
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** buscar profesores mediante diversos criterios
+**Quiero:** buscar profesores mediante diversos criterios
 
-**Para** localizar su información o editar sus datos
+**Para:** localizar su información o editar sus datos
 
-## Conversación
-
+## 2. Conversación
 * El sistema permite realizar búsquedas de profesores.
 * Se pueden utilizar diversos criterios para filtrar los resultados.
 * Al finalizar la búsqueda, se muestra la lista de profesores encontrados.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Búsqueda de profesores
 

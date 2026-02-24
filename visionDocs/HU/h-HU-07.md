@@ -1,6 +1,6 @@
-## 4.12 Configuración del sistema (Sólo correos electronicos)
+# Configuración del sistema (Sólo correos electronicos)
 
-### 1. Tarjeta
+## 1. Tarjeta
 
 **ID:** h-HU-07
 
@@ -12,7 +12,7 @@
 
 **Para:** Realizar pruebas de desarrollo o mantenimiento sin enviar correos reales a los usuarios. 
 
-### 2. Conversación
+## 2. Conversación
 
 - **Coordinador:** Entro a la opción **Cambiar estado de envío de correos** en el menú de configuración. 
 
@@ -26,7 +26,7 @@
 
 - **Coordinador:** Presiono el botón **Modificar** para aplicar el cambio. 
 
-### 3. Criterios de Aceptación
+## 3. Criterios de Aceptación
 
 ```gherkin
 Feature: Configuración de pasarela de correos

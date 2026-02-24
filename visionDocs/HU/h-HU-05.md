@@ -1,6 +1,6 @@
-## 4.11.1 Estadísticas dentro de SAPCyTI
+# Estadísticas dentro de SAPCyTI
 
-### 1. Tarjeta
+## 1. Tarjeta
 
 **ID:** h-HU-05
 
@@ -12,7 +12,7 @@
 
 **Para:** Evaluar el éxito del programa mediante tasas de graduación, retención y eficiencia terminal. 
 
-### 2. Conversación
+## 2. Conversación
  
 - **Coordinador:** Selecciono **Estadísticas del posgrado** dentro del menú **ESTADISTICAS**. 
 
@@ -24,7 +24,7 @@
 
 - **Coordinador:** Observo cuántos alumnos están actualmente en fase de tesis por generación. 
 
-### 3. Criterios de Aceptación
+## 3. Criterios de Aceptación
 
 ```gherkin
 Feature: Reporte de estadísticas de eficiencia terminal

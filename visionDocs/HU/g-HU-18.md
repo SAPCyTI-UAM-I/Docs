@@ -1,27 +1,24 @@
-# Cambiar password
+# Actualización de contraseña de usuario
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-18
 
-**Nombre:** Actualización de contraseña de usuario
+**Título:** Actualización de contraseña de usuario
 
-**Como** Coordinador del posgrado (o Usuario)
+**Como:** Coordinador del posgrado (o Usuario)
 
-**Quiero** cambiar la contraseña de acceso
+**Quiero:** cambiar la contraseña de acceso
 
-**Para** mantener la seguridad de la cuenta o recuperarla
+**Para:** mantener la seguridad de la cuenta o recuperarla
 
-## Conversación
-
+## 2. Conversación
 * Esta funcionalidad es accesible para todos los usuarios.
 * Cuando es ejecutada por el coordinador:
   * El sistema solicita primero que se seleccione al usuario.
   * Luego permite la modificación de la contraseña.
 * Cuando es ejecutada por el propio usuario, permite cambiar su propia contraseña.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Gestión de contraseñas
 

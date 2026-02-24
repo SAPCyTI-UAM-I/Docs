@@ -1,6 +1,6 @@
-## 4.11.2 Estadísticas en la página web del posgrado
+# Estadísticas en la página web del posgrado
 
-### 1. Tarjeta
+## 1. Tarjeta
 
 **ID:** h-HU-06
 
@@ -12,7 +12,7 @@
 
 **Para:** Proporcionar información transparente y actualizada a la comunidad sobre candidatos, ingresos y egresos. 
 
-### 2. Conversación
+## 2. Conversación
 
 - **Sistema:** Los datos capturados en SAPCyTI sirven como fuente única para el portal `http://pcyti.izt.uam.mx`. 
 
@@ -22,7 +22,7 @@
 
 - **Usuario Web:** Al entrar a la sección "Información estadística", visualiza el total de alumnos graduados (ej. 71) y los que están en tesis (ej. 31). 
 
-### 3. Criterios de Aceptación
+## 3. Criterios de Aceptación
 
 ```gherkin
 Feature: Sincronización de datos con portal externo

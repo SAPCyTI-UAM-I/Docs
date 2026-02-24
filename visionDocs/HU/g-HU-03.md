@@ -1,19 +1,17 @@
-# Generación de avisos de seminarios
+# Generación de invitaciones a seminarios
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-03
 
-**Nombre:** Generación de invitaciones a seminarios
+**Título:** Generación de invitaciones a seminarios
 
-**Como** Asistente del posgrado
+**Como:** Asistente del posgrado
 
-**Quiero** generar las invitaciones para los seminarios programados
+**Quiero:** generar las invitaciones para los seminarios programados
 
-**Para** difundir la información del evento a la comunidad
+**Para:** difundir la información del evento a la comunidad
 
-## Conversación
-
+## 2. Conversación
 * La asistente accede a la opción "Invitación a seminarios".
 * Debe completar los siguientes datos para la constancia/invitación:
   * Grado del ponente
@@ -21,8 +19,7 @@
   * Lugar donde se llevará a cabo el seminario
 * El sistema genera el documento de invitación con los datos ingresados.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Creación de invitaciones para seminarios
 

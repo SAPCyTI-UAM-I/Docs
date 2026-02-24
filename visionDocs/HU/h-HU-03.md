@@ -1,6 +1,6 @@
-## 4.10.1 Agregar programa de doctorado a alumno de maestría
+# Agregar programa de doctorado a alumno de maestría
 
-### 1. Tarjeta
+## 1. Tarjeta
 
 **ID:** h-HU-03
 
@@ -12,7 +12,7 @@
 
 **Para:** Mantener la continuidad del expediente académico del alumno en el sistema al subir de nivel. 
 
-### 2. Conversación
+## 2. Conversación
 
 - **Coordinador:** Accedo a la opción **Agregar programa de doctorado a alumno de maestría**. 
 
@@ -24,7 +24,7 @@
 
 - **Coordinador:** Selecciono el nombre del alumno y el profesor responsable de una lista desplegable. 
 
-### 3. Criterios de Aceptación
+## 3. Criterios de Aceptación
 
 ```gherkin
 Feature: Registro de doctorado para ex-alumnos de maestría

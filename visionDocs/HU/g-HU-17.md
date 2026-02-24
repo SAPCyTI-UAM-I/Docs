@@ -1,25 +1,22 @@
-# Buscar usuarios
+# Búsqueda y consulta de usuarios del sistema
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-17
 
-**Nombre:** Búsqueda y consulta de usuarios del sistema
+**Título:** Búsqueda y consulta de usuarios del sistema
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** listar y buscar usuarios registrados
+**Quiero:** listar y buscar usuarios registrados
 
-**Para** administrar sus cuentas o ver detalles
+**Para:** administrar sus cuentas o ver detalles
 
-## Conversación
-
+## 2. Conversación
 * El sistema proporciona un listado de los usuarios registrados.
 * Es posible aplicar criterios de búsqueda.
 * Al presionar "Ver", el sistema muestra los detalles del usuario.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Consulta de usuarios
 

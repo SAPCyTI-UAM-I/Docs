@@ -1,19 +1,17 @@
-# Crear usuario
+# Registro de nuevos usuarios administrativos
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-16
 
-**Nombre:** Registro de nuevos usuarios administrativos
+**Título:** Registro de nuevos usuarios administrativos
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** dar de alta a un usuario administrativo
+**Quiero:** dar de alta a un usuario administrativo
 
-**Para** otorgarle acceso y permisos en el sistema
+**Para:** otorgarle acceso y permisos en el sistema
 
-## Conversación
-
+## 2. Conversación
 * El coordinador selecciona la opción "Crear usuario".
 * Debe ingresar los datos del usuario:
   * Apellido Paterno
@@ -23,8 +21,7 @@
   * Password (autogenerado por el sistema)
   * Tipo de usuario (Ponente, Asistente Posgrado, Asistente Administrativo)
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Alta de usuarios administrativos
 

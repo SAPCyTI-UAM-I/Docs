@@ -1,24 +1,21 @@
-# Buscar alumnos
+# Búsqueda y filtrado de alumnos
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-06
 
-**Nombre:** Búsqueda y filtrado de alumnos
+**Título:** Búsqueda y filtrado de alumnos
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** buscar alumnos utilizando diferentes criterios
+**Quiero:** buscar alumnos utilizando diferentes criterios
 
-**Para** localizar rápidamente la información de un estudiante específico
+**Para:** localizar rápidamente la información de un estudiante específico
 
-## Conversación
-
+## 2. Conversación
 * El sistema permite realizar consultas mediante diversos criterios de búsqueda.
 * Muestra una lista de resultados con los alumnos que coinciden con los filtros.
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Búsqueda de alumnos en el sistema
 

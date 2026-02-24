@@ -1,27 +1,24 @@
-# Ver detalles del programa
+# Consulta de detalles del programa académico del alumno
 
-## Tarjeta
-
+## 1. Tarjeta
 **ID:** g-HU-09
 
-**Nombre:** Consulta de detalles del programa académico del alumno
+**Título:** Consulta de detalles del programa académico del alumno
 
-**Como** Coordinador del posgrado
+**Como:** Coordinador del posgrado
 
-**Quiero** ver la información específica del programa que cursa el alumno
+**Quiero:** ver la información específica del programa que cursa el alumno
 
-**Para** conocer su matrícula, tutor y asesores asignados
+**Para:** conocer su matrícula, tutor y asesores asignados
 
-## Conversación
-
+## 2. Conversación
 * Dependiendo del tipo de programa (Maestría/Doctorado), se muestran botones para ver los detalles.
 * La pantalla de detalles del programa incluye:
   * Matrícula
   * Tutor asignado
   * Asesor(es) asignado(s)
 
-## Criterios de Aceptación
-
+## 3. Criterios de Aceptación
 ```gherkin
 Feature: Visualización de información académica
 
