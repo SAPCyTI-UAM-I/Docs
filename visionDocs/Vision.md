@@ -36,7 +36,7 @@ La creación de un sistema que automatice parcialmente los procesos permitiría 
 | **NEC-1** | Información precisa y actualizada sobre estudiantes y el posgrado.                                                                      |
 | **NEC-2** | Portal para alumnos y profesores para realizar actividades asociadas al programa.                                                       |
 | **NEC-3** | Reducir el esfuerzo administrativo.                                                                                                     |
-| **NEC-4** | Facilitar la generación de evidencias para el PNPC de Conacyt.                                                                          |
+| **NEC-4** | Facilitar la generación de evidencias para el SNP de Conacyt.                                                                          |
 | **NEC-5** | Integración técnica con los Sistemas de Control Escolar para eliminar intermediarios en el registro.                                    |
 | **NEC-6** | Independencia del sistema "Virtuami" para la gestión de documentos de aspirantes, evitando pérdida de datos o actualizaciones externas. |
 | **NEC-7** | Internacionalización del sistema para soportar convenios de doble titulación.                                                           |
@@ -91,8 +91,8 @@ Para la comunidad del PCyTI que no dispone de un sistema de soporte, **SAPCyTI**
 
 | Entrega | Tema Principal                                   | Características        |
 | ------- | ------------------------------------------------ | ---------------------- |
-| **1.0** | Reducción de tiempo y colecta de evidencias PNPC | CAR-2, 4, 6, 8, 10     |
-| **2.0** | Generación de reportes PNPC                      | CAR-7, 14, 15, 18, 1   |
+| **1.0** | Reducción de tiempo y colecta de evidencias SNP | CAR-2, 4, 6, 8, 10     |
+| **2.0** | Generación de reportes SNP                      | CAR-7, 14, 15, 18, 1   |
 | **3.0** | Facilitar transición de coordinador              | CAR-3, 9, 11, 16, 5    |
 | **4.0** | Transición a otros posgrados                     | CAR-17, 20, 12, 13, 19 |
 
@@ -120,13 +120,16 @@ Para la comunidad del PCyTI que no dispone de un sistema de soporte, **SAPCyTI**
 
 El sistema será utilizado por el personal académico de la coordinación del posgrado mediante computadoras y otros dispositivos conectados a la red inalámbrica del posgrado de CyTI.
 
-El servidor utilizará una distribución de Linux.
+El sistema se desplegará en un servidor local dedicado como entorno definitivo de operación, con las siguientes características:
+- SO: Distribución de Linux
+- Almacenamiento: 16 TB
+- Memoria RAM: 32 GB
 
-El sistema se desplegará en un servidor local dedicado con 16 TB de almacenamiento y 32 GB en RAM
+El entorno de operación debe garantizar la exportación de datos compatible con los sistemas escolares mencionados (SAP, Virtuami, Control Escolar) y el marco POEP, asegurando capacidad de respuesta para la robusta generación de reportes e informes.
 
 El sistema será utilizado mediante un navegador web (Chrome 130, Safari 22, Firefox 129).
 
-El sistema será responsivo para su uso en tablets y teléfonos inteligentes
+El sistema y sus nuevas funciones de reporte (POEP) serán plenamente responsivos para su uso en tablets y teléfonos inteligentes.
 
 Diagrama de contexto:
 
