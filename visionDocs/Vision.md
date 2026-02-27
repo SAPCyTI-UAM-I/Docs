@@ -85,31 +85,6 @@ Para la comunidad del PCyTI que no dispone de un sistema de soporte, **SAPCyTI**
 | **CAR-26** | El sistema debe automatizar la gestión de la Comisión del Posgrado: registro de entrada/salida de miembros y generación de cartas de nombramiento para el director.                                                                                                                                                                                                                                                            | Media        |
 | **CAR-27** | El sistema debe calcular estadísticas de desempeño académico (tasas de graduación por generación, porcentajes de ingreso vs. egreso) necesarias para las evaluaciones del SNP.                                                                                                                                                                                                                                                 | Alta         |
 
-### 2.2.2 Atributos de calidad
-
-| Categoría                | Descripción                                                                                                                                                                                          |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Seguridad**            | El sistema deberá no ser vulnerable a ninguno de los errores de la lista siguiente: [http://cwe.mitre.org/top25/#Listing](http://cwe.mitre.org/top25/#Listing)                                       |
-| **Seguridad**            | El sistema deberá almacenar toda información sensible de forma encriptada                                                                                                                            |
-| **Seguridad**            | El sistema deberá permitir distintos tipos de usuario y niveles de acceso                                                                                                                            |
-| **Desempeño**            | Las páginas web dinámicas se deberán generar en un tiempo no mayor a 3 segundos (o lo que se considere razonable en términos de usabilidad)                                                          |
-| **Desempeño**            | El sistema deberá soportar a un mínimo de 50 usuarios conectados de forma concurrente                                                                                                                |
-| **Modificabilidad**      | El sistema deberá permitir cambiar parámetros de reglas de negocio de forma simple, es decir, en un solo punto de la aplicación.                                                                     |
-| **Modificabilidad**      | El sistema deberá poder ser usado en otros posgrados de la UAM que sigan el mismo esquema del posgrado divisional                                                                                    |
-| **Mantenibilidad**       | El sistema deberá generar una bitácora de errores para permitir entender por qué falló                                                                                                               |
-| **Disponibilidad**       | El sistema deberá respaldar la información de la base de datos de manera periódica y, en caso de fallo, deberá ser posible recuperar información con a lo más 24 horas de antigüedad.                |
-| **Escalabilidad**        | El diseño debe permitir que el sistema escale de un solo posgrado a los nueve posgrados de la división, e incluso a nivel de Rectoría General, soportando diferentes reglas de negocio por programa. |
-| **Internacionalización** | El sistema debe ser capaz de mostrar interfaces en Inglés y Español para facilitar procesos de doble titulación y movilidad internacional.                                                           |
-| **Portabilidad**         | El diseño debe facilitar la futura migración de un servidor local (On-premise) a la nube, aunque inicialmente se despliegue físicamente.                                                             |
-
-### 2.2.3 Restricciones
-
-- Desarrollo en **Java** (lenguaje familiar para los alumnos).
-
-- Uso de librerías **Open Source** solamente.
-
-- Hospedaje en una PC de escritorio de bajos recursos.
-
 ## 3. Alcance y Limitaciones
 
 ### 3.1 Plan de Liberaciones
