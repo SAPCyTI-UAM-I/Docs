@@ -290,6 +290,8 @@ flowchart TB
 | **SAPCyTI Backend API** | Exponer la API REST (JSON); autenticación y autorización por roles; contexto multi-tenant (Posgrado); lógica de negocio y orquestación; lectura de parámetros de configuración por posgrado; persistencia y acceso a datos; generación de exportación TXT/XLSX; integración asíncrona con WordPress. |
 | **PostgreSQL Database** | Almacenar datos del dominio, parámetros de configuración por posgrado y datos multi-tenant; garantizar consistencia transaccional. |
 
+En runtime, estos contenedores lógicos se despliegan según la **vista de despliegue** (sección 7): el Backend API y la base de datos como contenedores Docker, y la SPA como activos estáticos servidos por el contenedor Nginx.
+
 ### 6.- Component diagrams
 
 #### 6.1.- SAPCyTI Backend API
@@ -354,9 +356,65 @@ flowchart TB
 | **Core** | Auth guard (protección de rutas por rol); cliente HTTP (interceptores, tenant/posgrado en cabeceras); contexto de tenant y usuario. |
 | **Shared** | Componentes reutilizables (tablas, formularios, mensajes); pipes; estilos y utilidades comunes. |
 
-### 7.- Sequence diagrams
+### 7.- Deployment view
 
-#### 7.1.- Flujo de petición con contexto tenant y resolución de parámetros
+La topología de despliegue se basa en **Docker** y **Docker Compose** sobre el servidor Linux on-premise (CON-2). El Backend API y PostgreSQL se ejecutan como contenedores; Nginx actúa como punto de entrada único (reverse proxy y servidor de los estáticos de la SPA). La configuración de runtime se externaliza mediante variables de entorno. Esta disposición permite la misma pila en otros entornos (QA-5) y un ciclo de despliegue repetible para el equipo (CON-6).
+
+```mermaid
+flowchart TB
+    subgraph Host["Host Linux on-premise"]
+        subgraph Compose["Docker Compose"]
+            NGINX["Nginx - Reverse proxy y SPA"]
+            API["Backend API - Spring Boot"]
+            PG[("PostgreSQL")]
+        end
+        VOL["Volumen nombrado - datos DB"]
+    end
+    GHCR["GitHub Container Registry"]
+    GHA["GitHub Actions"]
+    PG --> VOL
+    GHA -.->|push image| GHCR
+    GHCR -.->|pull image| API
+```
+
+#### Responsabilidades de los elementos de despliegue
+
+| Elemento | Responsabilidades |
+| -------- | ----------------- |
+| **Host Linux** | Ejecutar Docker Engine y Docker Compose; albergar volúmenes persistentes; punto único de despliegue on-premise. |
+| **Contenedor Nginx** | Actuar como reverse proxy (único puerto público); enrutar p. ej. `/api` al Backend API; servir los estáticos de la SPA para la ruta de la aplicación; opcionalmente terminar TLS. |
+| **Contenedor Backend API** | Ejecutar la aplicación Spring Boot; conectarse a PostgreSQL y a servicios externos; leer configuración desde variables de entorno. |
+| **Contenedor PostgreSQL** | Proveer la base de datos; persistir datos en un volumen nombrado. |
+| **Volumen nombrado** | Persistir los datos de PostgreSQL entre reinicios de contenedores. |
+| **Docker Compose** | Definir servicios, redes y volúmenes; permitir arranque y parada del stack con un solo comando. |
+
+### 8.- CI/CD (Build and release)
+
+El ciclo de construcción y despliegue se automatiza con **GitHub Actions**. La pipeline construye y prueba el Backend API y la SPA, genera la imagen Docker del API, la publica en **GitHub Container Registry (ghcr.io)** y, opcionalmente, ejecuta un job de despliegue que actualiza el servidor (pull de imagen y `docker compose up -d`). Esto proporciona un proceso repetible y documentado para el equipo con rotación (CON-6) y es compatible con despliegue on-premise (CON-2) y futura nube (QA-5).
+
+```mermaid
+flowchart TB
+    subgraph Pipeline["GitHub Actions Workflow"]
+        B1["Build and test API"]
+        B2["Build and test SPA"]
+        B3["Build API image and push to GHCR"]
+        B4["Deploy to server"]
+    end
+    B1 --> B2 --> B3 --> B4
+```
+
+#### Responsabilidades de la pipeline
+
+| Job / etapa | Responsabilidades |
+| ----------- | ----------------- |
+| **Build and test API** | Compilar el Backend (Maven/Gradle); ejecutar pruebas unitarias e integración; fallar el workflow si las pruebas no pasan. |
+| **Build and test SPA** | Instalar dependencias; compilar la SPA (p. ej. `ng build`); ejecutar tests; producir artefactos estáticos. |
+| **Build API image and push** | Construir la imagen Docker del Backend (multi-stage); etiquetarla; hacer push a GitHub Container Registry (ghcr.io). |
+| **Deploy to server** | Conectar al servidor objetivo (p. ej. SSH o runner auto-hospedado); ejecutar `docker compose pull` y `docker compose up -d`; opcionalmente verificar salud del servicio. |
+
+### 9.- Sequence diagrams
+
+#### 9.1.- Flujo de petición con contexto tenant y resolución de parámetros
 
 Este diagrama ilustra cómo colaboran los elementos instanciados en la Iteración 1 cuando el usuario realiza una acción en la SPA: la petición incluye el contexto de tenant (posgrado), el Backend resuelve parámetros de configuración para ese posgrado y ejecuta la lógica de negocio contra la base de datos.
 
@@ -384,12 +442,40 @@ sequenceDiagram
 
 **Descripción:** El usuario interactúa con la SPA (Angular). La SPA envía cada petición al Backend API con el identificador del posgrado activo (cabecera o path). El API valida la sesión y el tenant, consulta los parámetros de configuración asociados a ese posgrado mediante el Configuration Service y ejecuta la lógica de negocio sobre la base de datos. La respuesta se devuelve en JSON y la SPA actualiza la interfaz. Este flujo soporta QA-3 (parametrización en un solo punto) y QA-4 (multi-tenant por posgrado).
 
-### 8.- Interfaces
+#### 9.2.- Ciclo de construcción y despliegue
+
+Este diagrama ilustra la colaboración de los elementos de DevOps instanciados en la Iteración 2: el desarrollador hace push al repositorio, GitHub Actions ejecuta la pipeline (build, test, construcción de imagen, push al registro) y el job de despliegue actualiza el servidor con la nueva imagen y reinicia el stack con Docker Compose.
+
+```mermaid
+sequenceDiagram
+    actor Dev as Desarrollador
+    participant Git as Repositorio Git
+    participant GHA as GitHub Actions
+    participant Registry as GHCR
+    participant Server as Servidor
+    participant Compose as Docker Compose
+
+    Dev->>Git: Push código
+    Git->>GHA: Dispara workflow
+    GHA->>GHA: Build y test API
+    GHA->>GHA: Build y test SPA
+    GHA->>GHA: Build imagen Docker API
+    GHA->>Registry: Push imagen
+    GHA->>Server: Job deploy - SSH o runner
+    Server->>Registry: Pull imagen
+    Server->>Compose: docker compose up -d
+    Compose-->>Server: Stack en ejecución
+```
+
+### 10.- Interfaces
 
 - **Backend API:** API REST sobre HTTPS. Contenido en JSON en request y response. La autenticación se definirá en la Iteración 3 (seguridad). El contexto de tenant (posgrado activo) se envía en cada petición, ya sea en cabecera (por ejemplo `X-Posgrado-Id`) o en el path según el recurso.
 - **Áreas principales de la API** (detalle en iteraciones posteriores): autenticación; posgrados y selección de tenant; configuración y parámetros; inscripción y oferta académica; gestión de alumnos y profesores; exportación (TXT/XLSX). Los contratos concretos (OpenAPI o equivalente) se documentarán cuando se definan los endpoints por iteración.
+- **Pipeline ↔ registro de imágenes:** GitHub Actions sube la imagen del Backend API a GitHub Container Registry (ghcr.io) mediante push OCI; el servidor (o el job de deploy) descarga la imagen desde ghcr.io. Autenticación mediante `GITHUB_TOKEN` en la pipeline o PAT/credenciales en el servidor para pull.
+- **Pipeline ↔ servidor (deploy):** El job de despliegue se conecta al servidor objetivo (SSH o runner auto-hospedado en el servidor), ejecuta `docker compose pull` y `docker compose up -d`, y opcionalmente una comprobación de salud (p. ej. HTTP GET al API o a Nginx). No se define un API de aplicación nuevo; es una interfaz operativa.
+- **Runtime entre contenedores:** Nginx se comunica con el Backend API por HTTP en la red interna de Compose; el Backend API se conecta a PostgreSQL por TCP. Estas interfaces quedan definidas por la configuración de Docker Compose y las variables de entorno.
 
-### 9.- Design decisions
+### 11.- Design decisions
 
 Decisiones de diseño de la **Iteración 1** (estructura general del sistema), asociadas a los drivers abordados.
 
@@ -404,4 +490,12 @@ Decisiones de diseño de la **Iteración 1** (estructura general del sistema), a
 | **CON-7** | **SPA Angular** con soporte para los navegadores indicados y diseño **responsivo** (CSS, viewport). | Angular tiene soporte amplio y prácticas estándar para compatibilidad y responsividad. | Solo Thymeleaf (preferencia del usuario por SPA); SPA sin framework (mayor esfuerzo de mantenimiento). |
 | **QA-3** | **Configuración externalizada**: parámetros por Posgrado en base de datos (tabla/s de parámetros); Configuration Service los expone en tiempo de ejecución. | Un solo punto de configuración; cambios sin despliegue de código; alineado con el modelo de dominio (ParametroConfiguracion). | Valores fijos en código; solo archivos de configuración (sin soporte por posgrado). |
 | **QA-4** | **Multi-tenant por discriminador**: misma base de datos y esquema, **posgrado_id** en tablas tenant-scoped; contexto de tenant en cada petición. | Soporta hasta 9 posgrados sin múltiples bases ni esquemas; operación simple y alineada con el agregado Posgrado. | Base de datos por tenant (excesivo); schema por tenant (más complejidad operativa). |
+
+Decisiones de diseño de la **Iteración 2** (infraestructura DevOps y despliegue), asociadas a los drivers abordados.
+
+| Driver | Decisión | Rationale | Alternativas descartadas |
+| ------ | -------- | --------- | ------------------------- |
+| **QA-5** | Backend API y PostgreSQL se ejecutan como **contenedores Docker**; configuración de runtime mediante **variables de entorno**; topología definida en un único archivo **Docker Compose**. Nginx en contenedor sirve los estáticos de la SPA. | Misma imagen y misma topología en cualquier entorno; desacoplamiento de la infraestructura concreta; facilita migración futura a nube. | Despliegue solo en metal (menos portable); orquestación cloud exclusiva. |
+| **CON-2** | **Docker Compose** en el único servidor Linux ejecuta Nginx, Backend API y PostgreSQL; sin Kubernetes. La automatización de despliegue (script o job de GitHub Actions) se dirige a este host. | Respeta la restricción de un solo servidor; operación sencilla; el mismo stack puede reproducirse en desarrollo. | Kubernetes; orquestación multi-nodo. |
+| **CON-6** | **GitHub Actions** para CI/CD: build y test del API y de la SPA, construcción de la imagen Docker del API y push a **GitHub Container Registry (ghcr.io)**, y job opcional de despliegue que ejecuta `docker compose` en el servidor. Proceso documentado y repetible. | Ciclo build–test–deploy repetible; reduce dependencia de una sola persona; compatible con repositorio en GitHub y con servidor on-premise. | Jenkins (más instalación y mantenimiento); solo despliegue manual; CI exclusivo en la nube. |
 
