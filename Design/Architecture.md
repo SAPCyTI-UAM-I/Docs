@@ -81,7 +81,7 @@ The architectural drivers were taken from [ArchitecturalDrivers.md](../Architect
 
 ### 4.- Domain model
 
-The domain model was derived by applying Domain-Driven Design (DDD) based on the primary functional requirements of the MVP (HU-01, HU-06, HU-07, HU-08, HU-09, HU-15, HU-21) and the quality attributes QA-3 (business rule parameterization) and QA-4 (multi-graduate program support). The following DDD building blocks were identified:
+The domain model was derived by applying Domain-Driven Design (DDD) based on the primary functional requirements of the MVP (HU-01, HU-06, HU-07, HU-08, HU-09, HU-15, HU-21), the quality attributes QA-3 (business rule parameterization) and QA-4 (multi-graduate program support), and the security cross-cutting concerns QA-1 (RBAC) and QA-2 (CWE Top 25 protection) introduced in Iteration 3. The following DDD building blocks were identified:
 
   - **Aggregate Root (AR):** Root entity that ensures the transactional consistency of its aggregate. It is the only point of external access to the aggregate.
   - **Entity (E):** Object with its own identity that exists within the boundaries of an aggregate and is managed by its Aggregate Root.
@@ -118,6 +118,42 @@ classDiagram
     class Role {
         <<Value Object>>
         +RoleType type
+    }
+
+    class RefreshToken {
+        <<Entity>>
+        +Long id
+        +String tokenHash
+        +Instant expiresAt
+        +Boolean revoked
+        +String deviceInfo
+    }
+
+    class PasswordResetToken {
+        <<Value Object>>
+        +String tokenHash
+        +Instant expiresAt
+        +Boolean used
+    }
+
+    class AuditEvent {
+        <<Aggregate Root>>
+        +Long id
+        +Instant timestamp
+        +Long actorId
+        +RoleType actorRole
+        +String action
+        +String entityType
+        +Long entityId
+        +String details
+        +AuditSeverity severity
+        +String ipAddress
+        +Long graduateProgramId
+    }
+
+    class AuditSeverity {
+        <<Value Object>>
+        +AuditSeverityLevel level
     }
 
     class Student {
@@ -205,6 +241,11 @@ classDiagram
     GraduateProgram "1" *-- "*" ConfigurationParameter
 
     User "1" *-- "1" Role
+    User "1" *-- "0..*" RefreshToken
+    User "1" *-- "0..1" PasswordResetToken
+
+    AuditEvent "*" --> "1" User : actor
+    AuditEvent "1" *-- "1" AuditSeverity
 
     Student "1" --> "1" User
     Student "1" *-- "1" PersonalData
@@ -239,7 +280,7 @@ classDiagram
 | **GraduateProgram** | Aggregate Root | Represents a UAM graduate program. Contains the parametric configuration of business rules, enabling the multi-graduate program support required by QA-4. |
 | **ConfigurationParameter** | Value Object | Immutable key-value pair that externalizes a business rule of the graduate program. Allows modifying dates, quotas, and criteria without changing source code, in response to QA-3. |
 | **User** | Aggregate Root | System access account. Stores credentials and activation status. Serves as the authentication identity for all system actors, per HU-01. |
-| **Role** | Value Object | User type assigned to an account: COORDINATOR, PROFESSOR, STUDENT, ASSISTANT, or SPEAKER. Determines menu options and visible permissions after login, per QA-1. |
+| **Role** | Value Object | User type assigned to an account: COORDINATOR, PROFESSOR, STUDENT, ASSISTANT, SPEAKER, or SYSTEM_ADMIN. Determines menu options and visible permissions after login, per QA-1. Role hierarchy: SYSTEM_ADMIN > COORDINATOR > ASSISTANT > PROFESSOR > STUDENT > SPEAKER (pending PO validation). |
 | **Student** | Aggregate Root | Student enrolled in a graduate program. Aggregates personal data and academic information and maintains a reference to their faculty advisor. Derived from HU-15. |
 | **PersonalData** | Value Object | Identity data of a person: first name, last names, and nationality. Shared by the Student and Professor aggregates. |
 | **AcademicInformation** | Value Object | Data from the student's academic program: original undergraduate degree, graduate program type, and admission date. Derived from HU-15. |
@@ -252,6 +293,10 @@ classDiagram
 | **Enrollment** | Aggregate Root | Process of a student enrolling in a specific term. Manages the complete lifecycle: course selection by the student in HU-07, approval by the advisor in HU-08, and generation of the official form in HU-09. Its statuses are: PENDING\_SELECTION, SELECTION\_COMPLETED, APPROVED\_BY\_ADVISOR, and FORM\_GENERATED. |
 | **UEASelection** | Entity | Record of the choice of a specific UEA group within an enrollment. Indicates if it was automatically preselected by the system and if it was approved by the advisor. Derived from HU-07 and HU-08. |
 | **EnrollmentForm** | Entity | PDF document generated as a result of the approved enrollment: the "UEA Request" delivered to School Systems. Records the generation date and if it has already been printed. Derived from HU-09. |
+| **AuditEvent** | Aggregate Root | Records a system event for compliance and traceability. Captures the actor, action, target entity, severity, and context (including graduate program for multi-tenant filtering). Supports general-purpose auditing with enhanced verbosity for security events. Derived from C003.2.2 (Iteration 3). |
+| **AuditSeverity** | Value Object | Enum indicating audit event importance: HIGH (security events — login, RBAC violations), STANDARD (domain mutations — entity CRUD), LOW (read operations — configurable per environment). |
+| **RefreshToken** | Entity | Persisted refresh token within the User aggregate. Stores only the token hash (SHA-256) for security. Supports "Remember me" via configurable TTL (7 days default, 30 days for remember-me) and concurrent session awareness via device tracking (C003.2.3). Derived from HU-01 (Iteration 3). |
+| **PasswordResetToken** | Value Object | Time-limited token for password recovery flow. Stores a hashed token with an expiry timestamp and a usage flag. Pattern established in Iteration 3; full implementation in Iteration 4 (HU-02). |
 
 ### 5.- Container diagram
 
@@ -276,7 +321,7 @@ flowchart TB
     end
 
     User <-->|HTTPS / UI consumption| SPA
-    SPA <-->|REST / JSON| API
+    SPA <-->|REST / JSON + JWT Bearer| API
     API <-->|SQL| DB
     API -.->|Async REST| WP
     API -->|TXT / XLSX| SCE
@@ -287,9 +332,9 @@ flowchart TB
 
 | Container | Responsibilities |
 | ---------- | ----------------- |
-| **SAPCyTI SPA** | Provide the user interface in the browser; routing and views by role; consumption of the REST API; sending tenant context (graduate program) in requests; compatibility with required browsers and responsive designs (CON-7). |
-| **SAPCyTI Backend API** | Expose the REST API (JSON); authentication and authorization by roles; multi-tenant context (Graduate Program); business logic and orchestration; reading configuration parameters per graduate program; persistence and data access; generation of TXT/XLSX export; asynchronous integration with WordPress. |
-| **PostgreSQL Database** | Store domain data, configuration parameters per graduate program, and multi-tenant data; ensure transactional consistency. |
+| **SAPCyTI SPA** | Provide the user interface in the browser; routing and views by role; consumption of the REST API; sending tenant context (graduate program) in requests; manage authentication state (access token in memory, refresh token via HttpOnly cookie); role-based route protection via AuthGuard; compatibility with required browsers and responsive designs (CON-7). |
+| **SAPCyTI Backend API** | Expose the REST API (JSON); JWT-based stateless authentication and RBAC enforcement via Spring Security; multi-tenant context (Graduate Program); business logic and orchestration; reading configuration parameters per graduate program; persistence and data access; audit logging for security events and domain mutations; generation of TXT/XLSX export; asynchronous integration with WordPress. |
+| **PostgreSQL Database** | Store domain data, configuration parameters per graduate program, multi-tenant data, audit events, and refresh tokens; ensure transactional consistency. |
 
 At runtime, these logical containers are deployed according to the **deployment view** (section 7): the Backend API and database as Docker containers, and the SPA as static assets served by the Nginx container.
 
@@ -297,24 +342,28 @@ At runtime, these logical containers are deployed according to the **deployment 
 
 #### 6.1.- SAPCyTI Backend API
 
-The Backend API is structured as a **modular monolith**, following **Hexagonal Architecture (Ports & Adapters)** and **DDD principles**. The domain layer sits at the center with zero dependencies on infrastructure. Port interfaces define the contracts through which the domain communicates with external concerns. Infrastructure adapters implement these ports, keeping the domain framework-agnostic and testable in isolation. Each bounded context module follows the same hexagonal structure internally.
+The Backend API is structured as a **modular monolith**, following **Hexagonal Architecture (Ports & Adapters)** and **DDD principles**. The domain layer sits at the center with zero dependencies on infrastructure. Port interfaces define the contracts through which the domain communicates with external concerns. Infrastructure adapters implement these ports, keeping the domain framework-agnostic and testable in isolation. Each bounded context module follows the same hexagonal structure internally. In Iteration 3, the security cross-cutting concern was instantiated as a **Security Filter Chain** in the driving adapters layer (before REST Controllers), a **JWT Service** in the application layer, and audit/security-related driven adapters.
 
 ```mermaid
 flowchart TB
     subgraph API["SAPCyTI Backend API - Modular Monolith"]
         subgraph Adapters_In["Driving Adapters - Infrastructure In"]
+            SECCHAIN["Security Filter Chain\nSpring Security"]
+            JWTFILT["JWT Authentication Filter\nToken extraction and validation"]
             REST["REST Controllers\nHTTP entry point"]
         end
 
         subgraph Application["Application Layer"]
             USECASES["Use Cases\nApplication Services"]
+            JWTSVC["JWT Service\nToken generation, validation, refresh"]
+            AUDITASP["Audit Aspect\nAOP security event capture"]
         end
 
         subgraph Domain["Domain Layer - Hexagonal Core"]
             AGG["Aggregates, Entities\nValue Objects"]
             DOMSVC["Domain Services"]
             PORTS_IN["Input Ports\nUse case interfaces"]
-            PORTS_OUT["Output Ports\nRepository and integration interfaces"]
+            PORTS_OUT["Output Ports\nRepository, security, audit interfaces"]
         end
 
         subgraph Adapters_Out["Driven Adapters - Infrastructure Out"]
@@ -323,59 +372,100 @@ flowchart TB
             EXPSVC["Export Adapter\nTXT / XLSX - Apache POI"]
             WPCLIENT["WordPress Adapter\nAsync HTTP client"]
             FLYWAY["Flyway\nDB migrations"]
+            PWDENC["Password Encoder Adapter\nBCrypt"]
+            AUDITADP["Audit Adapter\nJPA + EntityListeners"]
+            FILEACC["File Access Service\nHMAC signed URLs"]
         end
     end
 
+    SECCHAIN --> JWTFILT
+    JWTFILT --> REST
     REST --> USECASES
+    USECASES --> JWTSVC
     USECASES --> PORTS_IN
     PORTS_IN --> AGG
     PORTS_IN --> DOMSVC
     USECASES --> PORTS_OUT
+    AUDITASP -.-> PORTS_OUT
     PORTS_OUT --> JPA
     PORTS_OUT --> CONFSVC
     PORTS_OUT --> EXPSVC
     PORTS_OUT --> WPCLIENT
+    PORTS_OUT --> PWDENC
+    PORTS_OUT --> AUDITADP
+    PORTS_OUT --> FILEACC
 ```
 
 | Component | Responsibilities |
 | ---------- | ----------------- |
-| **REST Controllers** (Driving Adapter) | Receive HTTP requests; validate input; delegate to use cases via input ports; return JSON responses; apply authentication and tenant context filters. |
-| **Use Cases / Application Services** | Orchestrate business operations; coordinate aggregates and domain services through input ports; invoke output ports for persistence, configuration, export, and WordPress integration. |
-| **Aggregates, Entities, Value Objects** (Domain) | Core business model as defined in the domain model (§4); business rules; invariant enforcement. Zero dependencies on infrastructure. |
+| **Security Filter Chain** (Driving Adapter) | Spring Security `SecurityFilterChain` bean; first component in the HTTP request pipeline; applies URL-pattern security rules (default-deny, whitelist `/api/auth/**`); configures security headers (CSP, X-Frame-Options, X-Content-Type-Options); manages CORS policy (allowed origins from env vars, Factor III); enforces `SessionCreationPolicy.STATELESS` (Factor VI). |
+| **JWT Authentication Filter** (Driving Adapter) | Custom `OncePerRequestFilter`; extracts JWT from `Authorization: Bearer` header; validates signature using RSA public key; populates Spring `SecurityContext` with user identity, role, and tenant. Passes through to REST Controllers on success; returns 401 on invalid/expired token. |
+| **REST Controllers** (Driving Adapter) | Receive authenticated HTTP requests; validate input via Bean Validation (`@Valid`); enforce method-level RBAC via `@PreAuthorize` + SpEL; delegate to use cases via input ports; return JSON responses. |
+| **Use Cases / Application Services** | Orchestrate business operations; coordinate aggregates and domain services through input ports; invoke output ports for persistence, configuration, export, WordPress integration, and audit logging. |
+| **JWT Service** (Application Layer) | Generate access tokens (RSA-256 signed, 15 min TTL) and refresh tokens (opaque, hashed with SHA-256, 7/30 day TTL); validate and refresh tokens; revoke refresh tokens on logout. Token TTLs and RSA key paths externalized via environment variables (Factor III). |
+| **Audit Aspect** (Application Layer) | AOP aspect intercepting authentication and authorization methods; captures security events (LOGIN_SUCCESS, LOGIN_FAILURE, RBAC_VIOLATION, TOKEN_REFRESH) at HIGH severity; delegates to Audit Adapter via output port. |
+| **Aggregates, Entities, Value Objects** (Domain) | Core business model as defined in the domain model (§4) including AuditEvent, RefreshToken, and PasswordResetToken; business rules; invariant enforcement. Zero dependencies on infrastructure. |
 | **Domain Services** (Domain) | Complex business logic spanning multiple aggregates; domain event handling. |
 | **Input Ports** (Domain) | Interfaces defining use case contracts. Implemented by the application layer. |
-| **Output Ports** (Domain) | Interfaces defining contracts for persistence, configuration, export, and integration. Implemented by driven adapters. |
+| **Output Ports** (Domain) | Interfaces defining contracts for persistence, configuration, export, integration, password encoding (`PasswordEncoderPort`), audit logging (`AuditOutputPort`), and file access (`FileAccessPort`). Implemented by driven adapters. |
 | **JPA Repositories** (Driven Adapter) | Implement output ports for data access; access PostgreSQL; filtering by tenant (graduate\_program\_id) where applicable. |
 | **Configuration Adapter** (Driven Adapter) | Implement output port for reading configuration parameters per Graduate Program; support for QA-3 and QA-4. |
 | **Export Adapter** (Driven Adapter) | Implement output port for generating TXT and XLSX files for School Systems (CON-3); uses Apache POI. |
 | **WordPress Adapter** (Driven Adapter) | Implement output port for asynchronous HTTP calls to WordPress (CON-4); retries and error handling. |
 | **Flyway** (Infrastructure) | SQL-based database schema versioning; migrations run on application startup (Factor XII); scripts in `db/migration/`. |
+| **Password Encoder Adapter** (Driven Adapter) | Implements `PasswordEncoderPort`; wraps Spring Security's `BCryptPasswordEncoder` with configurable work factor (default 12, via env var). Isolates the domain from the concrete hashing algorithm. |
+| **Audit Adapter** (Driven Adapter) | Implements `AuditOutputPort`; persists `AuditEvent` entities to PostgreSQL; integrates with JPA `@EntityListeners` for domain mutation events at STANDARD severity; writes structured audit log entries to stdout (Factor XI) in addition to database persistence. |
+| **File Access Service** (Driven Adapter) | Implements `FileAccessPort`; generates HMAC-SHA256 signed, time-limited URLs for file download; validates signatures with constant-time comparison; streams files via `StreamingResponseBody`. HMAC key externalized (Factor III). |
 
 #### 6.2.- SAPCyTI SPA (Angular)
 
-The SPA is organized into a shell, feature modules, core (auth, HTTP, tenant), and shared components.
+The SPA is organized into a shell, feature modules, core services (authentication, HTTP, tenant context), and shared components. In Iteration 3, the Core module was refined to explicitly define the authentication and authorization sub-components, and a Login feature module was added.
 
 ```mermaid
 flowchart TB
     subgraph SPA["SAPCyTI SPA"]
-        SHELL["Shell / Layout\nMain Routing"]
-        FEAT["Feature Modules\nAuth, Dashboard, Enrollment, Entities"]
-        CORE["Core\nAuth Guard, HTTP, Tenant Context"]
+        SHELL["Shell / Layout\nMain Routing\nRole-based menu rendering"]
+
+        subgraph Features["Feature Modules"]
+            LOGIN["Login Module\nHU-01"]
+            DASH["Dashboard Module"]
+            ENROLL["Enrollment Module"]
+            ENTITIES["Entity Management Module"]
+        end
+
+        subgraph Core["Core"]
+            AUTHINT["Auth Interceptor\nJWT attachment + 401 refresh"]
+            AUTHGUARD["Role Auth Guard\nCanActivate + role check"]
+            AUTHSTATE["Auth State Service\ncurrentUser$ + token lifecycle"]
+            TENANT["Tenant Context\nGraduate program selection"]
+            HTTP["HTTP Client\nBase API configuration"]
+        end
+
         SHARED["Shared\nUI components, Pipes"]
     end
 
-    SHELL --> FEAT
-    SHELL --> CORE
-    FEAT --> CORE
-    FEAT --> SHARED
+    SHELL --> Features
+    SHELL --> Core
+    Features --> Core
+    Features --> SHARED
+    AUTHINT --> HTTP
+    AUTHGUARD --> AUTHSTATE
+    LOGIN --> AUTHSTATE
 ```
 
 | Component | Responsibilities |
 | ---------- | ----------------- |
-| **Shell / Layout** | Application structure (menu, bar, container); high-level routing; loading feature modules. |
-| **Feature Modules** | Modules by functionality (login, dashboard, enrollment, student/professor management); views and presentation logic per use case. |
-| **Core** | Auth guard (route protection by role); HTTP client (interceptors, tenant/graduate program in headers); tenant and user context. |
-| **Shared** | Reusable components (tables, forms, messages); pipes; common styles and utilities. |
+| **Shell / Layout** | Application structure (menu, top bar, container); high-level routing; loading feature modules; conditionally renders menu items based on `currentUser$.role` from AuthStateService — only role-appropriate options visible after login (HU-01). |
+| **Login Module** (Feature) | Login form (email, password, "Remember me" checkbox); calls AuthStateService.login(); displays generic error on failure; navigates to role-specific dashboard on success. Implements HU-01 UI. |
+| **Dashboard Module** (Feature) | Role-specific landing page after login; summary views per user type. |
+| **Enrollment Module** (Feature) | Enrollment-related views (CSV upload, course selection, advisor approval, form generation). |
+| **Entity Management Module** (Feature) | Student and professor CRUD views (Iteration 4). |
+| **Auth Interceptor** (Core) | Angular `HttpInterceptor`; attaches `Authorization: Bearer <accessToken>` header to all API requests (except auth endpoints); on 401 response, transparently attempts token refresh via refresh token cookie — retries original request on success, redirects to login on failure. |
+| **Role Auth Guard** (Core) | Angular `CanActivate` guard; reads `data.roles` from route definition; decodes JWT to extract role claim; allows navigation if user role is in allowed list; redirects to 403 page (wrong role) or login page (unauthenticated). UX convenience only — all authorization enforced server-side. |
+| **Auth State Service** (Core) | Holds access token in memory (never localStorage — XSS mitigation); exposes `currentUser$` Observable with decoded JWT claims (id, email, role, graduateProgramId); provides `login()`, `logout()`, `isAuthenticated()`, `hasRole()` methods; on bootstrap, attempts silent refresh via HttpOnly refresh token cookie to restore session. |
+| **Tenant Context** (Core) | Manages the active graduate program selection; includes `X-Graduate-Id` header in API requests. |
+| **HTTP Client** (Core) | Base Angular HttpClient configuration; base API URL; timeout handling. |
+| **Shared** | Reusable components (tables, forms, messages, error pages including 403 Access Denied); pipes; common styles and utilities. |
 
 ### 7.- Deployment view
 
@@ -660,12 +750,158 @@ sequenceDiagram
 
 **Description:** The Backend API exposes JVM, HTTP, and database pool metrics via Spring Boot Actuator in Prometheus format. Node Exporter collects host-level metrics (disk, CPU, RAM). VictoriaMetrics scrapes both sources at regular intervals, stores the time-series data, and evaluates alert rules. When thresholds are breached (disk > 80%, memory > 90%, or service health failure), VictoriaMetrics sends notifications via the existing SMTP integration. Grafana queries VictoriaMetrics using PromQL and renders dashboards for the team and administrators.
 
+#### 9.4.- Login and authentication flow (HU-01)
+
+This diagram illustrates the complete login flow instantiated in Iteration 3: the user submits credentials via the SPA Login module, the Backend validates credentials, issues JWT tokens, and the SPA stores the access token in memory.
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant SPA as Login Module
+    participant AuthState as Auth State Service
+    participant Interceptor as Auth Interceptor
+    participant API as Backend API
+    participant SecFilter as Security Filter Chain
+    participant AuthUC as Auth Use Case
+    participant PwdPort as Password Encoder Port
+    participant JwtSvc as JWT Service
+    participant RefRepo as Refresh Token Repository
+    participant AuditSvc as Audit Service
+    participant DB as PostgreSQL
+
+    User->>SPA: Enter email, password, remember me
+    SPA->>AuthState: login(email, password, rememberMe)
+    AuthState->>API: POST /api/auth/login
+    API->>SecFilter: Request (whitelisted path)
+    SecFilter->>AuthUC: Delegate to auth use case
+    AuthUC->>DB: Find user by email
+    DB-->>AuthUC: User record
+    AuthUC->>PwdPort: matches(rawPassword, user.passwordHash)
+    PwdPort-->>AuthUC: true / false
+    alt Credentials valid
+        AuthUC->>JwtSvc: generateAccessToken(user)
+        JwtSvc-->>AuthUC: accessToken (RSA-256, 15 min)
+        AuthUC->>JwtSvc: generateRefreshToken(user, rememberMe)
+        JwtSvc->>RefRepo: Persist hashed refresh token
+        RefRepo->>DB: INSERT refresh_tokens
+        JwtSvc-->>AuthUC: refreshToken
+        AuthUC->>AuditSvc: log LOGIN_SUCCESS (HIGH)
+        AuditSvc->>DB: INSERT audit_events
+        AuthUC-->>API: 200 + accessToken JSON + Set-Cookie HttpOnly refresh
+        API-->>AuthState: Response
+        AuthState->>AuthState: Store access token in memory
+        AuthState->>SPA: currentUser$ emits user
+        SPA->>User: Navigate to role-specific dashboard
+    else Credentials invalid
+        AuthUC->>AuditSvc: log LOGIN_FAILURE (HIGH)
+        AuditSvc->>DB: INSERT audit_events
+        AuthUC-->>API: 401 + generic error
+        API-->>AuthState: Error response
+        AuthState->>SPA: Error notification
+        SPA->>User: Display "Invalid credentials"
+    end
+```
+
+**Description:** The user enters email, password, and optionally checks "Remember me" on the Login Module (HU-01). The SPA's AuthStateService calls `POST /api/auth/login`. The Security Filter Chain passes the request (login endpoint is whitelisted). The Auth Use Case retrieves the user from PostgreSQL, validates the password via the PasswordEncoderPort (BCrypt), and on success, the JWT Service generates a short-lived access token (RSA-256 signed, 15 min) and a refresh token (7 days default, 30 days if remember-me). The refresh token hash is persisted for revocation support. An audit event is recorded at HIGH severity. The access token is returned in the JSON body; the refresh token is set as an HttpOnly, Secure, SameSite=Strict cookie. The AuthStateService stores the access token in memory (never localStorage) and emits the decoded user via `currentUser$`. On failure, a generic error is returned (no information leakage) and the failure is audit-logged.
+
+#### 9.5.- RBAC enforcement on a protected request
+
+This diagram illustrates how the security components collaborate to enforce role-based access control on every authenticated API request.
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant SPA as SPA
+    participant Interceptor as Auth Interceptor
+    participant Guard as Role Auth Guard
+    participant API as Backend API
+    participant JwtFilter as JWT Authentication Filter
+    participant SecCtx as Security Context
+    participant Controller as REST Controller
+    participant AuditSvc as Audit Service
+    participant DB as PostgreSQL
+
+    User->>SPA: Navigate to protected view
+    SPA->>Guard: canActivate(route)
+    Guard->>Guard: Check role from JWT payload
+    alt Role allowed for route
+        Guard-->>SPA: Allow navigation
+        SPA->>Interceptor: HTTP request to API
+        Interceptor->>Interceptor: Attach Authorization Bearer header
+        Interceptor->>API: GET /api/students (example)
+        API->>JwtFilter: Extract JWT from header
+        JwtFilter->>JwtFilter: Validate RSA signature + expiry
+        JwtFilter->>SecCtx: Set authentication (userId, role, tenant)
+        SecCtx-->>Controller: SecurityContext available
+        Controller->>Controller: @PreAuthorize hasRole COORDINATOR
+        alt Role matches
+            Controller->>DB: Execute business logic
+            DB-->>Controller: Result
+            Controller-->>API: 200 JSON response
+            API-->>SPA: Response data
+            SPA-->>User: Render view
+        else Role does not match
+            Controller-->>API: 403 Forbidden
+            AuditSvc->>DB: log RBAC_VIOLATION (HIGH)
+            API-->>SPA: 403 error
+            SPA-->>User: Access Denied page
+        end
+    else Role not allowed for route
+        Guard-->>SPA: Redirect to 403 page
+        SPA-->>User: Access Denied page
+    end
+```
+
+**Description:** When the user navigates to a protected view, the SPA's RoleAuthGuard first checks the JWT payload's role claim against the route's allowed roles. If allowed, the Auth Interceptor attaches the Bearer token to the HTTP request. The Backend's JWT Authentication Filter validates the RSA signature and expiry, then populates the Spring SecurityContext. The REST Controller evaluates `@PreAuthorize("hasRole('COORDINATOR')")` via SpEL. If the role matches, business logic executes normally. If not, a 403 response is returned and the Audit Service logs an RBAC_VIOLATION at HIGH severity. The SPA guard provides an immediate UX check, but all authorization is enforced server-side.
+
+#### 9.6.- Audit logging flow for domain mutations
+
+This diagram illustrates how the general-purpose audit infrastructure captures domain entity changes via JPA lifecycle listeners.
+
+```mermaid
+sequenceDiagram
+    participant UseCase as Use Case
+    participant Entity as Domain Entity
+    participant JPA as JPA Repository
+    participant Listener as JPA Entity Listener
+    participant AuditPort as Audit Output Port
+    participant AuditAdapter as Audit Adapter
+    participant DB as PostgreSQL
+    participant Stdout as Stdout (Factor XI)
+
+    UseCase->>Entity: Modify entity (e.g., register student)
+    UseCase->>JPA: save(entity)
+    JPA->>JPA: EntityManager.persist / merge
+    JPA->>Listener: @PrePersist / @PreUpdate callback
+    Listener->>Listener: Build AuditEvent (STANDARD severity)
+    Note over Listener: Fields: actor, action, entityType,<br/>entityId, changedFields, tenant
+    Listener->>AuditPort: persist(auditEvent)
+    AuditPort->>AuditAdapter: Adapter implementation
+    AuditAdapter->>DB: INSERT INTO audit_events
+    AuditAdapter->>Stdout: Structured JSON log (Factor XI)
+    JPA->>DB: INSERT / UPDATE entity
+    DB-->>JPA: Confirmation
+    JPA-->>UseCase: Saved entity
+```
+
+**Description:** When a Use Case modifies a domain entity (e.g., registering a student, updating a grade), the JPA Repository triggers the entity's lifecycle listener (`@PrePersist` or `@PreUpdate`). The listener constructs an `AuditEvent` with STANDARD severity, capturing the actor, action, entity type, entity ID, and changed fields. The event is persisted to the `audit_events` table via the Audit Adapter (implementing the `AuditOutputPort`) and simultaneously written to stdout as structured JSON (Factor XI). This dual-write approach ensures audit events are both queryable (database) and streamable (log aggregation). Security events (login, RBAC) are captured separately via the Audit Aspect (AOP) at HIGH severity.
+
 ### 10.- Interfaces
 
 #### Application interfaces
 
-  - **Backend API:** REST API over HTTPS. Content in JSON for both request and response. Authentication will be defined in Iteration 3 (security). The tenant context (active graduate program) is sent in every request, either in a header (e.g., `X-Graduate-Id`) or in the path depending on the resource.
-  - **Main API Areas** (details in later iterations): authentication; graduate programs and tenant selection; configuration and parameters; enrollment and academic offer; student and professor management; export (TXT/XLSX). Concrete contracts (OpenAPI or equivalent) will be documented as endpoints are defined per iteration.
+  - **Backend API:** REST API over HTTPS. Content in JSON for both request and response. Authentication is JWT-based (stateless, RSA-256 signed tokens) as defined in Iteration 3. All endpoints require a valid JWT in the `Authorization: Bearer` header, except authentication endpoints (`/api/auth/**`). The tenant context (active graduate program) is sent in every request via the `X-Graduate-Id` header.
+  - **Main API Areas** (details in later iterations): authentication (Iteration 3); graduate programs and tenant selection; configuration and parameters; enrollment and academic offer; student and professor management; export (TXT/XLSX). Concrete contracts (OpenAPI or equivalent) will be documented as endpoints are defined per iteration.
+
+#### Authentication and security interfaces
+
+  - **Login:** `POST /api/auth/login` — Request body: `{email: string, password: string, rememberMe: boolean}`. Response: `{accessToken: string, expiresIn: number}` (200 OK) + `Set-Cookie: refreshToken=<token>; HttpOnly; Secure; SameSite=Strict; Path=/api/auth; Max-Age=<ttl>`. Error: `{error: string, message: string, timestamp: string}` (401 Unauthorized).
+  - **Token refresh:** `POST /api/auth/refresh` — No request body; reads refresh token from HttpOnly cookie. Response: `{accessToken: string, expiresIn: number}` + rotated refresh cookie. Error: 401 if refresh token is expired, revoked, or missing.
+  - **Logout:** `POST /api/auth/logout` — Requires valid access token. Revokes the refresh token server-side and clears the refresh cookie. Response: 204 No Content.
+  - **Password recovery (pattern only — full flow in Iteration 4):** `POST /api/auth/forgot-password` — Request body: `{email: string}`. Response: always 200 OK with generic message (no information leakage on whether email exists).
+  - **RBAC error contract:** All protected endpoints return `401 Unauthorized` (missing/invalid/expired JWT) or `403 Forbidden` (insufficient role). Response body: `{error: string, message: string, timestamp: string, path: string}`.
+  - **Security headers** (applied by Security Filter Chain to all responses): `Content-Security-Policy: default-src 'self'`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Strict-Transport-Security: max-age=31536000; includeSubDomains` (when TLS is active).
+  - **File download:** `GET /api/files/{fileId}?signature=<hmac>&expires=<timestamp>&userId=<id>` — Validates HMAC-SHA256 signature and expiry before streaming file. Returns 403 if signature invalid or expired.
 
 #### Observability interfaces
 
@@ -717,6 +953,19 @@ Design decisions from **Iteration 2** (DevOps infrastructure and deployment), as
 | **C010.1.x, C010.2.x** | Comprehensive test strategy: **JUnit 5** for unit and integration tests; **Karate** framework for automated smoke, regression, and API contract tests (API + UI); **Gatling** for load/performance testing (50+ concurrent users); **Postman** for manual API testing. Sanitized test data via **Flyway** test migrations. | All automated tools are JVM-based (consistent with Java stack and Maven/Gradle integration). Karate provides unified BDD framework for API and UI testing. Gatling produces HTML reports. Postman gives GUI for manual API exploration. | k6 (JavaScript, less natural for Java team); JMeter (XML config, clunky GUI); unit tests only (insufficient coverage). |
 | **C010.2.2** | **OWASP Dependency-Check** (backend) + **npm audit** (SPA) in CI pipeline; fail on critical CVEs. | Automated security scanning catches known vulnerabilities before merge; OSS; integrates with GitHub Actions. | Snyk (commercial for advanced features); no scanning (unacceptable security risk). |
 | **C005.1.5, Factor X** | **Three-environment deployment** (Dev, Pre-prod, Prod) with **identical topology** differentiated only by `.env` files. Manual approval at every promotion stage including `develop`. | True dev/prod parity; Pre-prod serves as full QA gate before production; prevents untested code from reaching any shared environment. | Two environments (no QA gate); four+ environments (over-engineering). |
+
+Design decisions from **Iteration 3** (security cross-cutting concerns), associated with the addressed drivers.
+
+| Driver | Decision | Rationale | Discarded Alternatives |
+| ------ | -------- | --------- | ------------------------- |
+| **QA-1, QA-2, HU-01** | **Spring Security filter chain** with stateless JWT authentication as the single HTTP security entry point. `SecurityFilterChain` configures URL-pattern rules (default-deny), security headers, CORS, and `SessionCreationPolicy.STATELESS`. | Industry-proven framework; integrates natively with Spring Boot; configurable pipeline; handles CORS, CSRF, headers out of the box; compatible with hexagonal architecture (filter chain is a driving adapter); Factor VI compliance. | Apache Shiro (smaller ecosystem); custom servlet filters (reinvents solved problems, CON-6 risk); Keycloak/external IdP (adds infrastructure, overkill for 6 roles). |
+| **HU-01, C003.2.3** | **JWT with asymmetric RSA-256 key pair**. Access token (15 min TTL) + refresh token (7/30 day TTL for "Remember me") with rotation. Refresh token stored as HttpOnly cookie; access token in memory. | Stateless verification (Factor VI); no token store for access tokens; refresh token rotation mitigates theft; "Remember me" maps to longer refresh TTL; portable to future services. | Symmetric HMAC-SHA256 (shared secret risk); opaque tokens + Redis (violates Factor VI, adds infrastructure); Spring Session (adds Redis dependency). |
+| **QA-1, C003.2.1** | Method-level RBAC via **`@PreAuthorize` + SpEL** with Spring `RoleHierarchy` bean. Roles embedded in JWT claims. Hierarchy: SYSTEM_ADMIN > COORDINATOR > ASSISTANT > PROFESSOR > STUDENT > SPEAKER (pending PO validation). SPA AuthGuard provides UX-only route protection. | Declarative; close to business logic; easy for students to read; auto-generates 403 responses; supports complex expressions; auditable. All authorization enforced server-side. | Custom RBAC interceptor (manual, error-prone); ACL (overkill for 6 roles); OPA/Casbin (external dependency, steep learning curve). |
+| **C003.1.2, QA-2** | **BCrypt** password hashing via `BCryptPasswordEncoder` with configurable work factor (default 12, externalized via Factor III). Wrapped as a driven adapter implementing `PasswordEncoderPort`. | Adaptive cost function; built-in salt; industry standard; zero additional dependencies; widely understood by students. | Argon2 (superior but less mature Spring support, unfamiliar to students); SCrypt (less adoption); SHA-256 + salt (unsuitable for passwords, OWASP discourages). |
+| **QA-2** | **Spring Security defaults + explicit CWE Top 25 hardening**: CSP, X-Frame-Options, X-Content-Type-Options headers; JPA parameterized queries (CWE-89); Angular auto-escaping (CWE-79); SameSite cookies + CORS (CWE-352); Bean Validation (CWE-20); path normalization (CWE-22); no ObjectInputStream deserialization (CWE-502); secrets in `.env` only (CWE-798). | Comprehensive defense-in-depth; uses framework defaults; each layer addresses specific CWE entries; minimal custom code; CI scans enforce automatically. | WAF only (doesn't protect app-logic vulnerabilities); manual filters (reinvents the wheel, CON-6 risk). |
+| **C003.2.2** | **General-purpose audit logging** via JPA `@EntityListeners` (domain mutations at STANDARD level) + AOP `SecurityAuditAspect` (auth/RBAC events at HIGH level). `AuditEvent` aggregate persisted to PostgreSQL + structured JSON to stdout (Factor XI). | Non-invasive; general-purpose (any entity); centralized persistence; queryable for compliance reports; dual-write (DB + stdout) ensures both queryability and streamability. | Event Sourcing (excessive complexity, CON-6); ELK/Splunk (budget constraint); log-only (not queryable for compliance). |
+| **C003.1.1, C003.1.3** | **Signed time-limited URLs** via HMAC-SHA256 for file access. Backend generates signed URL with file ID, expiry, user scope. Download endpoint validates signature with constant-time comparison. Files never directly exposed via web server. | Files never publicly accessible; URL useless after expiry; compatible with future S3 pre-signed URLs (QA-5); simple to implement. | Nginx X-Accel-Redirect (Nginx-specific, no time limit); direct file paths (CWE-22 risk); S3 pre-signed URLs (not applicable to on-premise, CON-2). |
+| **QA-1, HU-01** | **Angular HttpInterceptor** for JWT attachment + **RoleAuthGuard** for route protection + **AuthStateService** for token lifecycle. Access token stored **in memory only** (XSS mitigation). Refresh token as HttpOnly cookie (secure from JavaScript). | Clean separation; Angular built-in patterns; consistent JWT handling; memory storage mitigates XSS theft; HttpOnly cookie secure from JS access. | localStorage (XSS-accessible, OWASP discourages); session cookies (violates Factor VI); third-party auth SDK (unnecessary dependency, CON-6). |
 
 ### 12.- Development workflow
 
@@ -938,3 +1187,117 @@ Alert rules are configured in VictoriaMetrics' alerting configuration and notifi
 | **VictoriaMetrics** | Scrape, store, and query metrics; evaluate alert rules; send alert notifications via SMTP. Lower resource footprint than Prometheus (~7x less RAM). |
 | **Grafana** | Render dashboards for the team; provide visual monitoring of system health, performance trends, and resource consumption. |
 | **SMTP integration** | Deliver alert email notifications to the system administrator and/or coordinator. |
+
+### 15.- Security architecture
+
+This section documents the security architecture established in Iteration 3, covering the HTTP security pipeline, CWE Top 25 mitigations, security configuration externalization, role hierarchy, and audit event infrastructure.
+
+#### 15.1.- Security filter chain architecture
+
+The following diagram shows the HTTP request pipeline from the Nginx reverse proxy through the Spring Security filter chain to the REST Controllers. Security is enforced as a layered pipeline — each layer addresses a specific concern.
+
+```mermaid
+flowchart LR
+    subgraph Pipeline["HTTP Security Pipeline"]
+        NGINX["Nginx\nReverse Proxy\nTLS termination"]
+        CORS["CORS Filter\nAllowed origins from env"]
+        HEADERS["Security Headers\nCSP, X-Frame, X-Content-Type"]
+        JWTF["JWT Auth Filter\nToken extraction\nRSA validation"]
+        PREAUTH["@PreAuthorize\nSpEL role check"]
+        CTRL["REST Controller\nBean Validation"]
+    end
+    NGINX --> CORS --> HEADERS --> JWTF --> PREAUTH --> CTRL
+```
+
+| Pipeline Stage | Responsibility | CWE Coverage |
+| -------------- | -------------- | ------------ |
+| **Nginx** | TLS termination; rate limiting; static asset serving; reverse proxy to API. | CWE-319 (cleartext transmission) |
+| **CORS Filter** | Restricts API access to SPA origin only. Origin URL externalized (Factor III). | CWE-352 (CSRF) |
+| **Security Headers** | Sets `Content-Security-Policy`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Strict-Transport-Security`. | CWE-79 (XSS), CWE-1021 (clickjacking) |
+| **JWT Auth Filter** | Extracts and validates JWT (RSA-256 public key); populates SecurityContext; rejects invalid/expired tokens with 401. | CWE-287 (improper auth), CWE-306 (missing auth) |
+| **@PreAuthorize** | Evaluates SpEL role expressions; rejects unauthorized requests with 403; logs violations via Audit Aspect. | CWE-862 (missing authorization), CWE-863 (incorrect authorization) |
+| **REST Controller** | Bean Validation (`@Valid`) on all request bodies and path variables; JPA parameterized queries; no raw SQL. | CWE-20 (input validation), CWE-89 (SQL injection) |
+
+#### 15.2.- CWE Top 25 coverage matrix
+
+| CWE ID | Vulnerability | Mitigation | Layer |
+| ------ | ------------- | ---------- | ----- |
+| CWE-89 | SQL Injection | JPA parameterized queries; no raw SQL string concatenation | REST Controller + JPA |
+| CWE-79 | Cross-Site Scripting (XSS) | Angular auto-escaping; `Content-Security-Policy` header; `X-Content-Type-Options: nosniff` | SPA + Security Headers |
+| CWE-352 | Cross-Site Request Forgery | `SameSite=Strict` on refresh cookie; CORS origin restriction; JWT Bearer in header (not cookie-based auth) | CORS Filter + Cookie config |
+| CWE-287 | Improper Authentication | Spring Security authentication filter; BCrypt password hashing; audit-logged failed login attempts | JWT Auth Filter + Password Encoder |
+| CWE-862 | Missing Authorization | `@PreAuthorize` on all endpoints; `SecurityFilterChain` default-deny; Angular AuthGuard (UX) | @PreAuthorize + SecurityFilterChain |
+| CWE-306 | Missing Authentication for Critical Function | `SecurityFilterChain` requires authentication for all paths except `/api/auth/**` and static assets | SecurityFilterChain |
+| CWE-22 | Path Traversal | File access via signed URLs (no direct path exposure); Spring resource handling with path normalization | File Access Service |
+| CWE-798 | Hard-coded Credentials | Factor III — all secrets in `.env` files; no credentials in source code; CI scan for secrets | Environment config + CI |
+| CWE-502 | Deserialization of Untrusted Data | Jackson strict typing; no `ObjectInputStream` usage; Spring Boot built-in deserialization protections | REST Controller |
+| CWE-20 | Improper Input Validation | Bean Validation (`@Valid`, `@NotBlank`, `@Email`, custom validators); Angular form validation (client-side) | REST Controller + SPA |
+| CWE-319 | Cleartext Transmission | TLS termination at Nginx; `Strict-Transport-Security` header | Nginx |
+| CWE-1021 | Improper Restriction of Rendered UI Layers | `X-Frame-Options: DENY` prevents clickjacking | Security Headers |
+
+#### 15.3.- Security configuration externalization (Factor III)
+
+All security-related configuration is externalized via environment variables in `.env.{dev,preprod,prod}` files. No secrets in source code.
+
+| Variable | Description | Default |
+| -------- | ----------- | ------- |
+| `JWT_RSA_PRIVATE_KEY_PATH` | Path to RSA private key file (mounted as Docker volume) | — (required) |
+| `JWT_RSA_PUBLIC_KEY_PATH` | Path to RSA public key file (mounted as Docker volume) | — (required) |
+| `JWT_ACCESS_TOKEN_TTL_MINUTES` | Access token time-to-live | 15 |
+| `JWT_REFRESH_TOKEN_TTL_DAYS` | Default refresh token time-to-live | 7 |
+| `JWT_REMEMBER_ME_TTL_DAYS` | Refresh token TTL when "Remember me" is checked | 30 |
+| `BCRYPT_WORK_FACTOR` | BCrypt cost parameter | 12 |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated list of allowed origins for CORS | — (required) |
+| `FILE_HMAC_SECRET` | HMAC-SHA256 key for signed file URLs | — (required) |
+| `FILE_SIGNED_URL_TTL_MINUTES` | Signed URL time-to-live | 60 |
+
+RSA keys are mounted as files via Docker volumes (not embedded in environment variables) to protect the private key via filesystem permissions.
+
+#### 15.4.- Role hierarchy
+
+The Spring `RoleHierarchy` bean defines the following hierarchy, where higher roles inherit all permissions of lower roles:
+
+```
+SYSTEM_ADMIN > COORDINATOR > ASSISTANT > PROFESSOR > STUDENT > SPEAKER
+```
+
+> **Note:** This hierarchy is pending validation with the product owner. The `SYSTEM_ADMIN` role has full system access including user management, configuration, and monitoring.
+
+| Role | Description | Access Level |
+| ---- | ----------- | ------------ |
+| **SYSTEM_ADMIN** | Platform-level administrator. Not tied to a specific graduate program. Full access to all system functions, user management, and configuration. | All functions |
+| **COORDINATOR** | Graduate program coordinator. Manages planning, enrollment, students, professors, and reports for their program. | Full program management |
+| **ASSISTANT** | Administrative assistant. Generates invitations, certificates, enrollment forms, and supports coordinator tasks. | Administrative support |
+| **PROFESSOR** | Faculty member. Teaches courses, advises students, approves enrollments, uploads work products. | Teaching + advisory |
+| **STUDENT** | Enrolled student. Selects courses, uploads evidence, views academic information. | Self-service academic |
+| **SPEAKER** | Guest speaker for seminars. Limited access to seminar-related functions only. | Seminar access only |
+
+#### 15.5.- Audit event infrastructure
+
+The audit infrastructure captures system events at different verbosity levels, persisted to the `audit_events` table and simultaneously logged to stdout as structured JSON (Factor XI).
+
+##### Audit event schema
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `id` | Long | Auto-generated primary key |
+| `timestamp` | Instant | ISO-8601 event timestamp |
+| `actor_id` | Long | FK to `users.id` — who performed the action |
+| `actor_role` | RoleType | Role of the actor at the time of the event |
+| `action` | String | Event identifier (e.g., `LOGIN_SUCCESS`, `STUDENT_CREATED`, `ENROLLMENT_APPROVED`) |
+| `entity_type` | String | Target entity type (e.g., `Student`, `Enrollment`, `User`) |
+| `entity_id` | Long | Target entity ID |
+| `details` | String | JSON blob with additional context (changed fields, old/new values for mutations) |
+| `severity` | AuditSeverity | `HIGH`, `STANDARD`, or `LOW` |
+| `ip_address` | String | Client IP address |
+| `graduate_program_id` | Long | Tenant context for multi-program filtering (QA-4) |
+
+##### Verbosity levels
+
+| Category | Severity | Captured By | Examples |
+| -------- | -------- | ----------- | -------- |
+| **Security — Authentication** | HIGH | AOP `SecurityAuditAspect` | `LOGIN_SUCCESS`, `LOGIN_FAILURE`, `TOKEN_REFRESH`, `LOGOUT`, `PASSWORD_CHANGE` |
+| **Security — Authorization** | HIGH | AOP `SecurityAuditAspect` | `RBAC_VIOLATION`, `UNAUTHORIZED_ACCESS`, `ROLE_ESCALATION_ATTEMPT` |
+| **Domain Mutations** | STANDARD | JPA `@EntityListeners` | `STUDENT_CREATED`, `GRADE_UPDATED`, `ENROLLMENT_APPROVED`, `PROFESSOR_REGISTERED` |
+| **Read Operations** | LOW (configurable) | Optional — disabled by default in Prod | `DASHBOARD_VIEWED`, `REPORT_GENERATED` |
+
