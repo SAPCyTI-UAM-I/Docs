@@ -83,12 +83,11 @@ The architectural drivers were taken from [ArchitecturalDrivers.md](../Architect
 
 The domain model was derived by applying Domain-Driven Design (DDD) based on the primary functional requirements of the MVP (HU-01, HU-06, HU-07, HU-08, HU-09, HU-15, HU-21), the quality attributes QA-3 (business rule parameterization) and QA-4 (multi-graduate program support), and the security cross-cutting concerns QA-1 (RBAC) and QA-2 (CWE Top 25 protection) introduced in Iteration 3. The following DDD building blocks were identified:
 
-  - **Aggregate Root (AR):** Root entity that ensures the transactional consistency of its aggregate. It is the only point of external access to the aggregate.
-  - **Entity (E):** Object with its own identity that exists within the boundaries of an aggregate and is managed by its Aggregate Root.
-  - **Value Object (VO):** Immutable object without its own identity, defined exclusively by its attributes.
+- **Aggregate Root (AR):** Root entity that ensures the transactional consistency of its aggregate. It is the only point of external access to the aggregate.
+- **Entity (E):** Object with its own identity that exists within the boundaries of an aggregate and is managed by its Aggregate Root.
+- **Value Object (VO):** Immutable object without its own identity, defined exclusively by its attributes.
 
 Composition relationships (filled diamond) represent objects that belong to the lifecycle of their aggregate. Directed associations (arrow) represent references between different aggregates.
-
 
 ```mermaid
 classDiagram
@@ -247,13 +246,13 @@ classDiagram
     AuditEvent "*" --> "1" User : actor
     AuditEvent "1" *-- "1" AuditSeverity
 
-    Student "1" --> "1" User
+    Student "1" --> "1" User : userId
     Student "1" *-- "1" PersonalData
     Student "1" *-- "1" AcademicInformation
     Student "*" --> "1" GraduateProgram
     Student "*" --> "1" Professor : advised by
 
-    Professor "1" --> "1" User
+    Professor "1" --> "1" User : userId
     Professor "1" *-- "1" PersonalData
 
     Term "*" --> "1" GraduateProgram
@@ -296,7 +295,83 @@ classDiagram
 | **AuditEvent** | Aggregate Root | Records a system event for compliance and traceability. Captures the actor, action, target entity, severity, and context (including graduate program for multi-tenant filtering). Supports general-purpose auditing with enhanced verbosity for security events. Derived from C003.2.2 (Iteration 3). |
 | **AuditSeverity** | Value Object | Enum indicating audit event importance: HIGH (security events — login, RBAC violations), STANDARD (domain mutations — entity CRUD), LOW (read operations — configurable per environment). |
 | **RefreshToken** | Entity | Persisted refresh token within the User aggregate. Stores only the token hash (SHA-256) for security. Supports "Remember me" via configurable TTL (7 days default, 30 days for remember-me) and concurrent session awareness via device tracking (C003.2.3). Derived from HU-01 (Iteration 3). |
-| **PasswordResetToken** | Value Object | Time-limited token for password recovery flow. Stores a hashed token with an expiry timestamp and a usage flag. Pattern established in Iteration 3; full implementation in Iteration 4 (HU-02). |
+| **PasswordResetToken** | Value Object | Time-limited token for password recovery flow. Stores a SHA-256 hashed token with an expiry timestamp (30 min TTL) and a single-use flag. Provides lifecycle methods: `isExpired()`, `isUsed()`, `markAsUsed()`, and factory method `create(tokenHash, ttl)`. Pattern established in Iteration 3; fully instantiated in Iteration 4 (HU-02). |
+| **PasswordGenerationService** | Domain Service | Generates cryptographically secure random passwords (12 characters: upper, lower, digits, special characters) using `SecureTokenGeneratorPort`. Returns the plaintext password for one-time delivery to the user. Used by RegisterStudentUseCase and RegisterProfessorUseCase. Derived from HU-15, HU-21 (Iteration 4). |
+
+> **Note (DDD):** Directed associations from `Student` and `Professor` to `User` are **ID-based references** (`userId: Long`), not direct object references. This preserves aggregate boundaries across bounded contexts (Academic Management → Identity & Access). The `User` aggregate is never loaded transitively when loading a Student or Professor — it must be explicitly resolved via the `UserRepositoryPort` when needed.
+
+### 4.1.- Bounded Context Map
+
+The modular monolith is organized into **bounded contexts** (modules), each following the same hexagonal internal structure. The following map shows the identified contexts, their relationships, and the aggregates they own. Inter-module references use **IDs only** (not object references) to maintain aggregate boundaries. Cross-module coordination is performed at the **application layer** via output ports — no direct domain-to-domain calls between modules.
+
+```mermaid
+flowchart TB
+    subgraph IAM["Identity and Access Module"]
+        U["User AR"]
+        R["Role VO"]
+        RT["RefreshToken E"]
+        PRT["PasswordResetToken VO"]
+    end
+
+    subgraph ACAD["Academic Management Module"]
+        S["Student AR"]
+        P["Professor AR"]
+        PD["PersonalData VO"]
+        AI["AcademicInformation VO"]
+    end
+
+    subgraph CONFIG["Program Configuration Module"]
+        GP["GraduateProgram AR"]
+        CP["ConfigurationParameter VO"]
+    end
+
+    subgraph AUDIT["Audit Module"]
+        AE["AuditEvent AR"]
+        AS["AuditSeverity VO"]
+    end
+
+    subgraph ENROLL["Enrollment Module"]
+        EN["Enrollment AR"]
+        SEL["UEASelection E"]
+        EF["EnrollmentForm E"]
+    end
+
+    subgraph OFFER["Academic Offering Module - Iteration 5"]
+        T["Term AR"]
+        AO["AcademicOffer AR"]
+        UG["UEAGroup E"]
+        UEA_E["UEA AR"]
+    end
+
+    ACAD -- "references User by ID\nCustomer/Supplier" --> IAM
+    ACAD -- "references GraduateProgram by ID" --> CONFIG
+    AUDIT -- "references User by ID" --> IAM
+    AUDIT -- "references GraduateProgram by ID" --> CONFIG
+    ENROLL -. "references Student by ID" .-> ACAD
+    ENROLL -. "references Term by ID" .-> OFFER
+    OFFER -. "references GraduateProgram by ID" .-> CONFIG
+    OFFER -. "references Professor by ID" .-> ACAD
+```
+
+#### Bounded Context Responsibilities
+
+| Bounded Context | Aggregates | Responsibilities | Module Status |
+| :--- | :--- | :--- | :--- |
+| **Identity & Access** | User, Role, RefreshToken, PasswordResetToken | Authentication, JWT lifecycle, password management (hashing, recovery, change), RBAC identity, refresh token management. | Active — Iteration 3 (auth), refined Iteration 4 (password flows) |
+| **Academic Management** | Student, Professor, PersonalData, AcademicInformation | Core entity CRUD for students and professors; personal data management; auto-generated password coordination (delegates to Identity via ports); advisor assignment. | Active — Iteration 4 |
+| **Program Configuration** | GraduateProgram, ConfigurationParameter | Multi-tenant context; business rule parameterization per graduate program. | Active — Iteration 1 |
+| **Audit** | AuditEvent, AuditSeverity | Cross-cutting audit logging; security event capture (HIGH), domain mutation capture (STANDARD), optional read capture (LOW). | Active — Iteration 3 |
+| **Enrollment** | Enrollment, UEASelection, EnrollmentForm | Enrollment lifecycle (selection → approval → form generation); course selection; advisor approval workflow. | Planned — Iteration 5 |
+| **Academic Offering** | Term, AcademicOffer, UEAGroup, UEA, Schedule | Academic period management; CSV import; course catalog; scheduling. | Planned — Iteration 5 |
+
+#### Cross-Module Communication Policy
+
+| Policy | Description |
+| :--- | :--- |
+| **ID-based references** | Aggregates in different modules reference each other by ID only (`userId: Long`, `graduateProgramId: Long`). No direct object references across module boundaries. |
+| **Application-layer orchestration** | When a use case spans multiple modules (e.g., RegisterStudentUseCase creates both a Student and a User), the application service orchestrates the calls through output ports. This is simpler than domain events and appropriate for CON-6 (student developers). |
+| **Single transaction** | Since all modules share the same database (modular monolith), cross-module operations within a single use case execute in a single database transaction for consistency. |
+| **Port-based communication** | No module directly imports classes from another module's domain layer. All inter-module communication goes through output port interfaces defined in the consuming module's domain layer. |
 
 ### 5.- Container diagram
 
@@ -342,7 +417,7 @@ At runtime, these logical containers are deployed according to the **deployment 
 
 #### 6.1.- SAPCyTI Backend API
 
-The Backend API is structured as a **modular monolith**, following **Hexagonal Architecture (Ports & Adapters)** and **DDD principles**. The domain layer sits at the center with zero dependencies on infrastructure. Port interfaces define the contracts through which the domain communicates with external concerns. Infrastructure adapters implement these ports, keeping the domain framework-agnostic and testable in isolation. Each bounded context module follows the same hexagonal structure internally. In Iteration 3, the security cross-cutting concern was instantiated as a **Security Filter Chain** in the driving adapters layer (before REST Controllers), a **JWT Service** in the application layer, and audit/security-related driven adapters.
+The Backend API is structured as a **modular monolith**, following **Hexagonal Architecture (Ports & Adapters)** and **DDD principles**. Each bounded context (§4.1) is a module with the same internal hexagonal structure: driving adapters → application layer → domain layer → driven adapters. The domain layer sits at the center with zero dependencies on infrastructure. Port interfaces define the contracts through which the domain communicates with external concerns. Infrastructure adapters implement these ports, keeping the domain framework-agnostic and testable in isolation. In Iteration 3, the security cross-cutting concern was instantiated in the Identity & Access module. In Iteration 4, the Academic Management module and the password/email infrastructure were added, and new concrete controllers and use cases were instantiated within both modules.
 
 ```mermaid
 flowchart TB
@@ -350,20 +425,37 @@ flowchart TB
         subgraph Adapters_In["Driving Adapters - Infrastructure In"]
             SECCHAIN["Security Filter Chain\nSpring Security"]
             JWTFILT["JWT Authentication Filter\nToken extraction and validation"]
-            REST["REST Controllers\nHTTP entry point"]
+            AUTHCTRL["AuthController\nLogin, refresh, logout"]
+            PWDCTRL["PasswordController\nForgot, reset, change password"]
+            STUDCTRL["StudentController\nCRUD students"]
+            PROFCTRL["ProfessorController\nCRUD professors"]
         end
 
         subgraph Application["Application Layer"]
-            USECASES["Use Cases\nApplication Services"]
+            AUTHUC["Auth Use Case\nLogin, refresh, logout"]
+            FORGOTUC["ForgotPassword Use Case\nToken generation, email trigger"]
+            RESETUC["ResetPassword Use Case\nToken validation, password update"]
+            CHANGEUC["ChangePassword Use Case\nSelf-change, coordinator-change"]
+            REGSTUDUC["RegisterStudent Use Case\nStudent + User creation"]
+            REGPROFUC["RegisterProfessor Use Case\nProfessor + User creation"]
             JWTSVC["JWT Service\nToken generation, validation, refresh"]
             AUDITASP["Audit Aspect\nAOP security event capture"]
         end
 
         subgraph Domain["Domain Layer - Hexagonal Core"]
-            AGG["Aggregates, Entities\nValue Objects"]
-            DOMSVC["Domain Services"]
-            PORTS_IN["Input Ports\nUse case interfaces"]
-            PORTS_OUT["Output Ports\nRepository, security, audit interfaces"]
+            subgraph IAM_Domain["Identity and Access Domain"]
+                USER_AGG["User AR + Role VO\nRefreshToken E\nPasswordResetToken VO"]
+                IAM_PORTS_IN["Input Ports\nAuthInputPort\nForgotPasswordInputPort\nResetPasswordInputPort\nChangePasswordInputPort"]
+                IAM_PORTS_OUT["Output Ports\nUserRepositoryPort\nPasswordEncoderPort\nEmailPort\nSecureTokenGeneratorPort"]
+            end
+
+            subgraph ACAD_Domain["Academic Management Domain"]
+                STUD_AGG["Student AR\nPersonalData VO\nAcademicInformation VO"]
+                PROF_AGG["Professor AR\nPersonalData VO"]
+                PWDGEN["PasswordGenerationService\nDomain Service"]
+                ACAD_PORTS_IN["Input Ports\nRegisterStudentInputPort\nRegisterProfessorInputPort"]
+                ACAD_PORTS_OUT["Output Ports\nStudentRepositoryPort\nProfessorRepositoryPort"]
+            end
         end
 
         subgraph Adapters_Out["Driven Adapters - Infrastructure Out"]
@@ -375,51 +467,115 @@ flowchart TB
             PWDENC["Password Encoder Adapter\nBCrypt"]
             AUDITADP["Audit Adapter\nJPA + EntityListeners"]
             FILEACC["File Access Service\nHMAC signed URLs"]
+            EMAILADP["Email Adapter\nSpring Mail + Thymeleaf"]
+            TOKENADP["Secure Token Generator\nSecureRandom"]
+            MAPPERS["MapStruct Mappers\nDTO - Domain mapping"]
         end
     end
 
     SECCHAIN --> JWTFILT
-    JWTFILT --> REST
-    REST --> USECASES
-    USECASES --> JWTSVC
-    USECASES --> PORTS_IN
-    PORTS_IN --> AGG
-    PORTS_IN --> DOMSVC
-    USECASES --> PORTS_OUT
-    AUDITASP -.-> PORTS_OUT
-    PORTS_OUT --> JPA
-    PORTS_OUT --> CONFSVC
-    PORTS_OUT --> EXPSVC
-    PORTS_OUT --> WPCLIENT
-    PORTS_OUT --> PWDENC
-    PORTS_OUT --> AUDITADP
-    PORTS_OUT --> FILEACC
+    JWTFILT --> AUTHCTRL
+    JWTFILT --> PWDCTRL
+    JWTFILT --> STUDCTRL
+    JWTFILT --> PROFCTRL
+    AUTHCTRL --> AUTHUC
+    PWDCTRL --> FORGOTUC
+    PWDCTRL --> RESETUC
+    PWDCTRL --> CHANGEUC
+    STUDCTRL --> REGSTUDUC
+    PROFCTRL --> REGPROFUC
+    AUTHUC --> JWTSVC
+    AUTHUC --> IAM_PORTS_IN
+    FORGOTUC --> IAM_PORTS_IN
+    RESETUC --> IAM_PORTS_IN
+    CHANGEUC --> IAM_PORTS_IN
+    REGSTUDUC --> ACAD_PORTS_IN
+    REGSTUDUC --> IAM_PORTS_OUT
+    REGPROFUC --> ACAD_PORTS_IN
+    REGPROFUC --> IAM_PORTS_OUT
+    IAM_PORTS_IN --> USER_AGG
+    ACAD_PORTS_IN --> STUD_AGG
+    ACAD_PORTS_IN --> PROF_AGG
+    ACAD_PORTS_IN --> PWDGEN
+    AUDITASP -.-> IAM_PORTS_OUT
+    IAM_PORTS_OUT --> JPA
+    IAM_PORTS_OUT --> PWDENC
+    IAM_PORTS_OUT --> EMAILADP
+    IAM_PORTS_OUT --> TOKENADP
+    ACAD_PORTS_OUT --> JPA
+    ACAD_PORTS_OUT --> MAPPERS
 ```
 
-| Component | Responsibilities |
-| ---------- | ----------------- |
-| **Security Filter Chain** (Driving Adapter) | Spring Security `SecurityFilterChain` bean; first component in the HTTP request pipeline; applies URL-pattern security rules (default-deny, whitelist `/api/auth/**`); configures security headers (CSP, X-Frame-Options, X-Content-Type-Options); manages CORS policy (allowed origins from env vars, Factor III); enforces `SessionCreationPolicy.STATELESS` (Factor VI). |
-| **JWT Authentication Filter** (Driving Adapter) | Custom `OncePerRequestFilter`; extracts JWT from `Authorization: Bearer` header; validates signature using RSA public key; populates Spring `SecurityContext` with user identity, role, and tenant. Passes through to REST Controllers on success; returns 401 on invalid/expired token. |
-| **REST Controllers** (Driving Adapter) | Receive authenticated HTTP requests; validate input via Bean Validation (`@Valid`); enforce method-level RBAC via `@PreAuthorize` + SpEL; delegate to use cases via input ports; return JSON responses. |
-| **Use Cases / Application Services** | Orchestrate business operations; coordinate aggregates and domain services through input ports; invoke output ports for persistence, configuration, export, WordPress integration, and audit logging. |
-| **JWT Service** (Application Layer) | Generate access tokens (RSA-256 signed, 15 min TTL) and refresh tokens (opaque, hashed with SHA-256, 7/30 day TTL); validate and refresh tokens; revoke refresh tokens on logout. Token TTLs and RSA key paths externalized via environment variables (Factor III). |
-| **Audit Aspect** (Application Layer) | AOP aspect intercepting authentication and authorization methods; captures security events (LOGIN_SUCCESS, LOGIN_FAILURE, RBAC_VIOLATION, TOKEN_REFRESH) at HIGH severity; delegates to Audit Adapter via output port. |
-| **Aggregates, Entities, Value Objects** (Domain) | Core business model as defined in the domain model (§4) including AuditEvent, RefreshToken, and PasswordResetToken; business rules; invariant enforcement. Zero dependencies on infrastructure. |
-| **Domain Services** (Domain) | Complex business logic spanning multiple aggregates; domain event handling. |
-| **Input Ports** (Domain) | Interfaces defining use case contracts. Implemented by the application layer. |
-| **Output Ports** (Domain) | Interfaces defining contracts for persistence, configuration, export, integration, password encoding (`PasswordEncoderPort`), audit logging (`AuditOutputPort`), and file access (`FileAccessPort`). Implemented by driven adapters. |
-| **JPA Repositories** (Driven Adapter) | Implement output ports for data access; access PostgreSQL; filtering by tenant (graduate\_program\_id) where applicable. |
-| **Configuration Adapter** (Driven Adapter) | Implement output port for reading configuration parameters per Graduate Program; support for QA-3 and QA-4. |
-| **Export Adapter** (Driven Adapter) | Implement output port for generating TXT and XLSX files for School Systems (CON-3); uses Apache POI. |
-| **WordPress Adapter** (Driven Adapter) | Implement output port for asynchronous HTTP calls to WordPress (CON-4); retries and error handling. |
-| **Flyway** (Infrastructure) | SQL-based database schema versioning; migrations run on application startup (Factor XII); scripts in `db/migration/`. |
-| **Password Encoder Adapter** (Driven Adapter) | Implements `PasswordEncoderPort`; wraps Spring Security's `BCryptPasswordEncoder` with configurable work factor (default 12, via env var). Isolates the domain from the concrete hashing algorithm. |
-| **Audit Adapter** (Driven Adapter) | Implements `AuditOutputPort`; persists `AuditEvent` entities to PostgreSQL; integrates with JPA `@EntityListeners` for domain mutation events at STANDARD severity; writes structured audit log entries to stdout (Factor XI) in addition to database persistence. |
-| **File Access Service** (Driven Adapter) | Implements `FileAccessPort`; generates HMAC-SHA256 signed, time-limited URLs for file download; validates signatures with constant-time comparison; streams files via `StreamingResponseBody`. HMAC key externalized (Factor III). |
+##### Module package structure
+
+Each bounded context module follows an identical hexagonal package layout. The following shows the two modules actively refined in Iteration 4:
+
+```text
+identity/                           # Identity & Access bounded context
+├── domain/
+│   ├── model/                      # User (AR), Role (VO), RefreshToken (E), PasswordResetToken (VO)
+│   ├── port/in/                    # AuthInputPort, ForgotPasswordInputPort, ResetPasswordInputPort, ChangePasswordInputPort
+│   └── port/out/                   # UserRepositoryPort, PasswordEncoderPort, EmailPort, SecureTokenGeneratorPort
+├── application/
+│   └── service/                    # AuthUseCase, ForgotPasswordUseCase, ResetPasswordUseCase, ChangePasswordUseCase, JwtService
+└── infrastructure/
+    ├── adapter/in/                 # AuthController, PasswordController
+    ├── adapter/out/                # UserJpaAdapter, PasswordEncoderAdapter, EmailAdapter, SecureTokenGeneratorAdapter
+    └── security/                   # SecurityFilterChain, JwtAuthFilter
+
+academic/                           # Academic Management bounded context
+├── domain/
+│   ├── model/                      # Student (AR), Professor (AR), PersonalData (VO), AcademicInformation (VO)
+│   ├── service/                    # PasswordGenerationService
+│   ├── port/in/                    # RegisterStudentInputPort, RegisterProfessorInputPort
+│   └── port/out/                   # StudentRepositoryPort, ProfessorRepositoryPort
+├── application/
+│   └── service/                    # RegisterStudentUseCase, RegisterProfessorUseCase
+└── infrastructure/
+    ├── adapter/in/                 # StudentController, ProfessorController
+    ├── adapter/out/                # StudentJpaAdapter, ProfessorJpaAdapter
+    └── mapper/                     # StudentMapper, ProfessorMapper (MapStruct)
+```
+
+##### Component responsibilities
+
+| Component | Module | Responsibilities |
+| ---------- | ------ | ----------------- |
+| **Security Filter Chain** (Driving Adapter) | Identity & Access | Spring Security `SecurityFilterChain` bean; first component in the HTTP request pipeline; applies URL-pattern security rules (default-deny, whitelist `/api/auth/**`); configures security headers (CSP, X-Frame-Options, X-Content-Type-Options); manages CORS policy (allowed origins from env vars, Factor III); enforces `SessionCreationPolicy.STATELESS` (Factor VI). |
+| **JWT Authentication Filter** (Driving Adapter) | Identity & Access | Custom `OncePerRequestFilter`; extracts JWT from `Authorization: Bearer` header; validates signature using RSA public key; populates Spring `SecurityContext` with user identity, role, and tenant. Passes through to controllers on success; returns 401 on invalid/expired token. |
+| **AuthController** (Driving Adapter) | Identity & Access | Handles login, token refresh, and logout endpoints (`/api/auth/**`). Delegates to AuthUseCase. Whitelisted in SecurityFilterChain (no JWT required for login). |
+| **PasswordController** (Driving Adapter) | Identity & Access | Handles password recovery (`POST /api/auth/forgot-password`, `POST /api/auth/reset-password` — public) and password change (`PUT /api/users/{id}/password` — authenticated). Delegates to ForgotPasswordUseCase, ResetPasswordUseCase, and ChangePasswordUseCase. |
+| **StudentController** (Driving Adapter) | Academic Management | Exposes CRUD endpoints for students (`/api/students`). All endpoints require `COORDINATOR` role via `@PreAuthorize`. Validates input via `@Valid` on request DTOs. Delegates to RegisterStudentUseCase via input port. |
+| **ProfessorController** (Driving Adapter) | Academic Management | Exposes CRUD endpoints for professors (`/api/professors`). All endpoints require `COORDINATOR` role via `@PreAuthorize`. Validates input via `@Valid` on request DTOs. Delegates to RegisterProfessorUseCase via input port. |
+| **Auth Use Case** (Application) | Identity & Access | Orchestrates login, token refresh, and logout operations. Coordinates User aggregate, JWT Service, and RefreshToken lifecycle. Existing from Iteration 3. |
+| **ForgotPassword Use Case** (Application) | Identity & Access | Orchestrates password recovery: find user by email → generate token via `SecureTokenGeneratorPort` → hash and persist `PasswordResetToken` → send email via `EmailPort`. Always returns success (no email enumeration). Audit-logs at HIGH severity. |
+| **ResetPassword Use Case** (Application) | Identity & Access | Orchestrates password reset: validate token (hash, expiry, used flag) → hash new password via `PasswordEncoderPort` → update User → mark token as used → revoke all refresh tokens. Audit-logs PASSWORD_RESET at HIGH severity. |
+| **ChangePassword Use Case** (Application) | Identity & Access | Orchestrates password change. Self-change: verify current password first. Coordinator-change: skip current password verification. Both paths: hash new password → update User → revoke refresh tokens. Audit-logs PASSWORD_CHANGE at HIGH severity. |
+| **RegisterStudent Use Case** (Application) | Academic Management | Orchestrates student registration: validate uniqueness (email, enrollment ID) → generate password via `PasswordGenerationService` → hash via `PasswordEncoderPort` (cross-module port) → create User with STUDENT role → create Student aggregate with PersonalData + AcademicInformation → persist both → return entity + one-time plaintext password. Single transaction. |
+| **RegisterProfessor Use Case** (Application) | Academic Management | Orchestrates professor registration: validate uniqueness (email, employee number) → generate password → hash → create User with PROFESSOR role → create Professor aggregate with PersonalData → persist both → return entity + one-time plaintext password. Single transaction. |
+| **JWT Service** (Application) | Identity & Access | Generate access tokens (RSA-256 signed, 15 min TTL) and refresh tokens (opaque, hashed with SHA-256, 7/30 day TTL); validate and refresh tokens; revoke refresh tokens on logout. Token TTLs and RSA key paths externalized via environment variables (Factor III). |
+| **Audit Aspect** (Application) | Identity & Access | AOP aspect intercepting authentication and authorization methods; captures security events (LOGIN_SUCCESS, LOGIN_FAILURE, RBAC_VIOLATION, TOKEN_REFRESH, PASSWORD_RESET, PASSWORD_CHANGE) at HIGH severity; delegates to Audit Adapter via output port. |
+| **User, Role, RefreshToken, PasswordResetToken** (Domain) | Identity & Access | Identity aggregate with credential lifecycle management. PasswordResetToken provides `isExpired()`, `isUsed()`, `markAsUsed()` lifecycle methods. Zero infrastructure dependencies. |
+| **Student, PersonalData, AcademicInformation** (Domain) | Academic Management | Student aggregate with composed value objects for personal and academic data. References User by ID (cross-module). Enforces invariants: required fields, valid enrollment ID format. |
+| **Professor, PersonalData** (Domain) | Academic Management | Professor aggregate with composed PersonalData VO. References User by ID (cross-module). Enforces invariants: required fields, valid employee number format. |
+| **PasswordGenerationService** (Domain Service) | Academic Management | Generates cryptographically secure random passwords (12 chars, mixed complexity) via `SecureTokenGeneratorPort`. Framework-agnostic. |
+| **Input Ports** (Domain) | Both | Interfaces defining use case contracts. Identity: `AuthInputPort`, `ForgotPasswordInputPort`, `ResetPasswordInputPort`, `ChangePasswordInputPort`. Academic: `RegisterStudentInputPort`, `RegisterProfessorInputPort`. |
+| **Output Ports** (Domain) | Both | Identity: `UserRepositoryPort`, `PasswordEncoderPort`, `EmailPort`, `SecureTokenGeneratorPort`, `AuditOutputPort`, `FileAccessPort`. Academic: `StudentRepositoryPort`, `ProfessorRepositoryPort`. Cross-module access: Academic use cases call `UserRepositoryPort` and `PasswordEncoderPort` via port injection. |
+| **JPA Repositories** (Driven Adapter) | Both | Implement repository output ports for data access; access PostgreSQL; filtering by tenant (`graduate_program_id`) where applicable. Includes `StudentJpaAdapter`, `ProfessorJpaAdapter`, `UserJpaAdapter`. |
+| **Configuration Adapter** (Driven Adapter) | Program Configuration | Implement output port for reading configuration parameters per Graduate Program; support for QA-3 and QA-4. |
+| **Export Adapter** (Driven Adapter) | Academic Offering | Implement output port for generating TXT and XLSX files for School Systems (CON-3); uses Apache POI. |
+| **WordPress Adapter** (Driven Adapter) | Program Configuration | Implement output port for asynchronous HTTP calls to WordPress (CON-4); retries and error handling. |
+| **Flyway** (Infrastructure) | Shared | SQL-based database schema versioning; migrations run on application startup (Factor XII); scripts in `db/migration/`. |
+| **Password Encoder Adapter** (Driven Adapter) | Identity & Access | Implements `PasswordEncoderPort`; wraps Spring Security's `BCryptPasswordEncoder` with configurable work factor (default 12, via env var). Isolates the domain from the concrete hashing algorithm. |
+| **Audit Adapter** (Driven Adapter) | Audit | Implements `AuditOutputPort`; persists `AuditEvent` entities to PostgreSQL; integrates with JPA `@EntityListeners` for domain mutation events at STANDARD severity; writes structured audit log entries to stdout (Factor XI) in addition to database persistence. |
+| **File Access Service** (Driven Adapter) | Identity & Access | Implements `FileAccessPort`; generates HMAC-SHA256 signed, time-limited URLs for file download; validates signatures with constant-time comparison; streams files via `StreamingResponseBody`. HMAC key externalized (Factor III). |
+| **Email Adapter** (Driven Adapter) | Identity & Access | Implements `EmailPort` using Spring Boot `spring-boot-starter-mail` (`JavaMailSender`). Connects to the SMTP server. Email templates rendered via Thymeleaf with i18n support (`password-reset_es.html`, `password-reset_en.html`). SMTP configuration externalized via env vars (Factor III). Added in Iteration 4 (HU-02). |
+| **Secure Token Generator Adapter** (Driven Adapter) | Identity & Access | Implements `SecureTokenGeneratorPort` using `java.security.SecureRandom`. Generates cryptographically secure random bytes, encoded as URL-safe Base64 (32 bytes → 43 chars). Used for password reset tokens and auto-generated passwords. Added in Iteration 4. |
+| **MapStruct Mappers** (Infrastructure) | Academic Management | Compile-time DTO ↔ Domain mappers (`StudentMapper`, `ProfessorMapper`). Separate API contract from domain model. Type-safe, zero-reflection. Added in Iteration 4. |
 
 #### 6.2.- SAPCyTI SPA (Angular)
 
-The SPA is organized into a shell, feature modules, core services (authentication, HTTP, tenant context), and shared components. In Iteration 3, the Core module was refined to explicitly define the authentication and authorization sub-components, and a Login feature module was added.
+The SPA is organized into a shell, feature modules, core services (authentication, HTTP, tenant context, i18n), and shared components. In Iteration 3, the Core module was refined to explicitly define the authentication and authorization sub-components, and a Login feature module was added. In Iteration 4, the Entity Management Module was decomposed into concrete views for student and professor CRUD, the Login Module was extended with password recovery views, and the internationalization infrastructure (QA-6) was integrated as a cross-cutting concern via `@ngx-translate` in the Core module.
 
 ```mermaid
 flowchart TB
@@ -427,45 +583,78 @@ flowchart TB
         SHELL["Shell / Layout\nMain Routing\nRole-based menu rendering"]
 
         subgraph Features["Feature Modules"]
-            LOGIN["Login Module\nHU-01"]
+            subgraph LoginMod["Login Module"]
+                LOGINFORM["Login Form\nHU-01"]
+                FORGOTPWD["Forgot Password View\nHU-02"]
+                RESETPWD["Reset Password View\nHU-02"]
+            end
+
             DASH["Dashboard Module"]
             ENROLL["Enrollment Module"]
-            ENTITIES["Entity Management Module"]
+
+            subgraph EntityMod["Entity Management Module"]
+                STUDLIST["Student List Component"]
+                STUDFORM["Student Form Component\nHU-15"]
+                PROFLIST["Professor List Component"]
+                PROFFORM["Professor Form Component\nHU-21"]
+                CHANGEPWD["Change Password Component\nHU-28"]
+            end
         end
 
         subgraph Core["Core"]
-            AUTHINT["Auth Interceptor\nJWT attachment + 401 refresh"]
+            AUTHINT["Auth Interceptor\nJWT + Accept-Language"]
             AUTHGUARD["Role Auth Guard\nCanActivate + role check"]
             AUTHSTATE["Auth State Service\ncurrentUser$ + token lifecycle"]
             TENANT["Tenant Context\nGraduate program selection"]
             HTTP["HTTP Client\nBase API configuration"]
+            I18N["TranslateModule\n@ngx-translate/core"]
         end
 
-        SHARED["Shared\nUI components, Pipes"]
+        subgraph Shared["Shared"]
+            UICOMP["UI Components\nTables, Forms, Messages, 403 Page"]
+            LANGSW["Language Switcher Component\nes / en toggle"]
+            PIPES["Pipes\ntranslate pipe"]
+        end
     end
 
     SHELL --> Features
     SHELL --> Core
+    SHELL --> LANGSW
     Features --> Core
-    Features --> SHARED
+    Features --> Shared
     AUTHINT --> HTTP
+    AUTHINT --> I18N
     AUTHGUARD --> AUTHSTATE
-    LOGIN --> AUTHSTATE
+    LOGINFORM --> AUTHSTATE
+    FORGOTPWD --> HTTP
+    RESETPWD --> HTTP
+    CHANGEPWD --> HTTP
+    EntityMod --> HTTP
+    LANGSW --> I18N
 ```
 
 | Component | Responsibilities |
 | ---------- | ----------------- |
-| **Shell / Layout** | Application structure (menu, top bar, container); high-level routing; loading feature modules; conditionally renders menu items based on `currentUser$.role` from AuthStateService — only role-appropriate options visible after login (HU-01). |
-| **Login Module** (Feature) | Login form (email, password, "Remember me" checkbox); calls AuthStateService.login(); displays generic error on failure; navigates to role-specific dashboard on success. Implements HU-01 UI. |
+| **Shell / Layout** | Application structure (menu, top bar, container); high-level routing; loading feature modules; conditionally renders menu items based on `currentUser$.role` from AuthStateService — only role-appropriate options visible after login (HU-01). Hosts the Language Switcher in the top bar. |
+| **Login Form** (Login Module) | Login form (email, password, "Remember me" checkbox); calls AuthStateService.login(); displays generic error on failure; navigates to role-specific dashboard on success. Includes "¿Olvidaste tu contraseña?" link to Forgot Password View. Implements HU-01 UI. |
+| **Forgot Password View** (Login Module) | Form with email field + "Send Email" button + "Back to Login" link. On submit, calls `POST /api/auth/forgot-password`. Always displays generic success message regardless of whether the email exists (no information leakage). Implements HU-02 request phase. |
+| **Reset Password View** (Login Module) | Accessed via email link (`/auth/reset-password?token=...`). Form with "New Password" + "Confirm Password" fields with complexity validation. On submit, calls `POST /api/auth/reset-password` with token and new password. Implements HU-02 reset phase. |
 | **Dashboard Module** (Feature) | Role-specific landing page after login; summary views per user type. |
-| **Enrollment Module** (Feature) | Enrollment-related views (CSV upload, course selection, advisor approval, form generation). |
-| **Entity Management Module** (Feature) | Student and professor CRUD views (Iteration 4). |
-| **Auth Interceptor** (Core) | Angular `HttpInterceptor`; attaches `Authorization: Bearer <accessToken>` header to all API requests (except auth endpoints); on 401 response, transparently attempts token refresh via refresh token cookie — retries original request on success, redirects to login on failure. |
+| **Enrollment Module** (Feature) | Enrollment-related views (CSV upload, course selection, advisor approval, form generation). Iteration 5. |
+| **Student List Component** (Entity Management) | Paginated table of students with search/filter. Columns: name, email, enrollment ID, program type, admission date, status. "Create Student" button navigates to Student Form. Requires COORDINATOR role. |
+| **Student Form Component** (Entity Management) | Create/edit student form with fields: first name, first last name, second last name, email, nationality, enrollment ID, program type, undergraduate degree, admission date, advisor selection. Auto-generates password on creation (displayed once). Bean Validation aligned with backend. Implements HU-15. |
+| **Professor List Component** (Entity Management) | Paginated table of professors with search/filter. Columns: name, email, employee number, status. "Create Professor" button navigates to Professor Form. Requires COORDINATOR role. |
+| **Professor Form Component** (Entity Management) | Create/edit professor form with fields: first name, first last name, second last name, email, employee number. Auto-generates password on creation (displayed once). Implements HU-21. |
+| **Change Password Component** (Entity Management) | Two modes: (a) Self-change — accessible from user profile menu; requires current password + new password + confirm. (b) Coordinator-change — accessible from student/professor detail view; requires only new password + confirm. Implements HU-28. |
+| **Auth Interceptor** (Core) | Angular `HttpInterceptor`; attaches `Authorization: Bearer <accessToken>` header to all API requests (except auth endpoints); injects `Accept-Language` header with current locale for i18n backend responses (QA-6); on 401 response, transparently attempts token refresh via refresh token cookie — retries original request on success, redirects to login on failure. |
 | **Role Auth Guard** (Core) | Angular `CanActivate` guard; reads `data.roles` from route definition; decodes JWT to extract role claim; allows navigation if user role is in allowed list; redirects to 403 page (wrong role) or login page (unauthenticated). UX convenience only — all authorization enforced server-side. |
 | **Auth State Service** (Core) | Holds access token in memory (never localStorage — XSS mitigation); exposes `currentUser$` Observable with decoded JWT claims (id, email, role, graduateProgramId); provides `login()`, `logout()`, `isAuthenticated()`, `hasRole()` methods; on bootstrap, attempts silent refresh via HttpOnly refresh token cookie to restore session. |
 | **Tenant Context** (Core) | Manages the active graduate program selection; includes `X-Graduate-Id` header in API requests. |
 | **HTTP Client** (Core) | Base Angular HttpClient configuration; base API URL; timeout handling. |
-| **Shared** | Reusable components (tables, forms, messages, error pages including 403 Access Denied); pipes; common styles and utilities. |
+| **TranslateModule** (Core) | `@ngx-translate/core` + `@ngx-translate/http-loader` configuration. `TranslateModule.forRoot()` with `HttpLoaderFactory` loading JSON files from `assets/i18n/`. Default language: Spanish (`es`). Provides `TranslateService` for programmatic access and `translate` pipe for templates. Implements QA-6 SPA-side infrastructure. |
+| **Language Switcher Component** (Shared) | Toggle between Spanish (`es`) and English (`en`); persists selection in `localStorage`; emits change to `TranslateService`. Placed in the Shell/Layout top bar. Visual indicator of current language. |
+| **UI Components** (Shared) | Reusable components (data tables with pagination, form controls, notification messages, error pages including 403 Access Denied); all use translation keys via `translate` pipe. |
+| **Pipes** (Shared) | Includes the `translate` pipe from `@ngx-translate` re-exported for use across all feature modules. |
 
 ### 7.- Deployment view
 
@@ -886,42 +1075,309 @@ sequenceDiagram
 
 **Description:** When a Use Case modifies a domain entity (e.g., registering a student, updating a grade), the JPA Repository triggers the entity's lifecycle listener (`@PrePersist` or `@PreUpdate`). The listener constructs an `AuditEvent` with STANDARD severity, capturing the actor, action, entity type, entity ID, and changed fields. The event is persisted to the `audit_events` table via the Audit Adapter (implementing the `AuditOutputPort`) and simultaneously written to stdout as structured JSON (Factor XI). This dual-write approach ensures audit events are both queryable (database) and streamable (log aggregation). Security events (login, RBAC) are captured separately via the Audit Aspect (AOP) at HIGH severity.
 
+#### 9.7.- Student and professor registration flow (HU-15, HU-21)
+
+This diagram illustrates the cross-module orchestration instantiated in Iteration 4: the Coordinator registers a student (HU-15) or professor (HU-21) via the SPA Entity Management Module. The use case spans the **Academic Management** and **Identity & Access** bounded contexts — the application service orchestrates both aggregate creations within a single transaction, following the cross-module communication policy (§4.1).
+
+```mermaid
+sequenceDiagram
+    actor Coordinator
+    participant SPA as Entity Management Module
+    participant Interceptor as Auth Interceptor
+    participant API as StudentController
+    participant JwtFilter as JWT Authentication Filter
+    participant UseCase as Academic Mgmt: RegisterStudentUseCase
+    participant PwdGen as Academic Mgmt: PasswordGenerationService
+    participant TokenPort as Identity: SecureTokenGeneratorPort
+    participant PwdEnc as Identity: PasswordEncoderPort
+    participant UserRepo as Identity: UserRepositoryPort
+    participant StudentRepo as Academic: StudentRepositoryPort
+    participant Mapper as StudentMapper
+    participant AuditListener as JPA Entity Listener
+    participant DB as PostgreSQL
+
+    Coordinator->>SPA: Fill student form + submit
+    SPA->>Interceptor: POST /api/students
+    Interceptor->>Interceptor: Attach Bearer + Accept-Language + X-Graduate-Id
+    Interceptor->>API: HTTP Request
+    API->>JwtFilter: Extract + validate JWT
+    JwtFilter->>API: SecurityContext with COORDINATOR role
+    API->>API: @PreAuthorize hasRole COORDINATOR
+    API->>API: @Valid CreateStudentRequest
+    API->>Mapper: Map DTO to domain objects
+    Mapper-->>API: PersonalData VO + AcademicInformation VO
+    API->>UseCase: registerStudent(command)
+
+    UseCase->>UserRepo: existsByEmail(email)
+    UserRepo->>DB: SELECT count
+    DB-->>UserRepo: 0
+    UseCase->>StudentRepo: existsByEnrollmentId(enrollmentId)
+    StudentRepo->>DB: SELECT count
+    DB-->>StudentRepo: 0
+
+    UseCase->>PwdGen: generatePassword()
+    PwdGen->>TokenPort: generateToken(12)
+    TokenPort-->>PwdGen: plaintextPassword
+    UseCase->>PwdEnc: encode(plaintextPassword)
+    PwdEnc-->>UseCase: hashedPassword
+
+    UseCase->>UseCase: Create User(email, hashedPassword, STUDENT role)
+    UseCase->>UserRepo: save(user)
+    UserRepo->>AuditListener: @PrePersist - USER_CREATED (STANDARD)
+    UserRepo->>DB: INSERT users
+    DB-->>UserRepo: User with ID
+
+    UseCase->>UseCase: Create Student(personalData, academicInfo, userId, graduateProgramId)
+    UseCase->>StudentRepo: save(student)
+    StudentRepo->>AuditListener: @PrePersist - STUDENT_CREATED (STANDARD)
+    StudentRepo->>DB: INSERT students
+    DB-->>StudentRepo: Student with ID
+
+    UseCase-->>API: RegisterResult(student, plaintextPassword)
+    API->>Mapper: Map domain to response DTO
+    API-->>SPA: 201 Created + StudentResponse + oneTimePassword
+    SPA-->>Coordinator: Show created student + display generated password once
+```
+
+**Description:** The Coordinator fills the student registration form in the Entity Management Module (HU-15). The Auth Interceptor attaches the JWT Bearer token, `Accept-Language` (for i18n), and `X-Graduate-Id` (tenant context) headers. The StudentController validates the JWT (COORDINATOR role required) and the request body via Bean Validation (`@Valid`). MapStruct converts the DTO to domain value objects. The `RegisterStudentUseCase` (Academic Management module) orchestrates a cross-module flow: it checks uniqueness (email and enrollment ID), generates a random password via `PasswordGenerationService` (which uses `SecureTokenGeneratorPort`), hashes it via `PasswordEncoderPort` (Identity module), creates a `User` aggregate with STUDENT role (Identity module), and creates the `Student` aggregate (Academic module). Both entities are persisted in a single transaction, and the JPA Entity Listener captures STANDARD-severity audit events for each creation. The one-time plaintext password is returned to the Coordinator for delivery to the student. **Professor registration (HU-21)** follows the identical pattern with `ProfessorController` → `RegisterProfessorUseCase`, substituting employee number for enrollment ID and omitting `AcademicInformation`.
+
+#### 9.8.- Password recovery flow (HU-02)
+
+This diagram illustrates the complete password recovery flow instantiated in Iteration 4: from the user requesting a password reset via email to setting a new password via a time-limited token link.
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant SPA_Forgot as Forgot Password View
+    participant SPA_Reset as Reset Password View
+    participant API as PasswordController
+    participant SecFilter as Security Filter Chain
+    participant ForgotUC as Identity: ForgotPasswordUseCase
+    participant TokenGen as SecureTokenGeneratorPort
+    participant UserRepo as UserRepositoryPort
+    participant EmailPort as EmailPort
+    participant EmailAdp as EmailAdapter
+    participant SMTP as Email Server
+    participant ResetUC as Identity: ResetPasswordUseCase
+    participant PwdEnc as PasswordEncoderPort
+    participant AuditSvc as Audit Service
+    participant DB as PostgreSQL
+
+    Note over User,DB: Phase 1 - Request password reset
+    User->>SPA_Forgot: Enter email + click Send
+    SPA_Forgot->>API: POST /api/auth/forgot-password {email}
+    API->>SecFilter: Request (whitelisted path)
+    SecFilter->>ForgotUC: Delegate
+
+    ForgotUC->>UserRepo: findByEmail(email)
+    UserRepo->>DB: SELECT
+    DB-->>UserRepo: User or null
+
+    alt User exists
+        ForgotUC->>TokenGen: generateToken(32)
+        TokenGen-->>ForgotUC: rawToken (URL-safe Base64)
+        ForgotUC->>ForgotUC: SHA-256 hash rawToken
+        ForgotUC->>ForgotUC: Create PasswordResetToken(hash, 30 min TTL)
+        ForgotUC->>UserRepo: save(user with PasswordResetToken)
+        UserRepo->>DB: UPDATE users
+        ForgotUC->>ForgotUC: Build reset URL with rawToken
+        ForgotUC->>EmailPort: sendPasswordResetEmail(email, resetUrl, locale)
+        EmailPort->>EmailAdp: Spring JavaMailSender
+        EmailAdp->>EmailAdp: Render Thymeleaf template (locale)
+        EmailAdp->>SMTP: Send email
+        ForgotUC->>AuditSvc: log PASSWORD_RESET_REQUESTED (HIGH)
+        AuditSvc->>DB: INSERT audit_events
+    else User does not exist
+        Note over ForgotUC: No action - prevent email enumeration
+    end
+
+    ForgotUC-->>API: Success (always)
+    API-->>SPA_Forgot: 200 OK + generic message
+    SPA_Forgot-->>User: "Recovery email sent if address exists"
+
+    Note over User,DB: Phase 2 - Reset password via token
+    User->>User: Open email, click reset link
+    User->>SPA_Reset: /auth/reset-password?token=rawToken
+    SPA_Reset->>SPA_Reset: Extract token from URL
+    User->>SPA_Reset: Enter new password + confirm
+    SPA_Reset->>API: POST /api/auth/reset-password {token, newPassword}
+    API->>SecFilter: Request (whitelisted path)
+    SecFilter->>ResetUC: Delegate
+
+    ResetUC->>ResetUC: SHA-256 hash provided token
+    ResetUC->>UserRepo: findByPasswordResetTokenHash(hash)
+    UserRepo->>DB: SELECT
+    DB-->>UserRepo: User with token
+
+    alt Token valid and not expired and not used
+        ResetUC->>PwdEnc: encode(newPassword)
+        PwdEnc-->>ResetUC: hashedPassword
+        ResetUC->>ResetUC: user.setPassword(hashedPassword)
+        ResetUC->>ResetUC: passwordResetToken.markAsUsed()
+        ResetUC->>UserRepo: revokeAllRefreshTokens(userId)
+        UserRepo->>DB: UPDATE refresh_tokens SET revoked=true
+        ResetUC->>UserRepo: save(user)
+        UserRepo->>DB: UPDATE users
+        ResetUC->>AuditSvc: log PASSWORD_RESET (HIGH)
+        AuditSvc->>DB: INSERT audit_events
+        ResetUC-->>API: Success
+        API-->>SPA_Reset: 200 OK
+        SPA_Reset-->>User: "Password updated — redirecting to login"
+    else Token invalid, expired, or already used
+        ResetUC->>AuditSvc: log PASSWORD_RESET_FAILED (HIGH)
+        AuditSvc->>DB: INSERT audit_events
+        ResetUC-->>API: 400 Bad Request
+        API-->>SPA_Reset: Error
+        SPA_Reset-->>User: "Invalid or expired link"
+    end
+```
+
+**Description:** **Phase 1 (Request):** The user enters their email on the Forgot Password View (linked from the login screen). The request hits `POST /api/auth/forgot-password` (whitelisted, no JWT required). The `ForgotPasswordUseCase` looks up the user by email. If found, it generates a cryptographic token via `SecureTokenGeneratorPort` (32 bytes, URL-safe Base64), stores the SHA-256 hash as a `PasswordResetToken` VO on the User aggregate (30 min TTL), and sends a reset email via `EmailPort` → `EmailAdapter` (Spring Mail + Thymeleaf template, localized per `Accept-Language`). If the email doesn't exist, no action is taken. The response is always a generic success message to prevent email enumeration (HU-02 security requirement). **Phase 2 (Reset):** The user clicks the link in the email, which navigates to the Reset Password View with the raw token in the URL. The user enters a new password. `POST /api/auth/reset-password` sends the raw token and new password. The `ResetPasswordUseCase` hashes the token, finds the matching user, validates the token (not expired, not used), hashes the new password via `PasswordEncoderPort`, updates the user's password, marks the token as used, and revokes all refresh tokens (forcing re-login). Both phases are audit-logged at HIGH severity.
+
+#### 9.9.- Password change flow (HU-28)
+
+This diagram illustrates the dual-mode password change flow instantiated in Iteration 4: self-change (any authenticated user) and coordinator-change (Coordinator can change any user's password).
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant SPA as Change Password Component
+    participant Interceptor as Auth Interceptor
+    participant JwtFilter as JWT Authentication Filter
+    participant API as PasswordController
+    participant ChangeUC as Identity: ChangePasswordUseCase
+    participant PwdEnc as PasswordEncoderPort
+    participant UserRepo as UserRepositoryPort
+    participant AuditSvc as Audit Service
+    participant DB as PostgreSQL
+
+    User->>SPA: Open change password form
+    User->>SPA: Fill password fields + submit
+
+    SPA->>Interceptor: PUT /api/users/{id}/password
+    Interceptor->>Interceptor: Attach Bearer + Accept-Language
+    
+    
+    Interceptor->>JwtFilter: HTTP Request (with JWT)
+    JwtFilter->>JwtFilter: Extract + validate JWT
+    Note over JwtFilter: Sets SecurityContext (userId, role)
+    
+    JwtFilter->>API: Authorized Request
+    
+    Note over API: @PreAuthorize #id == principal.id <br/>OR hasRole COORDINATOR
+
+    alt Self-change (id == principal.id)
+        API->>ChangeUC: changeSelfPassword(userId, currentPassword, newPassword)
+        ChangeUC->>UserRepo: findById(userId)
+        UserRepo->>DB: SELECT
+        DB-->>UserRepo: User
+        ChangeUC->>PwdEnc: matches(currentPassword, user.passwordHash)
+        PwdEnc-->>ChangeUC: true / false
+
+        alt Current password valid
+            ChangeUC->>PwdEnc: encode(newPassword)
+            PwdEnc-->>ChangeUC: hashedNewPassword
+            ChangeUC->>ChangeUC: setPassword(hashedNewPassword)
+            ChangeUC->>UserRepo: revokeAllRefreshTokens(userId)
+            UserRepo->>DB: UPDATE refresh_tokens
+            ChangeUC->>UserRepo: save(user)
+            UserRepo->>DB: UPDATE users
+            ChangeUC->>AuditSvc: log PASSWORD_CHANGE (actor=self)
+            AuditSvc->>DB: INSERT audit_events
+            ChangeUC-->>API: Success
+            API-->>SPA: 200 OK
+            SPA-->>User: "Password updated"
+        else Current password invalid
+            ChangeUC->>AuditSvc: log PASSWORD_CHANGE_FAILED
+            AuditSvc->>DB: INSERT audit_events
+            ChangeUC-->>API: 400 Bad Request
+            API-->>SPA: Error
+            SPA-->>User: "Current password is incorrect"
+        end
+
+    else Coordinator-change (hasRole COORDINATOR)
+        API->>ChangeUC: changeByCoordinator(targetId, newPassword)
+        ChangeUC->>UserRepo: findById(targetId)
+        UserRepo->>DB: SELECT
+        DB-->>UserRepo: User
+        ChangeUC->>PwdEnc: encode(newPassword)
+        PwdEnc-->>ChangeUC: hashedNewPassword
+        ChangeUC->>UserRepo: revokeAllRefreshTokens(targetId)
+        UserRepo->>DB: UPDATE refresh_tokens
+        ChangeUC->>UserRepo: save(user)
+        UserRepo->>DB: UPDATE users
+        ChangeUC->>AuditSvc: log PASSWORD_CHANGE (actor=coord)
+        AuditSvc->>DB: INSERT audit_events
+        ChangeUC-->>API: Success
+        API-->>SPA: 200 OK
+        SPA-->>User: "Password updated for user"
+    end
+```
+
+**Description:** The Change Password Component (HU-28) supports two modes via the same endpoint `PUT /api/users/{id}/password`. The `@PreAuthorize` SpEL expression enforces: the requester must be either the user themselves (`#id == principal.id`) or a Coordinator (`hasRole('COORDINATOR')`). **Self-change:** The user provides their current password and new password. The `ChangePasswordUseCase` verifies the current password via `PasswordEncoderPort`, then hashes and persists the new password. If the current password is wrong, a 400 error is returned with an audit log. **Coordinator-change:** The Coordinator provides only the new password (no current password required — they may not know it). The use case hashes and updates the target user's password directly. In both modes, all refresh tokens for the target user are revoked (forcing re-login with the new password), and the event is audit-logged at HIGH severity with actor and target information for traceability.
+
 ### 10.- Interfaces
 
 #### Application interfaces
 
-  - **Backend API:** REST API over HTTPS. Content in JSON for both request and response. Authentication is JWT-based (stateless, RSA-256 signed tokens) as defined in Iteration 3. All endpoints require a valid JWT in the `Authorization: Bearer` header, except authentication endpoints (`/api/auth/**`). The tenant context (active graduate program) is sent in every request via the `X-Graduate-Id` header.
-  - **Main API Areas** (details in later iterations): authentication (Iteration 3); graduate programs and tenant selection; configuration and parameters; enrollment and academic offer; student and professor management; export (TXT/XLSX). Concrete contracts (OpenAPI or equivalent) will be documented as endpoints are defined per iteration.
+- **Backend API:** REST API over HTTPS. Content in JSON for both request and response. Authentication is JWT-based (stateless, RSA-256 signed tokens) as defined in Iteration 3. All endpoints require a valid JWT in the `Authorization: Bearer` header, except authentication endpoints (`/api/auth/**`). The tenant context (active graduate program) is sent in every request via the `X-Graduate-Id` header.
+- **Main API Areas** (details in later iterations): authentication (Iteration 3); graduate programs and tenant selection; configuration and parameters; enrollment and academic offer; student and professor management; export (TXT/XLSX). Concrete contracts (OpenAPI or equivalent) will be documented as endpoints are defined per iteration.
 
-#### Authentication and security interfaces
+- **Login:** `POST /api/auth/login` — Request body: `{email: string, password: string, rememberMe: boolean}`. Response: `{accessToken: string, expiresIn: number}` (200 OK) + `Set-Cookie: refreshToken=<token>; HttpOnly; Secure; SameSite=Strict; Path=/api/auth; Max-Age=<ttl>`. Error: `{error: string, message: string, timestamp: string}` (401 Unauthorized).
+- **Token refresh:** `POST /api/auth/refresh` — No request body; reads refresh token from HttpOnly cookie. Response: `{accessToken: string, expiresIn: number}` + rotated refresh cookie. Error: 401 if refresh token is expired, revoked, or missing.
+- **Logout:** `POST /api/auth/logout` — Requires valid access token. Revokes the refresh token server-side and clears the refresh cookie. Response: 204 No Content.
+- **Forgot password:** `POST /api/auth/forgot-password` — Public (whitelisted). Request body: `{email: string}`. Response: always `{message: string}` (200 OK) with generic message regardless of whether email exists (no information leakage). If email exists, generates a `PasswordResetToken` (SHA-256 hashed, 30 min TTL) and sends a recovery email with a reset link. Audit-logged at HIGH severity.
+- **Reset password:** `POST /api/auth/reset-password` — Public (whitelisted). Request body: `{token: string, newPassword: string}`. Validates token hash, expiry, and used status. On success: updates password, marks token as used, revokes all refresh tokens, returns 200 OK. On failure (invalid, expired, or already used token): returns `{error: string, message: string, timestamp: string}` (400 Bad Request). Audit-logged at HIGH severity.
+- **Change password:** `PUT /api/users/{id}/password` — Authenticated. RBAC: `@PreAuthorize("#id == principal.id OR hasRole('COORDINATOR')")`. Request body: `{currentPassword?: string, newPassword: string}`. `currentPassword` is required when user changes their own password; not required when Coordinator changes another user's password. On success: updates password, revokes all refresh tokens for target user, returns 200 OK. On failure (wrong current password): returns 400 Bad Request. Audit-logged at HIGH severity.
+- **RBAC error contract:** All protected endpoints return `401 Unauthorized` (missing/invalid/expired JWT) or `403 Forbidden` (insufficient role). Response body: `{error: string, message: string, timestamp: string, path: string}`.
+- **Security headers** (applied by Security Filter Chain to all responses): `Content-Security-Policy: default-src 'self'`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Strict-Transport-Security: max-age=31536000; includeSubDomains` (when TLS is active).
+- **File download:** `GET /api/files/{fileId}?signature=<hmac>&expires=<timestamp>&userId=<id>` — Validates HMAC-SHA256 signature and expiry before streaming file. Returns 403 if signature invalid or expired.
 
-  - **Login:** `POST /api/auth/login` — Request body: `{email: string, password: string, rememberMe: boolean}`. Response: `{accessToken: string, expiresIn: number}` (200 OK) + `Set-Cookie: refreshToken=<token>; HttpOnly; Secure; SameSite=Strict; Path=/api/auth; Max-Age=<ttl>`. Error: `{error: string, message: string, timestamp: string}` (401 Unauthorized).
-  - **Token refresh:** `POST /api/auth/refresh` — No request body; reads refresh token from HttpOnly cookie. Response: `{accessToken: string, expiresIn: number}` + rotated refresh cookie. Error: 401 if refresh token is expired, revoked, or missing.
-  - **Logout:** `POST /api/auth/logout` — Requires valid access token. Revokes the refresh token server-side and clears the refresh cookie. Response: 204 No Content.
-  - **Password recovery (pattern only — full flow in Iteration 4):** `POST /api/auth/forgot-password` — Request body: `{email: string}`. Response: always 200 OK with generic message (no information leakage on whether email exists).
-  - **RBAC error contract:** All protected endpoints return `401 Unauthorized` (missing/invalid/expired JWT) or `403 Forbidden` (insufficient role). Response body: `{error: string, message: string, timestamp: string, path: string}`.
-  - **Security headers** (applied by Security Filter Chain to all responses): `Content-Security-Policy: default-src 'self'`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Strict-Transport-Security: max-age=31536000; includeSubDomains` (when TLS is active).
-  - **File download:** `GET /api/files/{fileId}?signature=<hmac>&expires=<timestamp>&userId=<id>` — Validates HMAC-SHA256 signature and expiry before streaming file. Returns 403 if signature invalid or expired.
+#### Entity management interfaces (Iteration 4)
+
+- **Create student:** `POST /api/students` — Authenticated, requires `COORDINATOR` role. Request body: `{firstName: string, firstLastName: string, secondLastName: string, email: string, nationality: string, enrollmentId: string, programType: "MASTERS" | "DOCTORATE", undergraduateDegree: string, admissionDate: string (ISO date), advisorId?: number}`. All fields validated via Bean Validation (`@NotBlank`, `@Email`, `@Size`). Response: `{id: number, firstName: string, ..., oneTimePassword: string}` (201 Created). The `oneTimePassword` is the auto-generated plaintext password, returned only once. Errors: 400 (validation failure), 409 (duplicate email or enrollment ID).
+- **List students:** `GET /api/students?page=0&size=20&search=<term>` — Authenticated, requires `COORDINATOR` role. Response: `{content: StudentResponse[], totalElements: number, totalPages: number, page: number, size: number}` (200 OK). Filtered by tenant (`X-Graduate-Id`).
+- **Get student:** `GET /api/students/{id}` — Authenticated, requires `COORDINATOR` role. Response: `StudentResponse` (200 OK) or 404 Not Found.
+- **Update student:** `PUT /api/students/{id}` — Authenticated, requires `COORDINATOR` role. Request body: same as create (without email/enrollmentId which are immutable). Response: `StudentResponse` (200 OK) or 404.
+- **Create professor:** `POST /api/professors` — Authenticated, requires `COORDINATOR` role. Request body: `{firstName: string, firstLastName: string, secondLastName: string, email: string, employeeNumber: string}`. Response: `{id: number, firstName: string, ..., oneTimePassword: string}` (201 Created). Errors: 400, 409 (duplicate email or employee number).
+- **List professors:** `GET /api/professors?page=0&size=20&search=<term>` — Authenticated, requires `COORDINATOR` role. Response: paginated `ProfessorResponse[]` (200 OK). Filtered by tenant.
+- **Get professor:** `GET /api/professors/{id}` — Authenticated, requires `COORDINATOR` role. Response: `ProfessorResponse` (200 OK) or 404.
+- **Update professor:** `PUT /api/professors/{id}` — Authenticated, requires `COORDINATOR` role. Request body: same as create (without email which is immutable). Response: `ProfessorResponse` (200 OK) or 404.
+- **Validation error format:** All 400 responses follow: `{error: "Validation Failed", message: string, timestamp: string, fieldErrors: [{field: string, message: string}]}`. Messages are localized based on `Accept-Language` header.
+
+#### Email infrastructure interfaces (Iteration 4)
+
+- **Backend API → SMTP Server:** Spring Mail (`JavaMailSender`) connects to the SMTP server for sending password recovery emails. Configuration externalized via environment variables (Factor III).
+
+| Variable | Description | Default |
+| -------- | ----------- | ------- |
+| `MAIL_HOST` | SMTP server hostname | — (required) |
+| `MAIL_PORT` | SMTP server port | 587 |
+| `MAIL_USERNAME` | SMTP authentication username | — (required) |
+| `MAIL_PASSWORD` | SMTP authentication password | — (required) |
+| `MAIL_FROM` | Sender email address for system emails | `noreply@sapcyti.uam.mx` |
+| `MAIL_STARTTLS_ENABLED` | Enable STARTTLS encryption | `true` |
+| `PASSWORD_RESET_BASE_URL` | Base URL for password reset links (e.g., `https://sapcyti.uam.mx`) | — (required) |
 
 #### Observability interfaces
 
-  - **Health check endpoint:** `/actuator/health` — used by Docker `HEALTHCHECK` directive and the deployment job's post-deploy verification (`curl /actuator/health`). Returns liveness and readiness status. Exposed on the internal Compose network.
-  - **Metrics endpoint:** `/actuator/prometheus` — exports JVM, HTTP request, and database connection pool metrics in Prometheus exposition format. Scraped by VictoriaMetrics at a configurable interval. Exposed on the internal Compose network only (not publicly accessible).
-  - **Build info endpoint:** `/actuator/info` — returns build version and Git SHA for deployment traceability (C005.1.3).
+- **Health check endpoint:** `/actuator/health` — used by Docker `HEALTHCHECK` directive and the deployment job's post-deploy verification (`curl /actuator/health`). Returns liveness and readiness status. Exposed on the internal Compose network.
+- **Metrics endpoint:** `/actuator/prometheus` — exports JVM, HTTP request, and database connection pool metrics in Prometheus exposition format. Scraped by VictoriaMetrics at a configurable interval. Exposed on the internal Compose network only (not publicly accessible).
+- **Build info endpoint:** `/actuator/info` — returns build version and Git SHA for deployment traceability (C005.1.3).
 
 #### DevOps and operational interfaces
 
-  - **Pipeline ↔ Image Registry:** GitHub Actions uploads Docker images (Backend API and SPA/Nginx) to GitHub Container Registry (ghcr.io) via OCI push, tagged by Git SHA and branch. Authentication via `GITHUB_TOKEN` in the pipeline; PAT/credentials on the server for pull.
-  - **Pipeline ↔ Server (deploy):** The deployment job connects to the target server via SSH, executes `docker compose -p sapcyti-{env} --env-file .env.{env} pull` followed by `docker compose -p sapcyti-{env} --env-file .env.{env} up -d`, then verifies health via `curl /actuator/health`. The `-p` flag targets the correct namespaced Compose project.
-  - **Inter-environment promotion:** Images flow from GHCR to Dev (auto on `develop` merge) → Pre-prod (manual approval on `release/*`) → Prod (manual approval on `main` merge). All environments pull the same immutable image from GHCR — no re-building between environments.
-  - **VictoriaMetrics ↔ Targets:** VictoriaMetrics scrapes Node Exporter (`:9100/metrics`) and Backend API Actuator (`:8080/actuator/prometheus`) on the internal Compose network. Prometheus-compatible scrape configuration.
-  - **VictoriaMetrics ↔ Grafana:** Grafana uses VictoriaMetrics as a Prometheus-compatible data source for dashboards and PromQL queries.
+- **Pipeline ↔ Image Registry:** GitHub Actions uploads Docker images (Backend API and SPA/Nginx) to GitHub Container Registry (ghcr.io) via OCI push, tagged by Git SHA and branch. Authentication via `GITHUB_TOKEN` in the pipeline; PAT/credentials on the server for pull.
+- **Pipeline ↔ Server (deploy):** The deployment job connects to the target server via SSH, executes `docker compose -p sapcyti-{env} --env-file .env.{env} pull` followed by `docker compose -p sapcyti-{env} --env-file .env.{env} up -d`, then verifies health via `curl /actuator/health`. The `-p` flag targets the correct namespaced Compose project.
+- **Inter-environment promotion:** Images flow from GHCR to Dev (auto on `develop` merge) → Pre-prod (manual approval on `release/*`) → Prod (manual approval on `main` merge). All environments pull the same immutable image from GHCR — no re-building between environments.
+- **VictoriaMetrics ↔ Targets:** VictoriaMetrics scrapes Node Exporter (`:9100/metrics`) and Backend API Actuator (`:8080/actuator/prometheus`) on the internal Compose network. Prometheus-compatible scrape configuration.
+- **VictoriaMetrics ↔ Grafana:** Grafana uses VictoriaMetrics as a Prometheus-compatible data source for dashboards and PromQL queries.
 
 #### Runtime container interfaces
 
-  - **Nginx ↔ Backend API:** Nginx proxies `/api` requests to the Backend API via HTTP on the internal Compose network (e.g., `http://api:8080`).
-  - **Backend API ↔ PostgreSQL:** JDBC connection via TCP on the internal Compose network; connection string and credentials from environment variables (Factor III).
-  - **VictoriaMetrics ↔ SMTP:** Alert notifications sent via the existing email server when alert rules trigger.
+- **Nginx ↔ Backend API:** Nginx proxies `/api` requests to the Backend API via HTTP on the internal Compose network (e.g., `http://api:8080`).
+- **Backend API ↔ PostgreSQL:** JDBC connection via TCP on the internal Compose network; connection string and credentials from environment variables (Factor III).
+- **VictoriaMetrics ↔ SMTP:** Alert notifications sent via the existing email server when alert rules trigger.
 
 ### 11.- Design decisions
 
@@ -966,6 +1422,21 @@ Design decisions from **Iteration 3** (security cross-cutting concerns), associa
 | **C003.2.2** | **General-purpose audit logging** via JPA `@EntityListeners` (domain mutations at STANDARD level) + AOP `SecurityAuditAspect` (auth/RBAC events at HIGH level). `AuditEvent` aggregate persisted to PostgreSQL + structured JSON to stdout (Factor XI). | Non-invasive; general-purpose (any entity); centralized persistence; queryable for compliance reports; dual-write (DB + stdout) ensures both queryability and streamability. | Event Sourcing (excessive complexity, CON-6); ELK/Splunk (budget constraint); log-only (not queryable for compliance). |
 | **C003.1.1, C003.1.3** | **Signed time-limited URLs** via HMAC-SHA256 for file access. Backend generates signed URL with file ID, expiry, user scope. Download endpoint validates signature with constant-time comparison. Files never directly exposed via web server. | Files never publicly accessible; URL useless after expiry; compatible with future S3 pre-signed URLs (QA-5); simple to implement. | Nginx X-Accel-Redirect (Nginx-specific, no time limit); direct file paths (CWE-22 risk); S3 pre-signed URLs (not applicable to on-premise, CON-2). |
 | **QA-1, HU-01** | **Angular HttpInterceptor** for JWT attachment + **RoleAuthGuard** for route protection + **AuthStateService** for token lifecycle. Access token stored **in memory only** (XSS mitigation). Refresh token as HttpOnly cookie (secure from JavaScript). | Clean separation; Angular built-in patterns; consistent JWT handling; memory storage mitigates XSS theft; HttpOnly cookie secure from JS access. | localStorage (XSS-accessible, OWASP discourages); session cookies (violates Factor VI); third-party auth SDK (unnecessary dependency, CON-6). |
+
+Design decisions from **Iteration 4** (entity management, credential flows, and internationalization), associated with the addressed drivers.
+
+| Driver | Decision | Rationale | Discarded Alternatives |
+| ------ | -------- | --------- | ------------------------- |
+| **HU-15, HU-21** | **Generic CRUD patterns** with concrete controllers (`StudentController`, `ProfessorController`), use cases (`RegisterStudentUseCase`, `RegisterProfessorUseCase`), and repository ports per entity. Both follow the same hexagonal structure within their respective bounded context modules. | Structurally similar entities benefit from consistent patterns; reduces cognitive load for student developers (CON-6); each entity has its own controller/use-case/port for single-responsibility. | Single generic CRUD controller (too abstract, confuses DDD boundaries); code generation tools like JHipster (opaque, hard to maintain by rotating students). |
+| **HU-15, HU-21** | **MapStruct** for compile-time DTO ↔ Domain mapping. Request/response DTOs separated from domain aggregates. | Type-safe, zero-reflection mapping; generated at compile time; keeps domain aggregates free from API annotations; OSS (CON-1); explicit mapper interfaces easy to review. | Manual mapping (error-prone, verbose, undesirable for CON-6); ModelMapper (reflection-based, runtime errors); Jackson annotations on domain entities (violates hexagonal architecture). |
+| **HU-15, HU-21** | **Auto-generated passwords** via `PasswordGenerationService` (domain service) using `SecureTokenGeneratorPort`. 12-character passwords with mixed complexity. Plaintext returned once in creation response, never stored. | Cryptographically secure; domain-level logic (framework-agnostic); consistent with password encoding infrastructure from Iteration 3; no external dependency. | UUID-based passwords (not human-friendly); passphrase generators (external library); manual password entry by coordinator (security risk, inconsistent complexity). |
+| **HU-15, HU-21** | **Cross-module orchestration** at application layer for entity registration. `RegisterStudentUseCase` (Academic Management) calls `UserRepositoryPort` and `PasswordEncoderPort` (Identity & Access) via port injection. Single database transaction. | Modular monolith allows cross-module port calls; simpler than domain events for CON-6; single transaction guarantees consistency; ports maintain module boundaries. | Domain events (adds complexity, eventual consistency issues); shared kernel (tight coupling between modules); separate API calls from SPA (inconsistent state risk). |
+| **HU-15, HU-21** | **Bean Validation** (`@NotBlank`, `@Email`, `@Size`, custom validators) on request DTOs at the controller layer via `@Valid`. Validation error responses localized via `MessageSource`. | Declarative, readable; Spring Boot auto-integration; standardized error response format; aligns with CWE-20 mitigation (QA-2); i18n-ready via message keys. | Programmatic validation in use cases only (scattered, no early rejection); custom validation framework (reinvents standard, CON-6 risk). |
+| **QA-6** | **`@ngx-translate/core`** + **`@ngx-translate/http-loader`** for SPA internationalization. Translation files in `assets/i18n/es.json` and `en.json`. `TranslateService` for programmatic access; `translate` pipe for templates. Default language: Spanish. | De facto Angular i18n library; runtime language switching without page reload; simple JSON format easy for non-developers to edit; supports parameterized translations; large community; OSS. | Angular built-in `@angular/localize` (compile-time only, requires separate builds per language, no runtime switching); custom i18n service (reinvents the wheel, CON-6 risk). |
+| **QA-6** | **Spring `MessageSource`** with `messages_es.properties` and `messages_en.properties` for backend i18n. Locale resolved from `Accept-Language` HTTP header via `AcceptHeaderLocaleResolver`. Bean Validation messages reference message keys. | Built-in Spring feature; no external dependency; consistent localized error messages across API responses; integrates with Bean Validation message interpolation. | Returning only message keys (shifts all i18n to client, breaks for validation errors); single-language API (doesn't satisfy QA-6). |
+| **HU-02** | **Token-based password recovery via email**. `ForgotPasswordUseCase` generates a `PasswordResetToken` (SHA-256 hashed, 30 min TTL, single-use), persists it on the User aggregate, and sends a reset link via `EmailPort`. `ResetPasswordUseCase` validates token and sets new password. Always returns generic response (no email enumeration). | Industry-standard pattern; leverages `PasswordResetToken` VO from Iteration 3; time-limited and single-use; no information leakage; compatible with existing security infrastructure. | SMS-based recovery (no phone infrastructure); security questions (poor UX, weak security); admin-only password reset (doesn't satisfy HU-02). |
+| **HU-02** | **Spring Mail** (`spring-boot-starter-mail`) with `JavaMailSender` for email sending. **Thymeleaf** template engine for localized email templates (`password-reset_es.html`, `password-reset_en.html`). SMTP configuration externalized via env vars. Wrapped as a driven adapter implementing `EmailPort`. | Built-in Spring Boot starter; simple configuration (Factor III); Thymeleaf supports i18n via MessageSource; well-documented; OSS (CON-1); hexagonal adapter pattern maintains domain isolation. | Jakarta Mail directly (more boilerplate); SendGrid/Mailgun SDK (external SaaS dependency, violates CON-2); no email (insecure, not realistic). |
+| **HU-28** | **Dual-mode password change** via single endpoint `PUT /api/users/{id}/password`. RBAC via `@PreAuthorize("#id == principal.id OR hasRole('COORDINATOR')")`. Self-change requires current password verification; Coordinator-change skips it. Both modes revoke all refresh tokens for the target user. | Single endpoint, clean API; leverages existing RBAC and password encoding infrastructure; audit-logged at HIGH severity; consistent with Iteration 3 security patterns. | Two separate endpoints (more API surface, duplication); admin-only password change (doesn't satisfy HU-28 self-service requirement). |
 
 ### 12.- Development workflow
 
@@ -1038,6 +1509,7 @@ All commits must follow the [Conventional Commits](https://www.conventionalcommi
 7. On approval, the PR is **merged** to `develop`, triggering auto-deployment to Dev.
 
 **GitHub branch protection rules** on `develop` and `main`:
+
 - Require CI status checks to pass
 - Require at least 1 approving review
 - Require up-to-date branches before merging
@@ -1157,6 +1629,7 @@ The Backend API writes logs as **event streams to stdout** (Factor XI), captured
 | **preprod, prod** | Structured JSON | `logstash-logback-encoder` |
 
 **Standard log fields:**
+
 - `timestamp` — ISO-8601
 - `level` — DEBUG, INFO, WARN, ERROR
 - `logger` — class name
@@ -1301,3 +1774,102 @@ The audit infrastructure captures system events at different verbosity levels, p
 | **Domain Mutations** | STANDARD | JPA `@EntityListeners` | `STUDENT_CREATED`, `GRADE_UPDATED`, `ENROLLMENT_APPROVED`, `PROFESSOR_REGISTERED` |
 | **Read Operations** | LOW (configurable) | Optional — disabled by default in Prod | `DASHBOARD_VIEWED`, `REPORT_GENERATED` |
 
+### 16.- Internationalization architecture (QA-6)
+
+This section documents the internationalization (i18n) infrastructure established in Iteration 4. The system supports **Spanish** (default) and **English**, covering both the SPA user interface and backend-generated messages (validation errors, email templates). The i18n concern is cross-cutting — it applies to all user-facing views and API responses.
+
+#### 16.1.- SPA i18n infrastructure
+
+The SPA uses **`@ngx-translate/core`** with **`@ngx-translate/http-loader`** for runtime language switching. Translation files are loaded lazily from `assets/i18n/` as JSON.
+
+| Element | Description |
+| ------- | ----------- |
+| **TranslateModule** | Configured in `CoreModule` via `TranslateModule.forRoot()` with `HttpLoaderFactory`. Available across all feature modules. |
+| **Translation files** | `assets/i18n/es.json` (Spanish, default) and `assets/i18n/en.json` (English). |
+| **TranslateService** | Injected into components for programmatic access (`instant()`, `get()`, `use()`). |
+| **translate pipe** | Used in templates: `{{ 'student.form.title' \| translate }}`. |
+| **Language Switcher** | Shared component in Shell top bar; toggles between `es` and `en`; persists to `localStorage`. |
+| **Accept-Language header** | Auth Interceptor injects `Accept-Language: es` or `Accept-Language: en` in every API request. |
+
+##### Translation file structure
+
+Translation keys are namespaced by feature module to prevent collisions:
+
+```json
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "search": "Buscar",
+    "loading": "Cargando...",
+    "error": {
+      "required": "Este campo es obligatorio",
+      "email": "Formato de correo inválido"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar Sesión",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "rememberMe": "Recordarme",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "submit": "Ingresar"
+    },
+    "forgotPassword": {
+      "title": "Recuperar Contraseña",
+      "instruction": "Escriba su correo electrónico",
+      "submit": "Enviar Correo",
+      "success": "Un correo con instrucciones ha sido enviado, si la dirección existe en el sistema"
+    },
+    "resetPassword": {
+      "title": "Restablecer Contraseña",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirmar contraseña"
+    }
+  },
+  "student": {
+    "list": { "title": "Alumnos", "create": "Crear Alumno" },
+    "form": {
+      "title": "Registro de Alumno",
+      "firstName": "Nombre",
+      "firstLastName": "Apellido paterno",
+      "secondLastName": "Apellido materno"
+    }
+  },
+  "professor": {
+    "list": { "title": "Profesores", "create": "Crear Profesor" },
+    "form": {
+      "title": "Registro de Profesor",
+      "employeeNumber": "Número de empleado"
+    }
+  }
+}
+```
+
+#### 16.2.- Backend i18n infrastructure
+
+The Backend API localizes error messages and validation responses using Spring's `MessageSource`.
+
+| Element | Description |
+| ------- | ----------- |
+| **MessageSource** | `ResourceBundleMessageSource` loading `messages_es.properties` and `messages_en.properties` from the classpath. |
+| **LocaleResolver** | `AcceptHeaderLocaleResolver` — resolves locale from the `Accept-Language` HTTP header sent by the SPA Auth Interceptor. Default locale: `es`. |
+| **Bean Validation i18n** | Custom validation messages reference keys: `@NotBlank(message = "{validation.field.required}")`. Spring auto-resolves against `MessageSource` using the resolved locale. |
+| **Email templates** | Thymeleaf templates in `templates/email/`: `password-reset_es.html` and `password-reset_en.html`. Template is selected based on the `locale` parameter passed to `EmailPort.sendPasswordResetEmail()`. |
+| **API error responses** | `GlobalExceptionHandler` resolves validation error messages via `MessageSource` and the request locale. Field-level errors returned as localized strings. |
+
+##### Backend message file example (`messages_es.properties`)
+
+```text
+validation.field.required=Este campo es obligatorio
+validation.email.invalid=Formato de correo electrónico inválido
+validation.email.duplicate=Este correo ya está registrado
+validation.enrollmentId.duplicate=Esta matrícula ya está registrada
+validation.employeeNumber.duplicate=Este número de empleado ya está registrado
+validation.password.weak=La contraseña no cumple con los requisitos de complejidad
+password.reset.success=Contraseña actualizada exitosamente
+password.reset.invalid=El enlace es inválido o ha expirado
+password.change.wrongCurrent=La contraseña actual es incorrecta
+```
