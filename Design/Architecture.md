@@ -302,67 +302,93 @@ classDiagram
 
 ### 4.1.- Bounded Context Map
 
-The modular monolith is organized into **bounded contexts** (modules), each following the same hexagonal internal structure. The following map shows the identified contexts, their relationships, and the aggregates they own. Inter-module references use **IDs only** (not object references) to maintain aggregate boundaries. Cross-module coordination is performed at the **application layer** via output ports — no direct domain-to-domain calls between modules.
+The modular monolith is organized into **bounded contexts** (modules), each following the same hexagonal internal structure. The following map shows the identified contexts grouped by their DDD sub-domain classification, their relationships using formal DDD strategic patterns, and the aggregates they own. Inter-module references use **IDs only** (not object references) to maintain aggregate boundaries. Cross-module coordination is performed at the **application layer** via output ports — no direct domain-to-domain calls between modules. Logical domain events are documented as cross-context communication contracts for future evolution.
+
+> This section was refined in **Iteration 4.1** to formalize sub-domain classification, context relationships, and domain event contracts.
+
+#### Sub-Domain Classification
+
+Each bounded context belongs to a DDD **sub-domain** that determines its strategic importance and investment priority:
+
+| Sub-Domain Type | Bounded Contexts | Strategic Meaning |
+| :--- | :--- | :--- |
+| **Core** | Enrollment, Academic Management, Academic Offering | The most domain-specific, business-differentiating logic. These contexts contain the complex business rules and workflows that make SAPCyTI unique to the PCyTI graduate program. Maximum design and development investment. |
+| **Supporting** | Program Configuration, Audit | Enable and support the Core contexts but do not represent competitively differentiating logic. Program Configuration enables multi-tenancy and parameterization; Audit provides institution-specific compliance and traceability. Custom-built but with lower complexity. |
+| **Generic** | Identity & Access | Industry-standard patterns for authentication, authorization, and credential management. Could theoretically be replaced by an external Identity Provider without changing the business domain. Built in-house for simplicity and CON-6 constraints, but follows generic, well-established patterns. |
+
+#### Bounded Context Map Diagram
+
+The diagram groups contexts by sub-domain type. Solid arrows represent active relationships (implemented); dashed arrows represent planned relationships (Iteration 5). Relationship labels follow DDD strategic patterns: **CS** = Customer/Supplier, **CF** = Conformist. The arrow direction indicates dependency: the arrow points from the **Downstream** (dependent) context to the **Upstream** (provider) context.
 
 ```mermaid
 flowchart TB
-    subgraph IAM["Identity and Access Module"]
-        U["User AR"]
-        R["Role VO"]
-        RT["RefreshToken E"]
-        PRT["PasswordResetToken VO"]
+    subgraph CORE["Core Domain"]
+        ACAD["Academic Management\nBounded Context"]
+        ENROLL["Enrollment\nBounded Context\nPlanned - Iteration 5"]
+        OFFER["Academic Offering\nBounded Context\nPlanned - Iteration 5"]
     end
 
-    subgraph ACAD["Academic Management Module"]
-        S["Student AR"]
-        P["Professor AR"]
-        PD["PersonalData VO"]
-        AI["AcademicInformation VO"]
+    subgraph SUPPORTING["Supporting Sub-Domain"]
+        CONFIG["Program Configuration\nBounded Context"]
+        AUDIT["Audit\nBounded Context"]
     end
 
-    subgraph CONFIG["Program Configuration Module"]
-        GP["GraduateProgram AR"]
-        CP["ConfigurationParameter VO"]
+    subgraph GENERIC["Generic Sub-Domain"]
+        IAM["Identity and Access\nBounded Context"]
     end
 
-    subgraph AUDIT["Audit Module"]
-        AE["AuditEvent AR"]
-        AS["AuditSeverity VO"]
-    end
-
-    subgraph ENROLL["Enrollment Module"]
-        EN["Enrollment AR"]
-        SEL["UEASelection E"]
-        EF["EnrollmentForm E"]
-    end
-
-    subgraph OFFER["Academic Offering Module - Iteration 5"]
-        T["Term AR"]
-        AO["AcademicOffer AR"]
-        UG["UEAGroup E"]
-        UEA_E["UEA AR"]
-    end
-
-    ACAD -- "references User by ID\nCustomer/Supplier" --> IAM
-    ACAD -- "references GraduateProgram by ID" --> CONFIG
-    AUDIT -- "references User by ID" --> IAM
-    AUDIT -- "references GraduateProgram by ID" --> CONFIG
-    ENROLL -. "references Student by ID" .-> ACAD
-    ENROLL -. "references Term by ID" .-> OFFER
-    OFFER -. "references GraduateProgram by ID" .-> CONFIG
-    OFFER -. "references Professor by ID" .-> ACAD
+    ACAD -- "CS — User is created" --> IAM
+    ACAD -- "CS — Program scopes entities" --> CONFIG
+    AUDIT -- "CF — Actor identity is referenced" --> IAM
+    AUDIT -- "CF — Program scopes events" --> CONFIG
+    ENROLL -. "CS — Student enrolls in courses" .-> ACAD
+    ENROLL -. "CS — Courses are selected from offer" .-> OFFER
+    ENROLL -. "CF — User identity is referenced" .-> IAM
+    OFFER -. "CS — Offer is scoped to program" .-> CONFIG
+    OFFER -. "CS — Professor is assigned to group" .-> ACAD
 ```
+
+#### Context Relationship Details
+
+| # | Upstream Context | Downstream Context | Pattern | Direction | Contract Description |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| R1 | **Identity & Access** | **Academic Management** | **Customer / Supplier** | IAM = Upstream Supplier, ACAD = Downstream Customer | Academic Management consumes `UserRepositoryPort` and `PasswordEncoderPort` from Identity. When registering students/professors, the Academic use case creates a User via Identity's ports. Identity provides the interface; Academic Management depends on it and can negotiate changes. |
+| R2 | **Program Configuration** | **Academic Management** | **Customer / Supplier** | CONFIG = Upstream, ACAD = Downstream | Academic Management references `graduateProgramId` to scope students and professors to a graduate program. Reads configuration parameters to apply program-specific business rules. |
+| R3 | **Identity & Access** | **Audit** | **Conformist** | IAM = Upstream, AUDIT = Downstream | Audit conforms to Identity's `User` model — references `userId` and `actorRole` without negotiation power over the Identity model. Audit adapts to whatever structure Identity exposes. |
+| R4 | **Program Configuration** | **Audit** | **Conformist** | CONFIG = Upstream, AUDIT = Downstream | Audit references `graduateProgramId` for multi-tenant event filtering. Conforms to Configuration's model without influencing it. |
+| R5 | **Academic Management** | **Enrollment** | **Customer / Supplier** | ACAD = Upstream, ENROLL = Downstream | Enrollment references `studentId` and `advisorId` (Professor) from Academic Management to scope the enrollment lifecycle to specific domain entities. Planned — Iteration 5. |
+| R6 | **Academic Offering** | **Enrollment** | **Customer / Supplier** | OFFER = Upstream, ENROLL = Downstream | Enrollment references `termId` and `uEAGroupId` from Academic Offering for course selection and term scoping. Planned — Iteration 5. |
+| R7 | **Identity & Access** | **Enrollment** | **Conformist** | IAM = Upstream, ENROLL = Downstream | Enrollment needs `userId` context for RBAC-scoped operations (e.g., a student can only modify their own enrollment). Conforms to IAM's model. Planned — Iteration 5. |
+| R8 | **Program Configuration** | **Academic Offering** | **Customer / Supplier** | CONFIG = Upstream, OFFER = Downstream | Academic Offering scopes Terms and Academic Offers to a specific `GraduateProgram` and reads configuration parameters for term-specific rules. Planned — Iteration 5. |
+| R9 | **Academic Management** | **Academic Offering** | **Customer / Supplier** | ACAD = Upstream, OFFER = Downstream | Academic Offering references `professorId` from Academic Management to assign professors to UEAGroups. Planned — Iteration 5. |
+
+#### Logical Domain Events
+
+The following domain events represent the **information contracts** between bounded contexts. In the current modular monolith, they are implemented as **synchronous, in-process method calls** through output ports and JPA lifecycle listeners (as per the Cross-Module Communication Policy). They are documented here to formalize the inter-context contracts and serve as a foundation for future evolution (e.g., service extraction for QA-5 portability).
+
+> **Note:** Events for the Enrollment and Academic Offering contexts are not included here. They will be defined in Iteration 5 when those bounded contexts are fully designed with their specific drivers and business rules.
+
+| Event Name | Source Context | Consumer Context(s) | Payload | Trigger | Implementation Mechanism |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `UserCreated` | Identity & Access | Audit | `userId, email, role, graduateProgramId, timestamp` | A new User aggregate is persisted during student or professor registration. | JPA `@EntityListener` → `AuditOutputPort` (STANDARD severity) |
+| `StudentRegistered` | Academic Management | Audit | `studentId, userId, enrollmentId, graduateProgramId, timestamp` | A new Student aggregate is persisted (HU-15). | JPA `@EntityListener` → `AuditOutputPort` (STANDARD severity) |
+| `ProfessorRegistered` | Academic Management | Audit | `professorId, userId, employeeNumber, graduateProgramId, timestamp` | A new Professor aggregate is persisted (HU-21). | JPA `@EntityListener` → `AuditOutputPort` (STANDARD severity) |
+| `LoginSucceeded` | Identity & Access | Audit | `userId, role, ipAddress, deviceInfo, timestamp` | Successful authentication (HU-01). | AOP `SecurityAuditAspect` → `AuditOutputPort` (HIGH severity) |
+| `LoginFailed` | Identity & Access | Audit | `email, ipAddress, reason, timestamp` | Failed authentication attempt. | AOP `SecurityAuditAspect` → `AuditOutputPort` (HIGH severity) |
+| `PasswordResetRequested` | Identity & Access | Audit | `userId, email, ipAddress, timestamp` | A password reset token is generated (HU-02). | AOP `SecurityAuditAspect` → `AuditOutputPort` (HIGH severity) |
+| `PasswordChanged` | Identity & Access | Audit | `userId, changedBy, changeType SELF or COORDINATOR, timestamp` | A password is changed (HU-28) or reset (HU-02). | AOP `SecurityAuditAspect` → `AuditOutputPort` (HIGH severity) |
+| `RBACViolationDetected` | Identity & Access | Audit | `userId, role, attemptedResource, ipAddress, timestamp` | An authenticated user attempts to access a resource outside their role permissions. | AOP `SecurityAuditAspect` → `AuditOutputPort` (HIGH severity) |
 
 #### Bounded Context Responsibilities
 
-| Bounded Context | Aggregates | Responsibilities | Module Status |
-| :--- | :--- | :--- | :--- |
-| **Identity & Access** | User, Role, RefreshToken, PasswordResetToken | Authentication, JWT lifecycle, password management (hashing, recovery, change), RBAC identity, refresh token management. | Active — Iteration 3 (auth), refined Iteration 4 (password flows) |
-| **Academic Management** | Student, Professor, PersonalData, AcademicInformation | Core entity CRUD for students and professors; personal data management; auto-generated password coordination (delegates to Identity via ports); advisor assignment. | Active — Iteration 4 |
-| **Program Configuration** | GraduateProgram, ConfigurationParameter | Multi-tenant context; business rule parameterization per graduate program. | Active — Iteration 1 |
-| **Audit** | AuditEvent, AuditSeverity | Cross-cutting audit logging; security event capture (HIGH), domain mutation capture (STANDARD), optional read capture (LOW). | Active — Iteration 3 |
-| **Enrollment** | Enrollment, UEASelection, EnrollmentForm | Enrollment lifecycle (selection → approval → form generation); course selection; advisor approval workflow. | Planned — Iteration 5 |
-| **Academic Offering** | Term, AcademicOffer, UEAGroup, UEA, Schedule | Academic period management; CSV import; course catalog; scheduling. | Planned — Iteration 5 |
+| Bounded Context | Sub-Domain | Aggregates | Responsibilities | Module Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Identity & Access** | Generic | User, Role, RefreshToken, PasswordResetToken | Authentication, JWT lifecycle, password management (hashing, recovery, change), RBAC identity, refresh token management. | Active — Iteration 3 (auth), refined Iteration 4 (password flows) |
+| **Academic Management** | Core | Student, Professor, PersonalData, AcademicInformation | Core entity CRUD for students and professors; personal data management; auto-generated password coordination (delegates to Identity via ports); advisor assignment. | Active — Iteration 4 |
+| **Program Configuration** | Supporting | GraduateProgram, ConfigurationParameter | Multi-tenant context; business rule parameterization per graduate program. | Active — Iteration 1 |
+| **Audit** | Supporting | AuditEvent, AuditSeverity | Cross-cutting audit logging; security event capture (HIGH), domain mutation capture (STANDARD), optional read capture (LOW). Institution-specific compliance and traceability. | Active — Iteration 3 |
+| **Enrollment** | Core | Enrollment, UEASelection, EnrollmentForm | Enrollment lifecycle (selection → approval → form generation); course selection; advisor approval workflow. Most complex multi-actor business process. | Planned — Iteration 5 |
+| **Academic Offering** | Core | Term, AcademicOffer, UEAGroup, UEA, Schedule | Academic period management; CSV import; course catalog; scheduling. Domain-specific logic tied to UAM's academic calendar. | Planned — Iteration 5 |
 
 #### Cross-Module Communication Policy
 
@@ -372,6 +398,7 @@ flowchart TB
 | **Application-layer orchestration** | When a use case spans multiple modules (e.g., RegisterStudentUseCase creates both a Student and a User), the application service orchestrates the calls through output ports. This is simpler than domain events and appropriate for CON-6 (student developers). |
 | **Single transaction** | Since all modules share the same database (modular monolith), cross-module operations within a single use case execute in a single database transaction for consistency. |
 | **Port-based communication** | No module directly imports classes from another module's domain layer. All inter-module communication goes through output port interfaces defined in the consuming module's domain layer. |
+| **Logical domain events as contracts** | Cross-context information flows are documented as logical domain events (see table above). Currently implemented as synchronous, in-process calls (JPA listeners + AOP aspects). These contracts serve as the specification for future service extraction (QA-5) — if a module is extracted into an independent service, the domain events become the asynchronous message contract. |
 
 ### 5.- Container diagram
 
@@ -1437,6 +1464,14 @@ Design decisions from **Iteration 4** (entity management, credential flows, and 
 | **HU-02** | **Token-based password recovery via email**. `ForgotPasswordUseCase` generates a `PasswordResetToken` (SHA-256 hashed, 30 min TTL, single-use), persists it on the User aggregate, and sends a reset link via `EmailPort`. `ResetPasswordUseCase` validates token and sets new password. Always returns generic response (no email enumeration). | Industry-standard pattern; leverages `PasswordResetToken` VO from Iteration 3; time-limited and single-use; no information leakage; compatible with existing security infrastructure. | SMS-based recovery (no phone infrastructure); security questions (poor UX, weak security); admin-only password reset (doesn't satisfy HU-02). |
 | **HU-02** | **Spring Mail** (`spring-boot-starter-mail`) with `JavaMailSender` for email sending. **Thymeleaf** template engine for localized email templates (`password-reset_es.html`, `password-reset_en.html`). SMTP configuration externalized via env vars. Wrapped as a driven adapter implementing `EmailPort`. | Built-in Spring Boot starter; simple configuration (Factor III); Thymeleaf supports i18n via MessageSource; well-documented; OSS (CON-1); hexagonal adapter pattern maintains domain isolation. | Jakarta Mail directly (more boilerplate); SendGrid/Mailgun SDK (external SaaS dependency, violates CON-2); no email (insecure, not realistic). |
 | **HU-28** | **Dual-mode password change** via single endpoint `PUT /api/users/{id}/password`. RBAC via `@PreAuthorize("#id == principal.id OR hasRole('COORDINATOR')")`. Self-change requires current password verification; Coordinator-change skips it. Both modes revoke all refresh tokens for the target user. | Single endpoint, clean API; leverages existing RBAC and password encoding infrastructure; audit-logged at HIGH severity; consistent with Iteration 3 security patterns. | Two separate endpoints (more API surface, duplication); admin-only password change (doesn't satisfy HU-28 self-service requirement). |
+
+Design decisions from **Iteration 4.1** (bounded context map and domain model refinement), associated with the addressed drivers.
+
+| Driver | Decision | Rationale | Discarded Alternatives |
+| ------ | -------- | --------- | ------------------------- |
+| **QA-3, QA-4, CON-6** | **DDD Sub-Domain Classification** — Categorize bounded contexts as Core (Enrollment, Academic Management, Academic Offering), Supporting (Program Configuration, Audit), or Generic (Identity & Access). | Guides investment priority: maximum effort on Core contexts that differentiate the system; identifies Identity & Access as potentially replaceable by an external IdP; reduces onboarding confusion for rotating students (CON-6) by clarifying where to focus. | No classification (treat all modules equally) — leads to uniform investment, wasting effort on Generic contexts and under-investing in Core. |
+| **QA-5, CON-6** | **DDD Context Mapping Patterns** — Formalize all bounded context relationships as Customer/Supplier (where the downstream can negotiate) or Conformist (where the downstream adapts without influence). | Establishes clear ownership, dependency direction, and change-propagation rules between modules; directly supports future service extraction (QA-5) by documenting who owns each interface; gives students a clear mental model of module dependencies (CON-6). | Anti-Corruption Layer (unnecessary — all modules are internal with shared domain language); Shared Kernel (creates tight coupling, contradicts port-based isolation); Open Host Service / Published Language (premature for internal monolith communication). |
+| **QA-5, CON-6** | **Logical Domain Events as Inter-Context Contracts** — Document cross-context information flows as 8 named events with payloads. Events are documentation-only contracts; implemented via existing JPA listeners (STANDARD) and AOP aspects (HIGH). No new runtime infrastructure. | Zero implementation overhead; formalizes implicit information flows already in the codebase; creates a specification for future service extraction (QA-5) — events become the async message contract if a module is extracted; easy catalog of "what happens when" for students (CON-6). | Spring ApplicationEvent infrastructure (adds runtime complexity, overkill for single-transaction monolith); Event Sourcing (fundamental architectural shift, excessive for CON-6); no documentation (leaves contracts implicit, harder to extract services). |
 
 ### 12.- Development workflow
 
