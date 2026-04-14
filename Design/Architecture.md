@@ -81,7 +81,7 @@ The architectural drivers were taken from [ArchitecturalDrivers.md](../Architect
 
 ### 4.- Domain model
 
-The domain model was derived by applying Domain-Driven Design (DDD) based on the primary functional requirements of the MVP (HU-01, HU-06, HU-07, HU-08, HU-09, HU-15, HU-21), the quality attributes QA-3 (business rule parameterization) and QA-4 (multi-graduate program support), and the security cross-cutting concerns QA-1 (RBAC) and QA-2 (CWE Top 25 protection) introduced in Iteration 3. The following DDD building blocks were identified:
+The domain model was derived by applying Domain-Driven Design (DDD) based on the primary functional requirements of the MVP (HU-01, HU-06, HU-07, HU-08, HU-09, HU-15, HU-21), the quality attributes QA-3 (business rule parameterization) and QA-4 (multi-graduate program support), and the security cross-cutting concerns QA-1 (RBAC) and QA-2 (CWE Top 25 protection) introduced in Iteration 3. In Iteration 5, the Enrollment and Academic Offering bounded contexts were fully instantiated — including domain-embedded state machines for the `Term` and `Enrollment` lifecycles — and the `EnrollmentForm` entity was removed in favor of on-demand PDF generation. The following DDD building blocks were identified:
 
 - **Aggregate Root (AR):** Root entity that ensures the transactional consistency of its aggregate. It is the only point of external access to the aggregate.
 - **Entity (E):** Object with its own identity that exists within the boundaries of an aggregate and is managed by its Aggregate Root.
@@ -199,6 +199,7 @@ classDiagram
         +Long id
         +String groupCode
         +Integer quota
+        +Integer availableQuota
     }
 
     class Schedule {
@@ -221,6 +222,7 @@ classDiagram
         +Long id
         +EnrollmentStatus status
         +Date creationDate
+        +Date finalizationDate
     }
 
     class UEASelection {
@@ -230,12 +232,7 @@ classDiagram
         +Boolean approvedByAdvisor
     }
 
-    class EnrollmentForm {
-        <<Entity>>
-        +Long id
-        +Date generationDate
-        +Boolean printed
-    }
+
 
     GraduateProgram "1" *-- "*" ConfigurationParameter
 
@@ -267,7 +264,6 @@ classDiagram
     Enrollment "*" --> "1" Student
     Enrollment "*" --> "1" Term
     Enrollment "1" *-- "*" UEASelection
-    Enrollment "1" *-- "0..1" EnrollmentForm
 
     UEASelection "*" --> "1" UEAGroup
 ```
@@ -284,14 +280,13 @@ classDiagram
 | **PersonalData** | Value Object | Identity data of a person: first name, last names, and nationality. Shared by the Student and Professor aggregates. |
 | **AcademicInformation** | Value Object | Data from the student's academic program: original undergraduate degree, graduate program type, and admission date. Derived from HU-15. |
 | **Professor** | Aggregate Root | Academic staff member who teaches courses and advises students. Identified by their institutional employee number. Derived from HU-21. |
-| **Term** | Aggregate Root | Academic period with an identifying code and a lifecycle with statuses: PLANNING, IN\_ENROLLMENT, IN\_PROGRESS, and COMPLETED. The coordinator activates it by uploading the academic offer, per HU-06. |
+| **Term** | Aggregate Root | Academic period with an identifying code and a lifecycle managed through a domain-embedded state machine. Statuses: `PLANNING` → `OFFER_LOADED` (CSV uploaded) → `IN_ENROLLMENT` (students can select courses) → `IN_PROGRESS` (enrollment closed) → `COMPLETED`. Transitions: `loadOffer()`, `openEnrollment()`, `closeEnrollment()`, `complete()` — each with guard conditions that enforce valid state progression. The `OFFER_LOADED` intermediate state allows the Coordinator to review the imported academic offer before opening enrollment to students (HU-06). Refined in Iteration 5. |
 | **AcademicOffer** | Aggregate Root | Set of UEA groups offered in a specific term. Created when processing the CSV file of schedules and lotteries uploaded by the coordinator in HU-06. |
-| **UEAGroup** | Entity | Specific section of a UEA within the quarterly offer. Defines the group code, available quota, assigned professor, and schedules. It is the unit selectable by students in HU-07. |
+| **UEAGroup** | Entity | Specific section of a UEA within the quarterly offer. Defines the group code, total quota (`quota`), remaining availability (`availableQuota`), assigned professor, and schedules. It is the unit selectable by students in HU-07. `availableQuota` is initialized equal to `quota` on CSV import and decremented upon advisor approval (HU-08), not upon student selection, to avoid phantom reservations. Refined in Iteration 5. |
 | **Schedule** | Value Object | Time block assigned to a group: day of the week, start time, and end time. Derived from information shown to the student in HU-07. |
 | **UEA** | Aggregate Root | Teaching-Learning Unit (Unidad de Enseñanza-Aprendizaje) from the academic catalog. Defines the code, name, and credits of a course. It is independent of any particular term or offer. |
-| **Enrollment** | Aggregate Root | Process of a student enrolling in a specific term. Manages the complete lifecycle: course selection by the student in HU-07, approval by the advisor in HU-08, and generation of the official form in HU-09. Its statuses are: PENDING\_SELECTION, SELECTION\_COMPLETED, APPROVED\_BY\_ADVISOR, and FORM\_GENERATED. |
+| **Enrollment** | Aggregate Root | Process of a student enrolling in a specific term. Manages the complete lifecycle via a domain-embedded state machine: course selection by the student (HU-07), approval or rejection by the advisor (HU-08), and finalization by the Coordinator (HU-09). Statuses: `PENDING_SELECTION` → `SELECTION_COMPLETED` → `APPROVED_BY_ADVISOR` → `FINALIZED`. Transition methods with guard conditions: `completeSelection()`, `approveByAdvisor(advisorId)`, `rejectByAdvisor(advisorId, reason)` (returns to `PENDING_SELECTION`), `finalize()`. Includes `finalizationDate` field (set during `finalize()` transition). The enrollment PDF form is generated on demand — not stored — for any enrollment in `APPROVED_BY_ADVISOR` or `FINALIZED` state. Refined in Iteration 5. |
 | **UEASelection** | Entity | Record of the choice of a specific UEA group within an enrollment. Indicates if it was automatically preselected by the system and if it was approved by the advisor. Derived from HU-07 and HU-08. |
-| **EnrollmentForm** | Entity | PDF document generated as a result of the approved enrollment: the "UEA Request" delivered to School Systems. Records the generation date and if it has already been printed. Derived from HU-09. |
 | **AuditEvent** | Aggregate Root | Records a system event for compliance and traceability. Captures the actor, action, target entity, severity, and context (including graduate program for multi-tenant filtering). Supports general-purpose auditing with enhanced verbosity for security events. Derived from C003.2.2 (Iteration 3). |
 | **AuditSeverity** | Value Object | Enum indicating audit event importance: HIGH (security events — login, RBAC violations), STANDARD (domain mutations — entity CRUD), LOW (read operations — configurable per environment). |
 | **RefreshToken** | Entity | Persisted refresh token within the User aggregate. Stores only the token hash (SHA-256) for security. Supports "Remember me" via configurable TTL (7 days default, 30 days for remember-me) and concurrent session awareness via device tracking (C003.2.3). Derived from HU-01 (Iteration 3). |
@@ -304,7 +299,7 @@ classDiagram
 
 The modular monolith is organized into **bounded contexts** (modules), each following the same hexagonal internal structure. The following map shows the identified contexts grouped by their DDD sub-domain classification, their relationships using formal DDD strategic patterns, and the aggregates they own. Inter-module references use **IDs only** (not object references) to maintain aggregate boundaries. Cross-module coordination is performed at the **application layer** via output ports — no direct domain-to-domain calls between modules. Logical domain events are documented as cross-context communication contracts for future evolution.
 
-> This section was refined in **Iteration 4.1** to formalize sub-domain classification, context relationships, and domain event contracts.
+> This section was refined in **Iteration 4.1** to formalize sub-domain classification, context relationships, and domain event contracts. In **Iteration 5**, relationships R5–R12 were activated (including ACL relationships with external systems), 6 new domain events were added, and context responsibilities were updated for the Enrollment and Academic Offering bounded contexts.
 
 #### Sub-Domain Classification
 
@@ -318,14 +313,14 @@ Each bounded context belongs to a DDD **sub-domain** that determines its strateg
 
 #### Bounded Context Map Diagram
 
-The diagram groups contexts by sub-domain type. Solid arrows represent active relationships (implemented); dashed arrows represent planned relationships (Iteration 5). Relationship labels follow DDD strategic patterns: **CS** = Customer/Supplier, **CF** = Conformist. The arrow direction indicates dependency: the arrow points from the **Downstream** (dependent) context to the **Upstream** (provider) context.
+The diagram groups contexts by sub-domain type. Solid arrows represent active inter-module relationships within the monolith. Dashed arrows represent relationships with external systems mediated by Anti-Corruption Layers (ACL). Relationship labels follow DDD strategic patterns: **CS** = Customer/Supplier, **CF** = Conformist, **ACL** = Anti-Corruption Layer. The arrow direction indicates dependency: the arrow points from the **Downstream** (dependent) context to the **Upstream** (provider) context. All internal relationships were activated across Iterations 1–5.
 
 ```mermaid
 flowchart TB
     subgraph CORE["Core Domain"]
         ACAD["Academic Management\nBounded Context"]
-        ENROLL["Enrollment\nBounded Context\nPlanned - Iteration 5"]
-        OFFER["Academic Offering\nBounded Context\nPlanned - Iteration 5"]
+        ENROLL["Enrollment\nBounded Context"]
+        OFFER["Academic Offering\nBounded Context"]
     end
 
     subgraph SUPPORTING["Supporting Sub-Domain"]
@@ -337,15 +332,24 @@ flowchart TB
         IAM["Identity and Access\nBounded Context"]
     end
 
+    subgraph EXTERNAL["External Systems"]
+        CSV_SRC["CSV File Source\nSchedules and Lotteries"]
+        SCE["School Systems\nSistemas Escolares"]
+    end
+
     ACAD -- "CS — User is created" --> IAM
     ACAD -- "CS — Program scopes entities" --> CONFIG
     AUDIT -- "CF — Actor identity is referenced" --> IAM
     AUDIT -- "CF — Program scopes events" --> CONFIG
-    ENROLL -. "CS — Student enrolls in courses" .-> ACAD
-    ENROLL -. "CS — Courses are selected from offer" .-> OFFER
-    ENROLL -. "CF — User identity is referenced" .-> IAM
-    OFFER -. "CS — Offer is scoped to program" .-> CONFIG
-    OFFER -. "CS — Professor is assigned to group" .-> ACAD
+    ENROLL -- "CS — Student enrolls in courses" --> ACAD
+    ENROLL -- "CS — Courses are selected from offer" --> OFFER
+    ENROLL -- "CF — User identity is referenced" --> IAM
+    ENROLL -- "CS — Enrollment rules per program" --> CONFIG
+    OFFER -- "CS — Offer is scoped to program" --> CONFIG
+    OFFER -- "CS — Professor is assigned to group" --> ACAD
+    CSV_SRC -. "ACL — CSV Import Adapter" .-> OFFER
+    ENROLL -. "ACL — TXT/XLSX Export Adapter" .-> SCE
+    ENROLL -. "ACL — PDF Generator Adapter" .-> SCE
 ```
 
 #### Context Relationship Details
@@ -356,17 +360,20 @@ flowchart TB
 | R2 | **Program Configuration** | **Academic Management** | **Customer / Supplier** | CONFIG = Upstream, ACAD = Downstream | Academic Management references `graduateProgramId` to scope students and professors to a graduate program. Reads configuration parameters to apply program-specific business rules. |
 | R3 | **Identity & Access** | **Audit** | **Conformist** | IAM = Upstream, AUDIT = Downstream | Audit conforms to Identity's `User` model — references `userId` and `actorRole` without negotiation power over the Identity model. Audit adapts to whatever structure Identity exposes. |
 | R4 | **Program Configuration** | **Audit** | **Conformist** | CONFIG = Upstream, AUDIT = Downstream | Audit references `graduateProgramId` for multi-tenant event filtering. Conforms to Configuration's model without influencing it. |
-| R5 | **Academic Management** | **Enrollment** | **Customer / Supplier** | ACAD = Upstream, ENROLL = Downstream | Enrollment references `studentId` and `advisorId` (Professor) from Academic Management to scope the enrollment lifecycle to specific domain entities. Planned — Iteration 5. |
-| R6 | **Academic Offering** | **Enrollment** | **Customer / Supplier** | OFFER = Upstream, ENROLL = Downstream | Enrollment references `termId` and `uEAGroupId` from Academic Offering for course selection and term scoping. Planned — Iteration 5. |
-| R7 | **Identity & Access** | **Enrollment** | **Conformist** | IAM = Upstream, ENROLL = Downstream | Enrollment needs `userId` context for RBAC-scoped operations (e.g., a student can only modify their own enrollment). Conforms to IAM's model. Planned — Iteration 5. |
-| R8 | **Program Configuration** | **Academic Offering** | **Customer / Supplier** | CONFIG = Upstream, OFFER = Downstream | Academic Offering scopes Terms and Academic Offers to a specific `GraduateProgram` and reads configuration parameters for term-specific rules. Planned — Iteration 5. |
-| R9 | **Academic Management** | **Academic Offering** | **Customer / Supplier** | ACAD = Upstream, OFFER = Downstream | Academic Offering references `professorId` from Academic Management to assign professors to UEAGroups. Planned — Iteration 5. |
+| R5 | **Academic Management** | **Enrollment** | **Customer / Supplier** | ACAD = Upstream Supplier, ENROLL = Downstream Customer | Enrollment references `studentId` and `advisorId` (Professor) from Academic Management. `SelectCoursesUseCase` validates the student exists; `ApproveEnrollmentUseCase` verifies the caller is the student's assigned advisor via `StudentQueryPort`. ID-based references only. Active — Iteration 5. |
+| R6 | **Academic Offering** | **Enrollment** | **Customer / Supplier** | OFFER = Upstream Supplier, ENROLL = Downstream Customer | Enrollment references `termId` and `uEAGroupId` from Academic Offering. `SelectCoursesUseCase` validates that the Term is `IN_ENROLLMENT` and that selected UEAGroups exist with available quota via `AcademicOfferQueryPort`. `ApproveEnrollmentUseCase` decrements `availableQuota` on UEAGroups via `UeaGroupQuotaPort`. Active — Iteration 5. |
+| R7 | **Identity & Access** | **Enrollment** | **Conformist** | IAM = Upstream, ENROLL = Downstream | Enrollment conforms to IAM's `User` model. JWT SecurityContext provides `userId` and `role` for RBAC enforcement — students can only access their own enrollment, advisors only their advised students' enrollments. No negotiation power over Identity's model. Active — Iteration 5. |
+| R8 | **Program Configuration** | **Academic Offering** | **Customer / Supplier** | CONFIG = Upstream Supplier, OFFER = Downstream Customer | Academic Offering scopes Terms and Academic Offers to a specific `GraduateProgram` via `graduateProgramId`. Reads configuration parameters (max courses per term, credit limits) for enrollment rule validation. Active — Iteration 5. |
+| R9 | **Academic Management** | **Academic Offering** | **Customer / Supplier** | ACAD = Upstream Supplier, OFFER = Downstream Customer | Academic Offering references `professorId` from Academic Management to assign professors to UEAGroups during CSV import. The `UploadAcademicOfferUseCase` resolves professor references via `ProfessorQueryPort`. Active — Iteration 5. |
+| R10 | **Program Configuration** | **Enrollment** | **Customer / Supplier** | CONFIG = Upstream Supplier, ENROLL = Downstream Customer | Enrollment reads program-specific enrollment rules (max courses per term, credit limits, enrollment deadlines) from ConfigurationParameter to validate course selections (HU-07). Active — Iteration 5. |
+| R11 | **CSV File Source** (External) | **Academic Offering** | **ACL** | External = Upstream, OFFER = Downstream with ACL | Raw CSV data from the Coordinator's file is translated by the `CsvAcademicOfferAdapter` (Anti-Corruption Layer) into domain commands. The ACL validates, sanitizes, and maps external field names and formats to domain concepts. The Academic Offering domain model is never shaped by the CSV structure. Active — Iteration 5. |
+| R12 | **Enrollment** | **School Systems** (External) | **ACL** | ENROLL = Upstream, External = Downstream with ACL | The `SchoolSystemsExportAdapter` and `PdfGeneratorAdapter` (Anti-Corruption Layers) translate domain aggregates (`Enrollment`, `UEASelection`) into the TXT/XLSX and PDF formats required by Sistemas Escolares (CON-3). The domain model is never shaped by the export format. Active — Iteration 5. |
 
 #### Logical Domain Events
 
 The following domain events represent the **information contracts** between bounded contexts. In the current modular monolith, they are implemented as **synchronous, in-process method calls** through output ports and JPA lifecycle listeners (as per the Cross-Module Communication Policy). They are documented here to formalize the inter-context contracts and serve as a foundation for future evolution (e.g., service extraction for QA-5 portability).
 
-> **Note:** Events for the Enrollment and Academic Offering contexts are not included here. They will be defined in Iteration 5 when those bounded contexts are fully designed with their specific drivers and business rules.
+> **Note:** Events marked with *(Iteration 5)* were added when the Enrollment and Academic Offering bounded contexts were instantiated.
 
 | Event Name | Source Context | Consumer Context(s) | Payload | Trigger | Implementation Mechanism |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -378,6 +385,12 @@ The following domain events represent the **information contracts** between boun
 | `PasswordResetRequested` | Identity & Access | Audit | `userId, email, ipAddress, timestamp` | A password reset token is generated (HU-02). | AOP `SecurityAuditAspect` → `AuditOutputPort` (HIGH severity) |
 | `PasswordChanged` | Identity & Access | Audit | `userId, changedBy, changeType SELF or COORDINATOR, timestamp` | A password is changed (HU-28) or reset (HU-02). | AOP `SecurityAuditAspect` → `AuditOutputPort` (HIGH severity) |
 | `RBACViolationDetected` | Identity & Access | Audit | `userId, role, attemptedResource, ipAddress, timestamp` | An authenticated user attempts to access a resource outside their role permissions. | AOP `SecurityAuditAspect` → `AuditOutputPort` (HIGH severity) |
+| `AcademicOfferUploaded` *(Iteration 5)* | Academic Offering | Audit | `termId, academicOfferId, graduateProgramId, totalGroups, totalUeas, timestamp` | A new AcademicOffer aggregate is persisted from CSV import (HU-06). | JPA `@EntityListener` → `AuditOutputPort` (STANDARD severity) |
+| `EnrollmentPeriodOpened` *(Iteration 5)* | Academic Offering | Audit | `termId, graduateProgramId, timestamp` | The Coordinator opens enrollment for a term (Term transitions to `IN_ENROLLMENT`). | Application service → `AuditOutputPort` (STANDARD severity) |
+| `CoursesSelected` *(Iteration 5)* | Enrollment | Audit | `enrollmentId, studentId, termId, selectedGroupIds, graduateProgramId, timestamp` | A student completes course selection (HU-07). Enrollment transitions to `SELECTION_COMPLETED`. | JPA `@EntityListener` → `AuditOutputPort` (STANDARD severity) |
+| `EnrollmentApprovedByAdvisor` *(Iteration 5)* | Enrollment | Audit | `enrollmentId, studentId, advisorId, approvedGroupIds, graduateProgramId, timestamp` | An advisor approves a student's enrollment (HU-08). Enrollment transitions to `APPROVED_BY_ADVISOR`. | Application service → `AuditOutputPort` (STANDARD severity) |
+| `EnrollmentRejectedByAdvisor` *(Iteration 5)* | Enrollment | Audit | `enrollmentId, studentId, advisorId, reason, graduateProgramId, timestamp` | An advisor rejects a student's enrollment (HU-08). Enrollment returns to `PENDING_SELECTION`. | Application service → `AuditOutputPort` (STANDARD severity) |
+| `EnrollmentFinalized` *(Iteration 5)* | Enrollment | Audit | `enrollmentId, studentId, graduateProgramId, finalizationDate, timestamp` | The Coordinator finalizes an enrollment (HU-09). Enrollment transitions to `FINALIZED`. | Application service → `AuditOutputPort` (STANDARD severity) |
 
 #### Bounded Context Responsibilities
 
@@ -387,8 +400,8 @@ The following domain events represent the **information contracts** between boun
 | **Academic Management** | Core | Student, Professor, PersonalData, AcademicInformation | Core entity CRUD for students and professors; personal data management; auto-generated password coordination (delegates to Identity via ports); advisor assignment. | Active — Iteration 4 |
 | **Program Configuration** | Supporting | GraduateProgram, ConfigurationParameter | Multi-tenant context; business rule parameterization per graduate program. | Active — Iteration 1 |
 | **Audit** | Supporting | AuditEvent, AuditSeverity | Cross-cutting audit logging; security event capture (HIGH), domain mutation capture (STANDARD), optional read capture (LOW). Institution-specific compliance and traceability. | Active — Iteration 3 |
-| **Enrollment** | Core | Enrollment, UEASelection, EnrollmentForm | Enrollment lifecycle (selection → approval → form generation); course selection; advisor approval workflow. Most complex multi-actor business process. | Planned — Iteration 5 |
-| **Academic Offering** | Core | Term, AcademicOffer, UEAGroup, UEA, Schedule | Academic period management; CSV import; course catalog; scheduling. Domain-specific logic tied to UAM's academic calendar. | Planned — Iteration 5 |
+| **Enrollment** | Core | Enrollment, UEASelection | Enrollment lifecycle via domain-embedded state machine (`PENDING_SELECTION` → `SELECTION_COMPLETED` → `APPROVED_BY_ADVISOR` → `FINALIZED`); course selection with validation (quota, schedules, program rules); advisor approval/rejection workflow; enrollment finalization; on-demand PDF form generation via ACL (`PdfGeneratorAdapter`); TXT/XLSX export to School Systems via ACL (`SchoolSystemsExportAdapter`). Most complex multi-actor business process. | Active — Iteration 5 |
+| **Academic Offering** | Core | Term, AcademicOffer, UEAGroup, UEA, Schedule | Academic period management with term lifecycle state machine (`PLANNING` → `OFFER_LOADED` → `IN_ENROLLMENT` → `IN_PROGRESS` → `COMPLETED`); CSV import via ACL (`CsvAcademicOfferAdapter`); course catalog (UEA reference entities); group scheduling and quota management. Domain-specific logic tied to UAM's academic calendar. | Active — Iteration 5 |
 
 #### Cross-Module Communication Policy
 
@@ -435,7 +448,7 @@ flowchart TB
 | Container | Responsibilities |
 | ---------- | ----------------- |
 | **SAPCyTI SPA** | Provide the user interface in the browser; routing and views by role; consumption of the REST API; sending tenant context (graduate program) in requests; manage authentication state (access token in memory, refresh token via HttpOnly cookie); role-based route protection via AuthGuard; compatibility with required browsers and responsive designs (CON-7). |
-| **SAPCyTI Backend API** | Expose the REST API (JSON); JWT-based stateless authentication and RBAC enforcement via Spring Security; multi-tenant context (Graduate Program); business logic and orchestration; reading configuration parameters per graduate program; persistence and data access; audit logging for security events and domain mutations; generation of TXT/XLSX export; asynchronous integration with WordPress. |
+| **SAPCyTI Backend API** | Expose the REST API (JSON); JWT-based stateless authentication and RBAC enforcement via Spring Security; multi-tenant context (Graduate Program); business logic and orchestration; reading configuration parameters per graduate program; persistence and data access; audit logging for security events and domain mutations; CSV import processing for academic offers; on-demand PDF generation for enrollment forms; generation of TXT/XLSX export for School Systems (CON-3); asynchronous integration with WordPress. |
 | **PostgreSQL Database** | Store domain data, configuration parameters per graduate program, multi-tenant data, audit events, and refresh tokens; ensure transactional consistency. |
 
 At runtime, these logical containers are deployed according to the **deployment view** (section 7): the Backend API and database as Docker containers, and the SPA as static assets served by the Nginx container.
@@ -444,7 +457,7 @@ At runtime, these logical containers are deployed according to the **deployment 
 
 #### 6.1.- SAPCyTI Backend API
 
-The Backend API is structured as a **modular monolith**, following **Hexagonal Architecture (Ports & Adapters)** and **DDD principles**. Each bounded context (§4.1) is a module with the same internal hexagonal structure: driving adapters → application layer → domain layer → driven adapters. The domain layer sits at the center with zero dependencies on infrastructure. Port interfaces define the contracts through which the domain communicates with external concerns. Infrastructure adapters implement these ports, keeping the domain framework-agnostic and testable in isolation. In Iteration 3, the security cross-cutting concern was instantiated in the Identity & Access module. In Iteration 4, the Academic Management module and the password/email infrastructure were added, and new concrete controllers and use cases were instantiated within both modules.
+The Backend API is structured as a **modular monolith**, following **Hexagonal Architecture (Ports & Adapters)** and **DDD principles**. Each bounded context (§4.1) is a module with the same internal hexagonal structure: driving adapters → application layer → domain layer → driven adapters. The domain layer sits at the center with zero dependencies on infrastructure. Port interfaces define the contracts through which the domain communicates with external concerns. Infrastructure adapters implement these ports, keeping the domain framework-agnostic and testable in isolation. In Iteration 3, the security cross-cutting concern was instantiated in the Identity & Access module. In Iteration 4, the Academic Management module and the password/email infrastructure were added, and new concrete controllers and use cases were instantiated within both modules. In Iteration 5, the Academic Offering and Enrollment modules were added, instantiating the enrollment workflow (HU-06–HU-09) with Anti-Corruption Layers for CSV import and School Systems export (CON-3).
 
 ```mermaid
 flowchart TB
@@ -456,6 +469,8 @@ flowchart TB
             PWDCTRL["PasswordController\nForgot, reset, change password"]
             STUDCTRL["StudentController\nCRUD students"]
             PROFCTRL["ProfessorController\nCRUD professors"]
+            OFFERCTRL["AcademicOfferController\nCSV upload, term management"]
+            ENROLLCTRL["EnrollmentController\nSelection, approval, finalization"]
         end
 
         subgraph Application["Application Layer"]
@@ -467,6 +482,15 @@ flowchart TB
             REGPROFUC["RegisterProfessor Use Case\nProfessor + User creation"]
             JWTSVC["JWT Service\nToken generation, validation, refresh"]
             AUDITASP["Audit Aspect\nAOP security event capture"]
+            UPLOADUC["UploadAcademicOffer Use Case\nCSV import, offer creation"]
+            GETOFFERUC["GetAcademicOffer Use Case\nOffer and term retrieval"]
+            OPENUC["OpenEnrollment Use Case\nTerm state transition"]
+            SELECTUC["SelectCourses Use Case\nStudent course selection"]
+            APPROVEUC["ApproveEnrollment Use Case\nAdvisor approval"]
+            REJECTUC["RejectEnrollment Use Case\nAdvisor rejection"]
+            FINALIZEUC["FinalizeEnrollment Use Case\nCoordinator finalization"]
+            DOWNLOADUC["DownloadEnrollmentForm Use Case\nOn-demand PDF generation"]
+            GETADVUC["GetAdvisorEnrollments Use Case\nAdvisor pending list"]
         end
 
         subgraph Domain["Domain Layer - Hexagonal Core"]
@@ -483,6 +507,20 @@ flowchart TB
                 ACAD_PORTS_IN["Input Ports\nRegisterStudentInputPort\nRegisterProfessorInputPort"]
                 ACAD_PORTS_OUT["Output Ports\nStudentRepositoryPort\nProfessorRepositoryPort"]
             end
+
+            subgraph OFFER_Domain["Academic Offering Domain"]
+                TERM_AGG["Term AR\nState machine: PLANNING to COMPLETED"]
+                OFFER_AGG["AcademicOffer AR\nUEAGroup E + Schedule VO"]
+                UEA_AGG["UEA AR\nCourse catalog reference"]
+                OFFER_PORTS_IN["Input Ports\nUploadAcademicOfferInputPort\nGetAcademicOfferInputPort\nOpenEnrollmentInputPort"]
+                OFFER_PORTS_OUT["Output Ports\nAcademicOfferRepositoryPort\nTermRepositoryPort\nUeaRepositoryPort\nCsvParserPort"]
+            end
+
+            subgraph ENROLL_Domain["Enrollment Domain"]
+                ENROLL_AGG["Enrollment AR\nState machine: PENDING to FINALIZED\nUEASelection E"]
+                ENROLL_PORTS_IN["Input Ports\nSelectCoursesInputPort\nApproveEnrollmentInputPort\nRejectEnrollmentInputPort\nFinalizeEnrollmentInputPort\nDownloadEnrollmentFormInputPort"]
+                ENROLL_PORTS_OUT["Output Ports\nEnrollmentRepositoryPort\nPdfGeneratorPort\nExportPort\nAcademicOfferQueryPort\nStudentQueryPort\nUeaGroupQuotaPort"]
+            end
         end
 
         subgraph Adapters_Out["Driven Adapters - Infrastructure Out"]
@@ -497,6 +535,9 @@ flowchart TB
             EMAILADP["Email Adapter\nSpring Mail + Thymeleaf"]
             TOKENADP["Secure Token Generator\nSecureRandom"]
             MAPPERS["MapStruct Mappers\nDTO - Domain mapping"]
+            CSVACL["CSV Import ACL Adapter\nApache Commons CSV"]
+            PDFACL["PDF Generator ACL Adapter\nOpenHTMLToPDF + Thymeleaf"]
+            EXPORTACL["School Systems Export ACL\nApache POI - TXT/XLSX"]
         end
     end
 
@@ -531,11 +572,45 @@ flowchart TB
     IAM_PORTS_OUT --> TOKENADP
     ACAD_PORTS_OUT --> JPA
     ACAD_PORTS_OUT --> MAPPERS
+    JWTFILT --> OFFERCTRL
+    JWTFILT --> ENROLLCTRL
+    OFFERCTRL --> UPLOADUC
+    OFFERCTRL --> GETOFFERUC
+    OFFERCTRL --> OPENUC
+    ENROLLCTRL --> SELECTUC
+    ENROLLCTRL --> APPROVEUC
+    ENROLLCTRL --> REJECTUC
+    ENROLLCTRL --> FINALIZEUC
+    ENROLLCTRL --> DOWNLOADUC
+    ENROLLCTRL --> GETADVUC
+    UPLOADUC --> OFFER_PORTS_IN
+    GETOFFERUC --> OFFER_PORTS_IN
+    OPENUC --> OFFER_PORTS_IN
+    SELECTUC --> ENROLL_PORTS_IN
+    APPROVEUC --> ENROLL_PORTS_IN
+    REJECTUC --> ENROLL_PORTS_IN
+    FINALIZEUC --> ENROLL_PORTS_IN
+    DOWNLOADUC --> ENROLL_PORTS_IN
+    GETADVUC --> ENROLL_PORTS_IN
+    OFFER_PORTS_IN --> TERM_AGG
+    OFFER_PORTS_IN --> OFFER_AGG
+    OFFER_PORTS_IN --> UEA_AGG
+    ENROLL_PORTS_IN --> ENROLL_AGG
+    OFFER_PORTS_OUT --> JPA
+    OFFER_PORTS_OUT --> CSVACL
+    ENROLL_PORTS_OUT --> JPA
+    ENROLL_PORTS_OUT --> PDFACL
+    ENROLL_PORTS_OUT --> EXPORTACL
+    UPLOADUC --> ACAD_PORTS_OUT
+    SELECTUC --> OFFER_PORTS_OUT
+    APPROVEUC --> OFFER_PORTS_OUT
+    DOWNLOADUC --> OFFER_PORTS_OUT
+    DOWNLOADUC --> ACAD_PORTS_OUT
 ```
 
 ##### Module package structure
 
-Each bounded context module follows an identical hexagonal package layout. The following shows the two modules actively refined in Iteration 4:
+Each bounded context module follows an identical hexagonal package layout. The following shows all four active modules (Identity & Access and Academic Management from Iterations 3–4, Academic Offering and Enrollment from Iteration 5):
 
 ```text
 identity/                           # Identity & Access bounded context
@@ -562,6 +637,30 @@ academic/                           # Academic Management bounded context
     ├── adapter/in/                 # StudentController, ProfessorController
     ├── adapter/out/                # StudentJpaAdapter, ProfessorJpaAdapter
     └── mapper/                     # StudentMapper, ProfessorMapper (MapStruct)
+
+offering/                           # Academic Offering bounded context
+├── domain/
+│   ├── model/                      # Term (AR), AcademicOffer (AR), UEAGroup (E), UEA (AR), Schedule (VO)
+│   ├── port/in/                    # UploadAcademicOfferInputPort, GetAcademicOfferInputPort, OpenEnrollmentInputPort
+│   └── port/out/                   # AcademicOfferRepositoryPort, TermRepositoryPort, UeaRepositoryPort, CsvParserPort
+├── application/
+│   └── service/                    # UploadAcademicOfferUseCase, GetAcademicOfferUseCase, OpenEnrollmentUseCase
+└── infrastructure/
+    ├── adapter/in/                 # AcademicOfferController
+    ├── adapter/out/                # AcademicOfferJpaAdapter, TermJpaAdapter, UeaJpaAdapter
+    └── acl/                        # CsvAcademicOfferAdapter (Anti-Corruption Layer)
+
+enrollment/                         # Enrollment bounded context
+├── domain/
+│   ├── model/                      # Enrollment (AR), UEASelection (E)
+│   ├── port/in/                    # SelectCoursesInputPort, ApproveEnrollmentInputPort, RejectEnrollmentInputPort, FinalizeEnrollmentInputPort, DownloadEnrollmentFormInputPort, GetAdvisorEnrollmentsInputPort
+│   └── port/out/                   # EnrollmentRepositoryPort, PdfGeneratorPort, ExportPort, AcademicOfferQueryPort, StudentQueryPort, UeaGroupQuotaPort
+├── application/
+│   └── service/                    # SelectCoursesUseCase, ApproveEnrollmentUseCase, RejectEnrollmentUseCase, FinalizeEnrollmentUseCase, DownloadEnrollmentFormUseCase, GetAdvisorEnrollmentsUseCase
+└── infrastructure/
+    ├── adapter/in/                 # EnrollmentController
+    ├── adapter/out/                # EnrollmentJpaAdapter
+    └── acl/                        # PdfGeneratorAdapter, SchoolSystemsExportAdapter (Anti-Corruption Layers)
 ```
 
 ##### Component responsibilities
@@ -599,11 +698,29 @@ academic/                           # Academic Management bounded context
 | **Email Adapter** (Driven Adapter) | Identity & Access | Implements `EmailPort` using Spring Boot `spring-boot-starter-mail` (`JavaMailSender`). Connects to the SMTP server. Email templates rendered via Thymeleaf with i18n support (`password-reset_es.html`, `password-reset_en.html`). SMTP configuration externalized via env vars (Factor III). Added in Iteration 4 (HU-02). |
 | **Secure Token Generator Adapter** (Driven Adapter) | Identity & Access | Implements `SecureTokenGeneratorPort` using `java.security.SecureRandom`. Generates cryptographically secure random bytes, encoded as URL-safe Base64 (32 bytes → 43 chars). Used for password reset tokens and auto-generated passwords. Added in Iteration 4. |
 | **MapStruct Mappers** (Infrastructure) | Academic Management | Compile-time DTO ↔ Domain mappers (`StudentMapper`, `ProfessorMapper`). Separate API contract from domain model. Type-safe, zero-reflection. Added in Iteration 4. |
+| **AcademicOfferController** (Driving Adapter) | Academic Offering | Exposes endpoints for CSV upload (`POST /api/terms/{termId}/academic-offer/upload`), academic offer retrieval (`GET /api/terms/{termId}/academic-offer`), and enrollment period management (`PUT /api/terms/{termId}/enrollment/open`). All endpoints require `COORDINATOR` role via `@PreAuthorize`. Validates multipart file input. Added in Iteration 5. |
+| **EnrollmentController** (Driving Adapter) | Enrollment | Exposes endpoints for course selection (`POST /api/enrollments/select-courses` — STUDENT), advisor review (`GET /api/enrollments/advisor-pending` — PROFESSOR), approval/rejection (`PUT /api/enrollments/{id}/approve`, `PUT /api/enrollments/{id}/reject` — PROFESSOR), finalization (`PUT /api/enrollments/{id}/finalize` — COORDINATOR/ASSISTANT), and on-demand document download (`GET /api/enrollments/{id}/form/download`, `GET /api/enrollments/{id}/export` — COORDINATOR/ASSISTANT). Added in Iteration 5. |
+| **UploadAcademicOffer Use Case** (Application) | Academic Offering | Orchestrates CSV import: validates Term is in `PLANNING` state → delegates CSV parsing to `CsvParserPort` (ACL) → resolves or creates UEA references → resolves Professor references via `ProfessorQueryPort` (cross-module) → creates `AcademicOffer` aggregate with all `UEAGroups` → transitions Term to `OFFER_LOADED` → persists in a single transaction. Returns validation report with warnings. Addresses HU-06. Added in Iteration 5. |
+| **GetAcademicOffer Use Case** (Application) | Academic Offering | Returns the full academic offer for a term, including UEAGroups with remaining quota, schedules, and assigned professors. Scoped by `graduateProgramId` (QA-4). Used by both the Coordinator (review after import) and students (course selection view). Added in Iteration 5. |
+| **OpenEnrollment Use Case** (Application) | Academic Offering | Transitions the Term from `OFFER_LOADED` to `IN_ENROLLMENT`. Validates that the AcademicOffer exists and has at least one UEAGroup. Requires `COORDINATOR` role. Produces `EnrollmentPeriodOpened` audit event. Added in Iteration 5. |
+| **SelectCourses Use Case** (Application) | Enrollment | Orchestrates student course selection: validates Term is `IN_ENROLLMENT` (cross-module via `AcademicOfferQueryPort`) → validates each selected UEAGroup has available quota → checks for schedule conflicts → validates program-specific rules from ConfigurationParameter (max courses, credit limits) → creates or updates Enrollment aggregate with UEASelections → transitions to `SELECTION_COMPLETED`. Single transaction. Addresses HU-07. Added in Iteration 5. |
+| **ApproveEnrollment Use Case** (Application) | Enrollment | Orchestrates advisor approval: validates the caller is the student's assigned advisor (cross-module via `StudentQueryPort`) → validates enrollment is `SELECTION_COMPLETED` → calls `approveByAdvisor()` on Enrollment aggregate → marks all UEASelections as `approvedByAdvisor = true` → decrements `availableQuota` on each selected UEAGroup (cross-module via `UeaGroupQuotaPort`). Addresses HU-08. Added in Iteration 5. |
+| **RejectEnrollment Use Case** (Application) | Enrollment | Orchestrates advisor rejection: validates the caller is the student's assigned advisor → calls `rejectByAdvisor(advisorId, reason)` on Enrollment aggregate → returns enrollment to `PENDING_SELECTION`. Student can then modify their selections and resubmit. Produces `EnrollmentRejectedByAdvisor` audit event. Added in Iteration 5. |
+| **FinalizeEnrollment Use Case** (Application) | Enrollment | Transitions enrollment from `APPROVED_BY_ADVISOR` to `FINALIZED`, sets `finalizationDate`. Requires `COORDINATOR` or `ASSISTANT` role. This is the workflow-completing action. Produces `EnrollmentFinalized` audit event. Addresses HU-09. Added in Iteration 5. |
+| **DownloadEnrollmentForm Use Case** (Application) | Enrollment | Stateless read operation: collects enrollment + student + course data from Enrollment, Academic Offering, and Academic Management modules via cross-module query ports → delegates to `PdfGeneratorPort` (ACL) for PDF → returns `byte[]` stream. Can be called multiple times without side effects for any enrollment in `APPROVED_BY_ADVISOR` or `FINALIZED` state. Also supports TXT/XLSX export via `ExportPort` (ACL) for CON-3. Addresses HU-09. Added in Iteration 5. |
+| **GetAdvisorEnrollments Use Case** (Application) | Enrollment | Returns all enrollments in `SELECTION_COMPLETED` state for students assigned to a specific advisor. Provides the data for the advisor's review view (HU-08). Added in Iteration 5. |
+| **Term, AcademicOffer, UEAGroup, UEA, Schedule** (Domain) | Academic Offering | Term AR with 5-state lifecycle machine; AcademicOffer AR owning UEAGroup entities and Schedule VOs; UEA AR as course catalog reference. Guard conditions enforce valid state transitions. Zero infrastructure dependencies. Added in Iteration 5. |
+| **Enrollment, UEASelection** (Domain) | Enrollment | Enrollment AR with 4-state lifecycle machine (`PENDING_SELECTION` → `SELECTION_COMPLETED` → `APPROVED_BY_ADVISOR` → `FINALIZED`) and `rejectByAdvisor()` loop. UEASelection E records course group choices within the aggregate boundary. `finalizationDate` set on `finalize()` transition. Zero infrastructure dependencies. Added in Iteration 5. |
+| **Academic Offering Input/Output Ports** (Domain) | Academic Offering | Input: `UploadAcademicOfferInputPort`, `GetAcademicOfferInputPort`, `OpenEnrollmentInputPort`. Output: `AcademicOfferRepositoryPort`, `TermRepositoryPort`, `UeaRepositoryPort`, `CsvParserPort`. Added in Iteration 5. |
+| **Enrollment Input/Output Ports** (Domain) | Enrollment | Input: `SelectCoursesInputPort`, `ApproveEnrollmentInputPort`, `RejectEnrollmentInputPort`, `FinalizeEnrollmentInputPort`, `DownloadEnrollmentFormInputPort`, `GetAdvisorEnrollmentsInputPort`. Output: `EnrollmentRepositoryPort`, `PdfGeneratorPort`, `ExportPort`, `AcademicOfferQueryPort`, `StudentQueryPort`, `UeaGroupQuotaPort`. Cross-module query ports are read-only; `UeaGroupQuotaPort` is write-only (single `decrementQuota()` method). Added in Iteration 5. |
+| **CSV Import ACL Adapter** (Driven Adapter — ACL) | Academic Offering | Implements `CsvParserPort`. Anti-Corruption Layer that translates raw CSV rows into domain commands using Apache Commons CSV. Validates required fields, formats, and referential integrity. Collects errors per row and returns a `CsvImportResult` containing parsed domain objects and an error report. The domain never sees CSV-specific structures. Added in Iteration 5. |
+| **PDF Generator ACL Adapter** (Driven Adapter — ACL) | Enrollment | Implements `PdfGeneratorPort`. Anti-Corruption Layer that translates domain DTOs (`EnrollmentFormData`) into PDF documents using OpenHTMLToPDF + Thymeleaf templates. Template (`enrollment-form.html`) matches the official "Solicitud de UEA" format. Supports i18n via Thymeleaf `MessageSource`. Returns `byte[]` for streaming. Added in Iteration 5. |
+| **School Systems Export ACL Adapter** (Driven Adapter — ACL) | Enrollment | Implements `ExportPort`. Anti-Corruption Layer that translates domain DTOs (`EnrollmentExportData`) into TXT and XLSX formats required by Sistemas Escolares (CON-3). Uses Apache POI for XLSX and `BufferedWriter` for TXT. Maps domain fields to the column structure required by the external system. Returns `byte[]` for streaming. Added in Iteration 5. |
+| **JPA Adapters** (Driven Adapter) | Academic Offering, Enrollment | `AcademicOfferJpaAdapter`, `TermJpaAdapter`, `UeaJpaAdapter`, `EnrollmentJpaAdapter`. Implement repository output ports; access PostgreSQL; filtering by tenant (`graduate_program_id`). Added in Iteration 5. |
 
 #### 6.2.- SAPCyTI SPA (Angular)
 
-The SPA is organized into a shell, feature modules, core services (authentication, HTTP, tenant context, i18n), and shared components. In Iteration 3, the Core module was refined to explicitly define the authentication and authorization sub-components, and a Login feature module was added. In Iteration 4, the Entity Management Module was decomposed into concrete views for student and professor CRUD, the Login Module was extended with password recovery views, and the internationalization infrastructure (QA-6) was integrated as a cross-cutting concern via `@ngx-translate` in the Core module.
-
+The SPA is organized into a shell, feature modules, core services (authentication, HTTP, tenant context, i18n), and shared components. In Iteration 3, the Core module was refined to explicitly define the authentication and authorization sub-components, and a Login feature module was added. In Iteration 4, the Entity Management Module was decomposed into concrete views for student and professor CRUD, the Login Module was extended with password recovery views, and the internationalization infrastructure (QA-6) was integrated as a cross-cutting concern via `@ngx-translate` in the Core module. In Iteration 5, the Enrollment Module placeholder was decomposed into three role-scoped sub-modules: Coordinator Enrollment, Student Enrollment, and Advisor Enrollment.
 ```mermaid
 flowchart TB
     subgraph SPA["SAPCyTI SPA"]
@@ -617,7 +734,23 @@ flowchart TB
             end
 
             DASH["Dashboard Module"]
-            ENROLL["Enrollment Module"]
+
+            subgraph EnrollMod["Enrollment Module"]
+                subgraph CoordEnroll["Coordinator Enrollment"]
+                    TERMLIST["Term List Component"]
+                    CSVUPLOAD["CSV Upload Component\nHU-06"]
+                    FORMGEN["Enrollment Form Generation\nComponent - HU-09"]
+                end
+
+                subgraph StudentEnroll["Student Enrollment"]
+                    COURSESEL["Course Selection Component\nHU-07"]
+                end
+
+                subgraph AdvisorEnroll["Advisor Enrollment"]
+                    ADVENRLIST["Advisor Enrollment List\nComponent"]
+                    ENRREVIEW["Enrollment Review Component\nHU-08"]
+                end
+            end
 
             subgraph EntityMod["Entity Management Module"]
                 STUDLIST["Student List Component"]
@@ -657,7 +790,14 @@ flowchart TB
     RESETPWD --> HTTP
     CHANGEPWD --> HTTP
     EntityMod --> HTTP
+    EnrollMod --> HTTP
     LANGSW --> I18N
+    CSVUPLOAD --> HTTP
+    COURSESEL --> HTTP
+    COURSESEL --> AUTHSTATE
+    ADVENRLIST --> HTTP
+    ENRREVIEW --> HTTP
+    FORMGEN --> HTTP
 ```
 
 | Component | Responsibilities |
@@ -667,7 +807,13 @@ flowchart TB
 | **Forgot Password View** (Login Module) | Form with email field + "Send Email" button + "Back to Login" link. On submit, calls `POST /api/auth/forgot-password`. Always displays generic success message regardless of whether the email exists (no information leakage). Implements HU-02 request phase. |
 | **Reset Password View** (Login Module) | Accessed via email link (`/auth/reset-password?token=...`). Form with "New Password" + "Confirm Password" fields with complexity validation. On submit, calls `POST /api/auth/reset-password` with token and new password. Implements HU-02 reset phase. |
 | **Dashboard Module** (Feature) | Role-specific landing page after login; summary views per user type. |
-| **Enrollment Module** (Feature) | Enrollment-related views (CSV upload, course selection, advisor approval, form generation). Iteration 5. |
+| **Enrollment Module** (Feature) | Enrollment-related views decomposed into three role-scoped sub-modules (Iteration 5). See Coordinator Enrollment, Student Enrollment, and Advisor Enrollment below. |
+| **Term List Component** (Coordinator Enrollment) | Paginated table of academic terms with status indicators (`PLANNING`, `OFFER_LOADED`, `IN_ENROLLMENT`, `IN_PROGRESS`, `COMPLETED`). Action buttons for CSV upload and enrollment opening. Requires COORDINATOR role. Implements HU-06 navigation. Added in Iteration 5. |
+| **CSV Upload Component** (Coordinator Enrollment) | File upload form for CSV schedules and lotteries. Displays a validation report after upload (errors per row, warnings, summary of imported groups and UEAs). Shows the academic offer in a reviewable table before the Coordinator opens enrollment. Requires COORDINATOR role. Implements HU-06. Added in Iteration 5. |
+| **Enrollment Form Generation Component** (Coordinator Enrollment) | Student selection view (searchable list of students with `APPROVED_BY_ADVISOR` or `FINALIZED` enrollment status). For each student, shows their approved course selections and provides "Finalize" (state transition) and "Download PDF" / "Export TXT/XLSX" buttons. Requires COORDINATOR or ASSISTANT role. Implements HU-09 and CON-3. Added in Iteration 5. |
+| **Course Selection Component** (Student Enrollment) | Available courses view with remaining quota, schedules, and assigned professors. Students select groups from the academic offer; client-side schedule conflict detection provides immediate UX feedback (server validates authoritatively). Submit button calls `SelectCoursesUseCase`. Requires STUDENT role. Implements HU-07. Added in Iteration 5. |
+| **Advisor Enrollment List Component** (Advisor Enrollment) | Paginated table of advised students whose enrollments are in `SELECTION_COMPLETED` state. Columns: student name, enrollment ID, number of selected courses, submission date. Click navigates to Enrollment Review Component. Requires PROFESSOR role. Added in Iteration 5. |
+| **Enrollment Review Component** (Advisor Enrollment) | Detailed view of a student's selected courses with schedule and credit details. Approve and Reject buttons (reject requires a reason text field). On approval, calls `ApproveEnrollmentUseCase`; on rejection, calls `RejectEnrollmentUseCase`. Requires PROFESSOR role. Implements HU-08. Added in Iteration 5. |
 | **Student List Component** (Entity Management) | Paginated table of students with search/filter. Columns: name, email, enrollment ID, program type, admission date, status. "Create Student" button navigates to Student Form. Requires COORDINATOR role. |
 | **Student Form Component** (Entity Management) | Create/edit student form with fields: first name, first last name, second last name, email, nationality, enrollment ID, program type, undergraduate degree, admission date, advisor selection. Auto-generates password on creation (displayed once). Bean Validation aligned with backend. Implements HU-15. |
 | **Professor List Component** (Entity Management) | Paginated table of professors with search/filter. Columns: name, email, employee number, status. "Create Professor" button navigates to Professor Form. Requires COORDINATOR role. |
@@ -1343,12 +1489,381 @@ sequenceDiagram
 
 **Description:** The Change Password Component (HU-28) supports two modes via the same endpoint `PUT /api/users/{id}/password`. The `@PreAuthorize` SpEL expression enforces: the requester must be either the user themselves (`#id == principal.id`) or a Coordinator (`hasRole('COORDINATOR')`). **Self-change:** The user provides their current password and new password. The `ChangePasswordUseCase` verifies the current password via `PasswordEncoderPort`, then hashes and persists the new password. If the current password is wrong, a 400 error is returned with an audit log. **Coordinator-change:** The Coordinator provides only the new password (no current password required — they may not know it). The use case hashes and updates the target user's password directly. In both modes, all refresh tokens for the target user are revoked (forcing re-login with the new password), and the event is audit-logged at HIGH severity with actor and target information for traceability.
 
+#### 9.10.- CSV upload and academic offer loading flow (HU-06)
+
+This diagram illustrates the full flow of the Coordinator uploading a CSV file to create the academic offer for a term, and subsequently opening the enrollment period. Added in Iteration 5.
+
+```mermaid
+sequenceDiagram
+    actor Coord as Coordinator
+    participant SPA as CSV Upload Component
+    participant Interceptor as Auth Interceptor
+    participant JwtFilter as JWT Authentication Filter
+    participant API as AcademicOfferController
+    participant UploadUC as Offering: UploadAcademicOfferUseCase
+    participant CsvACL as CSV Import ACL Adapter
+    participant TermRepo as TermRepositoryPort
+    participant OfferRepo as AcademicOfferRepositoryPort
+    participant ProfQuery as Academic Mgmt: ProfessorQueryPort
+    participant AuditSvc as Audit Service
+    participant DB as PostgreSQL
+
+    Coord->>SPA: Select term + upload CSV file
+    SPA->>Interceptor: POST /api/terms/{termId}/academic-offer/upload (multipart)
+    Interceptor->>Interceptor: Attach Bearer + Accept-Language
+    Interceptor->>JwtFilter: HTTP Request (with JWT)
+    JwtFilter->>JwtFilter: Extract + validate JWT
+    Note over JwtFilter: Sets SecurityContext (userId, role=COORDINATOR)
+    JwtFilter->>API: Authorized Request
+
+    Note over API: @PreAuthorize hasRole COORDINATOR
+
+    API->>UploadUC: execute(termId, csvFile)
+
+    UploadUC->>TermRepo: findById(termId)
+    TermRepo->>DB: SELECT terms
+    DB-->>TermRepo: Term (status=PLANNING)
+
+    alt Term is NOT in PLANNING state
+        UploadUC-->>API: 409 Conflict (invalid term state)
+        API-->>SPA: Error
+        SPA-->>Coord: "Term is not in PLANNING state"
+    else Term is in PLANNING state
+        UploadUC->>CsvACL: parse(csvFile)
+        Note over CsvACL: ACL: Reads CSV rows via Apache Commons CSV<br/>Maps columns to domain value objects<br/>Validates fields, formats, references<br/>Collects errors per row
+        CsvACL-->>UploadUC: CsvImportResult (parsedGroups, errors, warnings)
+
+        alt CSV has critical errors
+            UploadUC-->>API: 400 Bad Request (validation report)
+            API-->>SPA: Validation errors
+            SPA-->>Coord: Display error report per row
+        else CSV valid
+            loop For each UEA in CSV
+                UploadUC->>DB: Find or create UEA by code
+            end
+
+            loop For each UEAGroup in parsed data
+                UploadUC->>ProfQuery: findProfessorById(professorId)
+                ProfQuery->>DB: SELECT professors
+                DB-->>ProfQuery: Professor (validated)
+            end
+
+            UploadUC->>UploadUC: Create AcademicOffer AR + UEAGroups
+            Note over UploadUC: availableQuota = quota for each group
+            UploadUC->>UploadUC: term.loadOffer() → OFFER_LOADED
+            UploadUC->>OfferRepo: save(academicOffer)
+            OfferRepo->>DB: INSERT academic_offers, uea_groups, schedules
+            UploadUC->>TermRepo: save(term)
+            TermRepo->>DB: UPDATE terms (status=OFFER_LOADED)
+
+            UploadUC->>AuditSvc: log AcademicOfferUploaded
+            AuditSvc->>DB: INSERT audit_events
+
+            UploadUC-->>API: 201 Created (import summary)
+            API-->>SPA: Success + summary
+            SPA-->>Coord: Display imported offer for review
+        end
+    end
+```
+
+**Description:** The Coordinator selects a term in `PLANNING` state and uploads a CSV file containing schedules and lotteries. The `AcademicOfferController` delegates to `UploadAcademicOfferUseCase`, which: (1) validates the term state via the domain-embedded state machine, (2) delegates CSV parsing to the `CsvAcademicOfferAdapter` (ACL) — this anti-corruption layer translates raw CSV rows into domain value objects while collecting validation errors, (3) resolves UEA references (creating new catalog entries if needed), (4) validates professor references via cross-module `ProfessorQueryPort`, (5) creates the `AcademicOffer` aggregate root with all `UEAGroup` entities (`availableQuota` initialized to `quota`), (6) transitions the Term to `OFFER_LOADED`, and (7) persists everything in a single transaction. The Coordinator can then review the imported offer before opening enrollment to students.
+
+#### 9.11.- Student course selection flow (HU-07)
+
+This diagram illustrates the flow of a student selecting courses during the enrollment period. Added in Iteration 5.
+
+```mermaid
+sequenceDiagram
+    actor Student
+    participant SPA as Course Selection Component
+    participant Interceptor as Auth Interceptor
+    participant JwtFilter as JWT Authentication Filter
+    participant API as EnrollmentController
+    participant SelectUC as Enrollment: SelectCoursesUseCase
+    participant OfferQuery as Offering: AcademicOfferQueryPort
+    participant ConfigPort as ConfigurationAdapter
+    participant EnrollRepo as EnrollmentRepositoryPort
+    participant AuditSvc as Audit Service
+    participant DB as PostgreSQL
+
+    Student->>SPA: Open enrollment module
+    SPA->>Interceptor: GET /api/terms/{termId}/academic-offer
+    Note over Interceptor: Retrieves available courses with quota
+    Interceptor->>JwtFilter: HTTP Request
+    JwtFilter->>API: Authorized (STUDENT)
+    API-->>SPA: Academic Offer (groups, schedules, quota)
+    SPA-->>Student: Display available courses
+
+    Student->>SPA: Select course groups + submit
+    SPA->>SPA: Client-side schedule conflict check (UX only)
+
+    SPA->>Interceptor: POST /api/enrollments/select-courses
+    Interceptor->>Interceptor: Attach Bearer + Accept-Language
+    Interceptor->>JwtFilter: HTTP Request (with JWT)
+    JwtFilter->>JwtFilter: Extract + validate JWT
+    Note over JwtFilter: Sets SecurityContext (userId, role=STUDENT)
+    JwtFilter->>API: Authorized Request
+
+    Note over API: @PreAuthorize hasRole STUDENT
+
+    API->>SelectUC: execute(studentId, termId, selectedGroupIds)
+
+    SelectUC->>OfferQuery: getTermStatus(termId)
+    OfferQuery->>DB: SELECT terms
+    DB-->>OfferQuery: Term (status)
+
+    alt Term is NOT IN_ENROLLMENT
+        SelectUC-->>API: 409 Conflict (enrollment not open)
+        API-->>SPA: Error
+        SPA-->>Student: "Enrollment period is not open"
+    else Term is IN_ENROLLMENT
+        loop For each selectedGroupId
+            SelectUC->>OfferQuery: getUeaGroup(groupId)
+            OfferQuery->>DB: SELECT uea_groups
+            DB-->>OfferQuery: UEAGroup (availableQuota, schedule)
+            SelectUC->>SelectUC: Validate quota > 0
+            SelectUC->>SelectUC: Check schedule conflicts
+        end
+
+        SelectUC->>ConfigPort: getParameter("MAX_COURSES_PER_TERM", programId)
+        ConfigPort->>DB: SELECT configuration_parameters
+        DB-->>ConfigPort: value
+        SelectUC->>SelectUC: Validate selections <= max courses
+
+        alt Validation fails (quota, conflict, or rules)
+            SelectUC-->>API: 400 Bad Request (specific error)
+            API-->>SPA: Validation error
+            SPA-->>Student: Display error message
+        else All validations pass
+            SelectUC->>EnrollRepo: findByStudentAndTerm(studentId, termId)
+
+            alt No existing enrollment
+                SelectUC->>SelectUC: Create Enrollment AR (PENDING_SELECTION)
+            end
+
+            SelectUC->>SelectUC: enrollment.completeSelection(selections)
+            Note over SelectUC: State: PENDING_SELECTION → SELECTION_COMPLETED<br/>Creates UEASelection entities
+
+            SelectUC->>EnrollRepo: save(enrollment)
+            EnrollRepo->>DB: INSERT/UPDATE enrollments, uea_selections
+
+            SelectUC->>AuditSvc: log CoursesSelected
+            AuditSvc->>DB: INSERT audit_events
+
+            SelectUC-->>API: 200 OK (enrollment summary)
+            API-->>SPA: Success
+            SPA-->>Student: "Course selection submitted for advisor approval"
+        end
+    end
+```
+
+**Description:** The student accesses the Course Selection Component, which loads the academic offer (available groups with remaining quota and schedules). After selecting course groups, the SPA performs client-side schedule conflict detection for immediate UX feedback (server validates authoritatively). The `SelectCoursesUseCase` orchestrates: (1) validates the Term is `IN_ENROLLMENT` via cross-module `AcademicOfferQueryPort`, (2) validates each selected `UEAGroup` has available quota and checks for schedule conflicts, (3) reads program-specific rules (max courses per term, credit limits) from ConfigurationParameter, (4) creates or updates the `Enrollment` aggregate and transitions it to `SELECTION_COMPLETED`. Note: quota is **not** decremented at this point — it is only decremented upon advisor approval (HU-08, §9.12) to avoid phantom reservations.
+
+#### 9.12.- Advisor enrollment approval/rejection flow (HU-08)
+
+This diagram illustrates the flow of an advisor reviewing and approving or rejecting a student's enrollment. Added in Iteration 5.
+
+```mermaid
+sequenceDiagram
+    actor Advisor as Professor (Advisor)
+    participant SPA as Enrollment Review Component
+    participant Interceptor as Auth Interceptor
+    participant JwtFilter as JWT Authentication Filter
+    participant API as EnrollmentController
+    participant ApproveUC as Enrollment: ApproveEnrollmentUseCase
+    participant RejectUC as Enrollment: RejectEnrollmentUseCase
+    participant EnrollRepo as EnrollmentRepositoryPort
+    participant StudQuery as Academic Mgmt: StudentQueryPort
+    participant QuotaPort as Offering: UeaGroupQuotaPort
+    participant AuditSvc as Audit Service
+    participant DB as PostgreSQL
+
+    Advisor->>SPA: Open advisor enrollment view
+    SPA->>Interceptor: GET /api/enrollments/advisor-pending
+    Interceptor->>JwtFilter: HTTP Request
+    JwtFilter->>API: Authorized (PROFESSOR)
+    API-->>SPA: List of pending enrollments
+    SPA-->>Advisor: Display students with SELECTION_COMPLETED
+
+    Advisor->>SPA: Select student enrollment to review
+    SPA-->>Advisor: Display selected courses, schedules, credits
+
+    alt Advisor approves
+        Advisor->>SPA: Click "Approve"
+        SPA->>Interceptor: PUT /api/enrollments/{id}/approve
+        Interceptor->>JwtFilter: HTTP Request (with JWT)
+        JwtFilter->>API: Authorized (PROFESSOR)
+
+        API->>ApproveUC: execute(enrollmentId, advisorId)
+
+        ApproveUC->>EnrollRepo: findById(enrollmentId)
+        EnrollRepo->>DB: SELECT enrollments + uea_selections
+        DB-->>EnrollRepo: Enrollment (SELECTION_COMPLETED)
+
+        ApproveUC->>StudQuery: getStudentAdvisorId(enrollment.studentId)
+        StudQuery->>DB: SELECT students
+        DB-->>StudQuery: advisorId
+
+        alt Caller is NOT the student's advisor
+            ApproveUC-->>API: 403 Forbidden
+            API-->>SPA: Error
+            SPA-->>Advisor: "Not authorized for this student"
+        else Caller is the student's advisor
+            ApproveUC->>ApproveUC: enrollment.approveByAdvisor(advisorId)
+            Note over ApproveUC: State: SELECTION_COMPLETED → APPROVED_BY_ADVISOR<br/>All UEASelections marked approvedByAdvisor=true
+
+            loop For each approved UEASelection
+                ApproveUC->>QuotaPort: decrementQuota(uEAGroupId)
+                QuotaPort->>DB: UPDATE uea_groups SET available_quota = available_quota - 1
+            end
+
+            ApproveUC->>EnrollRepo: save(enrollment)
+            EnrollRepo->>DB: UPDATE enrollments, uea_selections
+
+            ApproveUC->>AuditSvc: log EnrollmentApprovedByAdvisor
+            AuditSvc->>DB: INSERT audit_events
+
+            ApproveUC-->>API: 200 OK
+            API-->>SPA: Success
+            SPA-->>Advisor: "Enrollment approved"
+        end
+
+    else Advisor rejects
+        Advisor->>SPA: Click "Reject" + enter reason
+        SPA->>Interceptor: PUT /api/enrollments/{id}/reject
+        Interceptor->>JwtFilter: HTTP Request
+        JwtFilter->>API: Authorized (PROFESSOR)
+
+        API->>RejectUC: execute(enrollmentId, advisorId, reason)
+
+        RejectUC->>EnrollRepo: findById(enrollmentId)
+        EnrollRepo->>DB: SELECT
+        DB-->>EnrollRepo: Enrollment (SELECTION_COMPLETED)
+
+        RejectUC->>StudQuery: getStudentAdvisorId(enrollment.studentId)
+        StudQuery->>DB: SELECT students
+        DB-->>StudQuery: advisorId
+
+        RejectUC->>RejectUC: enrollment.rejectByAdvisor(advisorId, reason)
+        Note over RejectUC: State: SELECTION_COMPLETED → PENDING_SELECTION<br/>Student can modify selections and resubmit
+
+        RejectUC->>EnrollRepo: save(enrollment)
+        EnrollRepo->>DB: UPDATE enrollments
+
+        RejectUC->>AuditSvc: log EnrollmentRejectedByAdvisor
+        AuditSvc->>DB: INSERT audit_events
+
+        RejectUC-->>API: 200 OK
+        API-->>SPA: Success
+        SPA-->>Advisor: "Enrollment rejected — student notified"
+    end
+```
+
+**Description:** The advisor accesses the Advisor Enrollment List Component, which shows all students assigned to them whose enrollments are in `SELECTION_COMPLETED` state. After reviewing a student's selected courses, the advisor can approve or reject. **Approval path:** `ApproveEnrollmentUseCase` (1) validates the caller is the student's assigned advisor via cross-module `StudentQueryPort`, (2) calls `approveByAdvisor()` on the Enrollment aggregate (state transition to `APPROVED_BY_ADVISOR`), and (3) decrements `availableQuota` on each approved `UEAGroup` via cross-module `UeaGroupQuotaPort` — this is the only point where quota is consumed, preventing phantom reservations during the selection phase. **Rejection path:** `RejectEnrollmentUseCase` validates the advisor relationship and calls `rejectByAdvisor(advisorId, reason)` which returns the enrollment to `PENDING_SELECTION`, allowing the student to modify their selections and resubmit.
+
+#### 9.13.- Enrollment finalization and form download flow (HU-09, CON-3)
+
+This diagram illustrates the Coordinator finalizing an enrollment and downloading the official enrollment form as PDF or TXT/XLSX export. Added in Iteration 5.
+
+```mermaid
+sequenceDiagram
+    actor Coord as Coordinator
+    participant SPA as Enrollment Form Generation Component
+    participant Interceptor as Auth Interceptor
+    participant JwtFilter as JWT Authentication Filter
+    participant API as EnrollmentController
+    participant FinalizeUC as Enrollment: FinalizeEnrollmentUseCase
+    participant DownloadUC as Enrollment: DownloadEnrollmentFormUseCase
+    participant EnrollRepo as EnrollmentRepositoryPort
+    participant OfferQuery as Offering: AcademicOfferQueryPort
+    participant StudQuery as Academic Mgmt: StudentQueryPort
+    participant PdfACL as PDF Generator ACL Adapter
+    participant ExportACL as School Systems Export ACL Adapter
+    participant AuditSvc as Audit Service
+    participant DB as PostgreSQL
+
+    Coord->>SPA: Browse approved enrollments
+    SPA-->>Coord: List of students with APPROVED_BY_ADVISOR status
+
+    %% Finalization
+    Coord->>SPA: Click "Finalize" for a student
+    SPA->>Interceptor: PUT /api/enrollments/{id}/finalize
+    Interceptor->>JwtFilter: HTTP Request (with JWT)
+    JwtFilter->>API: Authorized (COORDINATOR)
+
+    API->>FinalizeUC: execute(enrollmentId)
+    FinalizeUC->>EnrollRepo: findById(enrollmentId)
+    EnrollRepo->>DB: SELECT
+    DB-->>EnrollRepo: Enrollment (APPROVED_BY_ADVISOR)
+
+    FinalizeUC->>FinalizeUC: enrollment.finalize()
+    Note over FinalizeUC: State: APPROVED_BY_ADVISOR → FINALIZED<br/>Sets finalizationDate
+
+    FinalizeUC->>EnrollRepo: save(enrollment)
+    EnrollRepo->>DB: UPDATE enrollments
+
+    FinalizeUC->>AuditSvc: log EnrollmentFinalized
+    AuditSvc->>DB: INSERT audit_events
+
+    FinalizeUC-->>API: 200 OK
+    API-->>SPA: Success
+    SPA-->>Coord: Status updated to FINALIZED
+
+    %% PDF Download
+    Coord->>SPA: Click "Download PDF"
+    SPA->>Interceptor: GET /api/enrollments/{id}/form/download
+    Interceptor->>JwtFilter: HTTP Request
+    JwtFilter->>API: Authorized (COORDINATOR)
+
+    API->>DownloadUC: execute(enrollmentId, format=PDF)
+    DownloadUC->>EnrollRepo: findById(enrollmentId)
+    EnrollRepo->>DB: SELECT enrollments + uea_selections
+    DB-->>EnrollRepo: Enrollment (FINALIZED)
+
+    DownloadUC->>StudQuery: getStudentDetails(studentId)
+    StudQuery->>DB: SELECT students
+    DB-->>StudQuery: Student (name, enrollmentId, program)
+
+    DownloadUC->>OfferQuery: getUeaGroupDetails(selectedGroupIds)
+    OfferQuery->>DB: SELECT uea_groups, ueas, schedules
+    DB-->>OfferQuery: UEAGroup details
+
+    DownloadUC->>DownloadUC: Assemble EnrollmentFormData DTO
+    DownloadUC->>PdfACL: generate(enrollmentFormData)
+    Note over PdfACL: ACL: Thymeleaf template → HTML<br/>OpenHTMLToPDF → PDF byte[]<br/>i18n via MessageSource
+
+    PdfACL-->>DownloadUC: byte[] (PDF content)
+    DownloadUC-->>API: byte[] + Content-Type: application/pdf
+    API-->>SPA: PDF file stream
+    SPA-->>Coord: Browser downloads PDF
+
+    %% TXT/XLSX Export (alternative)
+    Note over Coord, SPA: Alternative: Coordinator clicks "Export TXT/XLSX"
+    Coord->>SPA: Click "Export TXT/XLSX"
+    SPA->>Interceptor: GET /api/enrollments/{id}/export?format=xlsx
+    Interceptor->>JwtFilter: HTTP Request
+    JwtFilter->>API: Authorized (COORDINATOR)
+
+    API->>DownloadUC: execute(enrollmentId, format=XLSX)
+    Note over DownloadUC: Same data collection as PDF path
+
+    DownloadUC->>ExportACL: export(enrollmentExportData, format=XLSX)
+    Note over ExportACL: ACL: Maps domain fields to<br/>School Systems column structure<br/>Apache POI → XLSX byte[]
+
+    ExportACL-->>DownloadUC: byte[] (XLSX content)
+    DownloadUC-->>API: byte[] + Content-Type: application/vnd.openxmlformats...
+    API-->>SPA: XLSX file stream
+    SPA-->>Coord: Browser downloads XLSX
+```
+
+**Description:** The Coordinator accesses the Enrollment Form Generation Component, which lists students with `APPROVED_BY_ADVISOR` or `FINALIZED` enrollment status. The flow has two independent operations: **Finalization** (`PUT /api/enrollments/{id}/finalize`) — the `FinalizeEnrollmentUseCase` transitions the enrollment to `FINALIZED` and sets `finalizationDate`. This is a one-time state transition. **Document Download** (`GET /api/enrollments/{id}/form/download` or `GET /api/enrollments/{id}/export`) — the `DownloadEnrollmentFormUseCase` is a stateless read operation that (1) collects enrollment data from three modules (Enrollment, Academic Management, Academic Offering) via cross-module query ports, (2) assembles an `EnrollmentFormData` DTO, and (3) delegates to the appropriate ACL adapter: `PdfGeneratorAdapter` for PDF (Thymeleaf + OpenHTMLToPDF) or `SchoolSystemsExportAdapter` for TXT/XLSX (Apache POI). The PDF is **generated on demand — not stored** — so it can be downloaded multiple times without side effects. The TXT/XLSX export satisfies CON-3 (integration with Sistemas Escolares).
+
 ### 10.- Interfaces
 
 #### Application interfaces
 
 - **Backend API:** REST API over HTTPS. Content in JSON for both request and response. Authentication is JWT-based (stateless, RSA-256 signed tokens) as defined in Iteration 3. All endpoints require a valid JWT in the `Authorization: Bearer` header, except authentication endpoints (`/api/auth/**`). The tenant context (active graduate program) is sent in every request via the `X-Graduate-Id` header.
-- **Main API Areas** (details in later iterations): authentication (Iteration 3); graduate programs and tenant selection; configuration and parameters; enrollment and academic offer; student and professor management; export (TXT/XLSX). Concrete contracts (OpenAPI or equivalent) will be documented as endpoints are defined per iteration.
+- **Main API Areas:** authentication (Iteration 3); entity management — students and professors (Iteration 4); enrollment and academic offer (Iteration 5); export — TXT/XLSX/PDF (Iteration 5); graduate programs and tenant selection; configuration and parameters. Concrete endpoint contracts are documented below by iteration.
 
 - **Login:** `POST /api/auth/login` — Request body: `{email: string, password: string, rememberMe: boolean}`. Response: `{accessToken: string, expiresIn: number}` (200 OK) + `Set-Cookie: refreshToken=<token>; HttpOnly; Secure; SameSite=Strict; Path=/api/auth; Max-Age=<ttl>`. Error: `{error: string, message: string, timestamp: string}` (401 Unauthorized).
 - **Token refresh:** `POST /api/auth/refresh` — No request body; reads refresh token from HttpOnly cookie. Response: `{accessToken: string, expiresIn: number}` + rotated refresh cookie. Error: 401 if refresh token is expired, revoked, or missing.
@@ -1371,6 +1886,22 @@ sequenceDiagram
 - **Get professor:** `GET /api/professors/{id}` — Authenticated, requires `COORDINATOR` role. Response: `ProfessorResponse` (200 OK) or 404.
 - **Update professor:** `PUT /api/professors/{id}` — Authenticated, requires `COORDINATOR` role. Request body: same as create (without email which is immutable). Response: `ProfessorResponse` (200 OK) or 404.
 - **Validation error format:** All 400 responses follow: `{error: "Validation Failed", message: string, timestamp: string, fieldErrors: [{field: string, message: string}]}`. Messages are localized based on `Accept-Language` header.
+
+#### Enrollment and academic offering interfaces (Iteration 5)
+
+- **Create term:** `POST /api/terms` — Authenticated, requires `COORDINATOR` role. Request body: `{code: string, graduateProgramId: number}`. Creates a new Term in `PLANNING` state. Response: `{id: number, code: string, status: "PLANNING", graduateProgramId: number}` (201 Created). Errors: 400 (validation), 409 (duplicate code).
+- **List terms:** `GET /api/terms?page=0&size=20` — Authenticated, requires `COORDINATOR` role. Response: paginated `TermResponse[]` with status indicators. Filtered by tenant (`X-Graduate-Id`).
+- **Upload academic offer (CSV):** `POST /api/terms/{termId}/academic-offer/upload` — Authenticated, requires `COORDINATOR` role. Request: `multipart/form-data` with CSV file. Term must be in `PLANNING` state. On success: creates AcademicOffer aggregate with all UEAGroups, transitions Term to `OFFER_LOADED`, returns `{academicOfferId: number, totalGroups: number, totalUeas: number, warnings: string[]}` (201 Created). On validation errors: returns `{errors: [{row: number, field: string, message: string}], warnings: string[]}` (400). On wrong term state: 409 Conflict.
+- **Get academic offer:** `GET /api/terms/{termId}/academic-offer` — Authenticated, requires `STUDENT` or `COORDINATOR` role. Response: `{id: number, termId: number, groups: [{id: number, groupCode: string, ueaCode: string, ueaName: string, credits: number, professorName: string, quota: number, availableQuota: number, schedules: [{dayOfWeek: string, startTime: string, endTime: string}]}]}` (200 OK). 404 if no offer for term.
+- **Open enrollment:** `PUT /api/terms/{termId}/enrollment/open` — Authenticated, requires `COORDINATOR` role. Term must be in `OFFER_LOADED` state. Validates AcademicOffer exists with ≥ 1 group. Transitions Term to `IN_ENROLLMENT`. Response: `{termId: number, status: "IN_ENROLLMENT"}` (200 OK). Errors: 409 (wrong state), 422 (no groups).
+- **Select courses (student):** `POST /api/enrollments/select-courses` — Authenticated, requires `STUDENT` role. Request body: `{termId: number, selectedGroupIds: number[]}`. Validates: term is `IN_ENROLLMENT`, groups exist with available quota, no schedule conflicts, program rules (max courses, credit limits). Creates or updates Enrollment, transitions to `SELECTION_COMPLETED`. Response: `{enrollmentId: number, status: "SELECTION_COMPLETED", selections: [{groupId: number, ueaName: string}]}` (200 OK). Errors: 400 (validation — quota, conflicts, rules), 409 (term not open).
+- **Get student enrollment:** `GET /api/enrollments/my-enrollment?termId={termId}` — Authenticated, requires `STUDENT` role. Returns the current user's enrollment for the specified term. Response: `{id: number, status: string, selections: UEASelectionResponse[], creationDate: string, finalizationDate?: string}` (200 OK). 404 if no enrollment exists.
+- **Get advisor pending enrollments:** `GET /api/enrollments/advisor-pending` — Authenticated, requires `PROFESSOR` role. Returns all enrollments in `SELECTION_COMPLETED` state for students assigned to the authenticated advisor. Response: `{content: [{enrollmentId: number, studentName: string, studentEnrollmentId: string, selectedCourseCount: number, submissionDate: string}], totalElements: number}` (200 OK).
+- **Approve enrollment:** `PUT /api/enrollments/{id}/approve` — Authenticated, requires `PROFESSOR` role. Validates caller is the student's assigned advisor. Enrollment must be in `SELECTION_COMPLETED`. Transitions to `APPROVED_BY_ADVISOR`, marks selections as approved, decrements `availableQuota` on each group. Response: `{enrollmentId: number, status: "APPROVED_BY_ADVISOR"}` (200 OK). Errors: 403 (not the student's advisor), 409 (wrong state).
+- **Reject enrollment:** `PUT /api/enrollments/{id}/reject` — Authenticated, requires `PROFESSOR` role. Request body: `{reason: string}`. Validates caller is the student's advisor. Returns enrollment to `PENDING_SELECTION`. Response: `{enrollmentId: number, status: "PENDING_SELECTION"}` (200 OK). Errors: 403, 409.
+- **Finalize enrollment:** `PUT /api/enrollments/{id}/finalize` — Authenticated, requires `COORDINATOR` or `ASSISTANT` role. Enrollment must be in `APPROVED_BY_ADVISOR`. Transitions to `FINALIZED`, sets `finalizationDate`. Response: `{enrollmentId: number, status: "FINALIZED", finalizationDate: string}` (200 OK). Errors: 409 (wrong state).
+- **Download enrollment form (PDF):** `GET /api/enrollments/{id}/form/download` — Authenticated, requires `COORDINATOR` or `ASSISTANT` role. Enrollment must be in `APPROVED_BY_ADVISOR` or `FINALIZED`. Generates PDF on demand (stateless, no storage). Response: `Content-Type: application/pdf`, `Content-Disposition: attachment; filename="enrollment-form-{id}.pdf"`, body: PDF byte stream. Errors: 409 (wrong state), 404.
+- **Export enrollment data (TXT/XLSX):** `GET /api/enrollments/{id}/export?format=xlsx|txt` — Authenticated, requires `COORDINATOR` or `ASSISTANT` role. Enrollment must be in `APPROVED_BY_ADVISOR` or `FINALIZED`. Generates export file on demand via ACL adapter. Response: `Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` (XLSX) or `text/plain` (TXT), body: file byte stream. Satisfies CON-3.
 
 #### Email infrastructure interfaces (Iteration 4)
 
@@ -1471,7 +2002,20 @@ Design decisions from **Iteration 4.1** (bounded context map and domain model re
 | ------ | -------- | --------- | ------------------------- |
 | **QA-3, QA-4, CON-6** | **DDD Sub-Domain Classification** — Categorize bounded contexts as Core (Enrollment, Academic Management, Academic Offering), Supporting (Program Configuration, Audit), or Generic (Identity & Access). | Guides investment priority: maximum effort on Core contexts that differentiate the system; identifies Identity & Access as potentially replaceable by an external IdP; reduces onboarding confusion for rotating students (CON-6) by clarifying where to focus. | No classification (treat all modules equally) — leads to uniform investment, wasting effort on Generic contexts and under-investing in Core. |
 | **QA-5, CON-6** | **DDD Context Mapping Patterns** — Formalize all bounded context relationships as Customer/Supplier (where the downstream can negotiate) or Conformist (where the downstream adapts without influence). | Establishes clear ownership, dependency direction, and change-propagation rules between modules; directly supports future service extraction (QA-5) by documenting who owns each interface; gives students a clear mental model of module dependencies (CON-6). | Anti-Corruption Layer (unnecessary — all modules are internal with shared domain language); Shared Kernel (creates tight coupling, contradicts port-based isolation); Open Host Service / Published Language (premature for internal monolith communication). |
-| **QA-5, CON-6** | **Logical Domain Events as Inter-Context Contracts** — Document cross-context information flows as 8 named events with payloads. Events are documentation-only contracts; implemented via existing JPA listeners (STANDARD) and AOP aspects (HIGH). No new runtime infrastructure. | Zero implementation overhead; formalizes implicit information flows already in the codebase; creates a specification for future service extraction (QA-5) — events become the async message contract if a module is extracted; easy catalog of "what happens when" for students (CON-6). | Spring ApplicationEvent infrastructure (adds runtime complexity, overkill for single-transaction monolith); Event Sourcing (fundamental architectural shift, excessive for CON-6); no documentation (leaves contracts implicit, harder to extract services). |
+| **QA-5, CON-6** | **Logical Domain Events as Inter-Context Contracts** — Document cross-context information flows as 14 named events with payloads (8 from Iterations 3–4, 6 added in Iteration 5). Events are documentation-only contracts; implemented via existing JPA listeners (STANDARD) and AOP aspects (HIGH). No new runtime infrastructure. | Zero implementation overhead; formalizes implicit information flows already in the codebase; creates a specification for future service extraction (QA-5) — events become the async message contract if a module is extracted; easy catalog of "what happens when" for students (CON-6). | Spring ApplicationEvent infrastructure (adds runtime complexity, overkill for single-transaction monolith); Event Sourcing (fundamental architectural shift, excessive for CON-6); no documentation (leaves contracts implicit, harder to extract services). |
+
+Design decisions from **Iteration 5** (enrollment workflow), associated with the addressed drivers.
+
+| Driver | Decision | Rationale | Discarded Alternatives |
+| ------ | -------- | --------- | ------------------------- |
+| **HU-06, HU-07, HU-08, HU-09** | **Domain-embedded state machine** for Term lifecycle (`PLANNING` → `OFFER_LOADED` → `IN_ENROLLMENT` → `IN_PROGRESS` → `COMPLETED`) and Enrollment lifecycle (`PENDING_SELECTION` → `SELECTION_COMPLETED` → `APPROVED_BY_ADVISOR` → `FINALIZED` with `rejectByAdvisor()` loop back). State transitions modeled as methods on the aggregate roots with guard conditions. | Pure DDD — state logic lives in the aggregate; no external dependencies; easy to test; easy for student developers to understand (CON-6); transitions enforce invariants at the domain level; 4–5 states don't justify a state machine library. | Spring State Machine (adds library dependency, configuration complexity, overkill for 4–5 states, steep learning curve for CON-6); Camunda/Flowable BPMN Engine (massive infrastructure overhead, overkill for linear workflows). |
+| **CON-3, HU-06** | **Anti-Corruption Layer (ACL)** as dedicated hexagonal adapters for external system boundaries. Three ACLs: (1) `CsvAcademicOfferAdapter` translates raw CSV into domain commands, (2) `PdfGeneratorAdapter` translates domain DTOs into official PDF form, (3) `SchoolSystemsExportAdapter` translates domain DTOs into TXT/XLSX for Sistemas Escolares. | Isolates domain from external format changes; single responsibility; explicit translation and validation layer; aligns with DDD strategic patterns; domain model never shaped by CSV or export structures. | Direct format coupling (domain entities annotated with import/export logic — violates hexagonal architecture); generic format adapter without domain validation (allows corrupt data to enter the domain). |
+| **HU-06** | **Apache Commons CSV** for CSV parsing in the CSV Import ACL. | Mature, well-documented, part of the Apache ecosystem; OSS (CON-1); simple API; handles edge cases (quoted fields, custom delimiters). | OpenCSV (viable but less consistent with Apache POI already used); Jackson CSV (more complex setup); manual `BufferedReader` + `split()` (fragile, doesn't handle edge cases). |
+| **HU-09** | **OpenHTMLToPDF + Thymeleaf** for on-demand PDF generation (no PDF storage). PDF is generated on every download request as a stateless operation. | Leverages existing Thymeleaf infrastructure from email templates (Iteration 4); familiar to student developers (CON-6); templates modifiable without code changes (QA-3); supports i18n (QA-6); OSS (CON-1). | Apache PDFBox (low-level API, not template-friendly); JasperReports (heavy, XML-based); iText (AGPL license, restrictive for CON-1); stored PDFs (unnecessary complexity, data could drift from template changes). |
+| **HU-06, HU-07, HU-08, HU-09** | **Application-layer orchestration** for the multi-step enrollment workflow. Each step is an independent use case. The `Enrollment` aggregate tracks the current state; use cases validate state preconditions before executing. The SPA drives workflow progression by calling the correct endpoint at each stage. | Consistent with cross-module communication policy (§4.1); simple to understand (CON-6); each use case independently testable; single-transaction consistency within the monolith; no additional infrastructure. | Saga pattern (overkill for single-database monolith); domain events with eventual consistency (unnecessary complexity); choreography (implicit flow, harder to trace for CON-6). |
+| **HU-07, QA-3, QA-4** | **Strategy pattern** for program-specific enrollment rules. Business rules (max courses per term, credit limits) loaded from `ConfigurationParameter` at runtime and injected into enrollment use cases via the existing `ConfigurationAdapter`. | Supports QA-3 (parameterization) and QA-4 (multi-program); rules change without code deployment; consistent with pattern established in Iteration 1. | Hard-coded rules per program (violates QA-3); Drools rule engine (massive dependency, overkill for CON-6). |
+| **HU-06** | **Bulk import with transactional validation** for CSV processing. The entire CSV file is parsed, validated, and persisted as a single `AcademicOffer` aggregate in one database transaction. Validation errors collected and returned as a batch report. | Atomic — either the entire offer loads or nothing does (no partial state); aligns with aggregate root pattern; simple consistency model. | Row-by-row processing with partial success (inconsistent state); async background processing with job status (infrastructure overhead, overkill for once-per-term manual upload). |
+| **HU-08** | **Quota decrement on advisor approval**, not on student selection. `availableQuota` is decremented only when the advisor approves the enrollment, not when the student submits their selection. | Prevents phantom reservations where students select but never get approved; the advisor’s approval is the business commitment that consumes capacity; rejected enrollments don't leave phantom quota decrements. | Decrement on selection (phantom reservations, requires complex reservation expiry logic); reservation with timeout (unnecessary infrastructure complexity). |
 
 ### 12.- Development workflow
 
