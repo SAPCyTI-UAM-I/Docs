@@ -9,7 +9,7 @@
 | Phase | Status | Progress | Last Updated |
 |-------|--------|----------|--------------|
 | 0 — Project setup | 🔵 In progress | 34/40 tasks (6 manual) | 2026-04-19 |
-| 1 — Backend init | 🔲 Not started | 0/10 tasks | — |
+| 1 — Backend init | ✅ Completed | 10/10 tasks | 2026-04-24 |
 | 2 — Domain model | 🔲 Not started | 0/10 tasks | — |
 | 3 — REST API | 🔲 Not started | 0/12 tasks | — |
 | 4 — SPA init | 🔲 Not started | 0/16 tasks | — |
@@ -21,9 +21,9 @@
 
 ## Current Phase
 
-**Phase:** 0 — Project setup and configuration 🔵 IN PROGRESS  
-**Next phase:** 1 — Backend project initialization  
-**Next step:** Complete manual tasks (❌) from Phase 0, then begin [`phase1.md`](phase1.md) — A1.1
+**Phase:** 1 — Backend project initialization ✅ COMPLETED  
+**Next phase:** 2 — Domain model and persistence  
+**Next step:** Begin [`phase2.md`](phase2.md) — A2.1 (GraduateProgram aggregate, ConfigurationParameter entity, JPA adapters, Flyway migrations)
 
 ### Pending Manual Tasks (Phase 0)
 
@@ -49,6 +49,9 @@
 | D-004 | 2026-04-19 | OWASP Dependency-Check as `continue-on-error: true` | Prevents blocking PRs for transitive vulnerabilities not under project control | Strict fail (blocks all PRs with any CVE) |
 | D-005 | 2026-04-19 | `docker-compose.dev.yml` in `sapcyti-api/` only | Single DB instance shared by backend; SPA does not need its own DB | DB in root directory, separate repo |
 | D-006 | 2026-04-19 | Quality tool plugins (JaCoCo, ESLint, istanbul) as CI steps | Maven/Angular plugins configured in Phase 1/4 when pom.xml/angular.json exist | Configure plugins before project exists |
+| D-007 | 2026-04-24 | Project created manually (no Spring Initializr) | `start.spring.io` unreachable from dev environment; `pom.xml` written manually | Spring Initializr download |
+| D-008 | 2026-04-24 | `TenantFilter` and `TenantContext` placed in `shared/tenant` | Cross-cutting concern not owned by any bounded context | Inside `configuration` module |
+| D-009 | 2026-04-24 | `checkstyle.xml`: `LineLength` moved to `Checker` level | Checkstyle 10.x (maven-checkstyle-plugin 3.6.0) requires it outside `TreeWalker` | No change (broke build) |
 
 ---
 
@@ -78,6 +81,30 @@
 - Phase dependencies defined: P0 → P1 → P2 → P3 → P5; P0 → P4 → P5
 - Technology stack confirmed: Spring Boot 3.x (Java 21) + Angular 17+ + PostgreSQL
 - Deployment strategy: local Docker first, on-premise server after Iteration 2
+
+### Session — 2026-04-24 (Phase 1 Implementation)
+
+- **Completed A1.1** (4/4 tasks): Spring Boot Project Creation
+  - `pom.xml` created manually (Spring Initializr unreachable — D-007): Spring Boot 3.4.5, Java 21, Maven
+  - Dependencies: `spring-boot-starter-web`, `data-jpa`, `validation`, `actuator`, `flyway-core`, `flyway-database-postgresql`, `postgresql`, `mapstruct`, `logstash-logback-encoder`
+  - Plugins: `spring-boot-maven-plugin`, `maven-compiler-plugin` (MapStruct processor), `jacoco-maven-plugin` (≥80% coverage), `maven-checkstyle-plugin`
+  - `application.yml`: datasource, JPA, Flyway, Actuator (`health`, `info`, `prometheus`) — all from env vars (Factor III)
+  - `application-dev.yml`, `application-preprod.yml`, `application-prod.yml` created
+  - `logback-spring.xml`: plain-text in `dev`, JSON (`logstash-logback-encoder`) in `preprod`/`prod`; MDC fields: `graduate_program_id`, `user_id`, `request_id`
+  - Fixed `checkstyle.xml`: moved `LineLength` from `TreeWalker` to `Checker` level (D-009)
+  - `mvn clean compile` → BUILD SUCCESS
+- **Completed A1.2** (3/3 tasks): Hexagonal Package Structure
+  - `configuration` module: 6 sub-packages with `package-info.java` documenting hexagonal layers
+  - Placeholder modules `identity`, `academic`, `offering`, `enrollment`: each with `package-info.java` documenting bounded context, sub-domain classification, aggregates, context relationships, and iteration scope
+  - `src/README.md`: package tree, layer rules table, design decisions reference
+- **Completed A1.3** (3/3 tasks): Multi-Tenant Configuration
+  - `TenantContext`: `ThreadLocal`-based store for `graduateProgramId`; `get/set/clear` API
+  - `TenantFilter`: `OncePerRequestFilter`; reads `X-Graduate-Id`, writes to `TenantContext` + MDC; generates/echoes `X-Request-Id` correlation header; clears in `finally` block
+  - `WebConfig`: `WebMvcConfigurer` CORS from `CORS_ALLOWED_ORIGINS` env var (default `http://localhost:4200`)
+  - `TenantFilterTest`: 7/7 unit tests pass (context propagation, MDC propagation, context cleanup, exception safety)
+- Decisions D-007 through D-009 recorded
+- **All deliverables met:** E1.1 (`mvn clean compile` ✅), E1.2 (package structure ✅), E1.3 (7/7 tests ✅), E1.4 (profiles ✅)
+- Next: Phase 2 — Domain model and persistence (GraduateProgram, ConfigurationParameter, JPA adapters, Flyway migrations)
 
 ### Session — 2026-04-19 (Phase 0 Implementation)
 
