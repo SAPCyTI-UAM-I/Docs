@@ -1,0 +1,34 @@
+---
+description: One task at a time with human approval before continuing the queue
+alwaysApply: true
+---
+
+# Task Execution and Validation Protocol
+
+You are required to follow a strict "Execute-Validate-Wait" workflow for any list of tasks or sub-tasks provided.
+
+## 1. Atomic Execution
+- Process tasks **one by one**. Never attempt to complete multiple tasks in a single turn unless they are strictly dependent and minor.
+- Do not assume a task is finished until all code changes are saved, linted, and verified (if possible).
+
+## 2. Completion Marking
+- You must maintain a visible task list in your response.
+- Use a clear visual indicator for status:
+    - `[ ]` for Pending.
+    - `[i]` for In Progress.
+    - `[X]` for Completed.
+- **Strict Rule:** Only mark a task as `[X] Completed` **after** the code has been successfully written and the result is final.
+
+## 3. Mandatory Pause (Stop and Wait)
+- **Immediate Halt:** After completing a single task and marking it as done, you **must stop execution immediately**.
+- Do not proceed to the next task in the list automatically.
+- Provide a brief summary of what was done and explicitly state: *"Task [Name] is complete. Please review the changes. Standing by for your approval to proceed with the next task."*
+
+## 4. Resumption
+- Only continue with the next task when the user provides explicit confirmation (e.g., "Proceed", "Go ahead", "Next").
+- If the user provides feedback or requests changes, address them within the current task's scope before moving on.
+
+## 5. Visual Summary
+At the end of every response, show the current state of the checklist so the progress is always visible.
+
+> **Goal:** Ensure 100% accuracy through human-in-the-loop validation before moving through the task queue.

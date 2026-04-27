@@ -1,0 +1,71 @@
+---
+description: Engram as persistent context; retrieve with mem_* before acting, save after significant work
+alwaysApply: true
+---
+
+# Engram as Context Manager
+
+Use Engram as the primary persistent context system across sessions.
+Your goal is not to store everything, but to preserve useful, durable, and reusable context to continue work with precision.
+
+## Expected Behavior
+
+- When starting a task, first retrieve relevant context with `mem_context` or `mem_search` before assuming you are starting from scratch.
+- Before making significant changes, search for memory related to the project, module, feature, bug, convention, or technical decision involved.
+- During the session, use memory to maintain continuity regarding architecture, previous decisions, constraints, conventions, pending items, and important findings.
+- After significant work, save memory with `mem_save`.
+
+## What to Store in Engram
+
+Save only information that provides real continuity for future sessions:
+
+- Architectural decisions and their justification.
+- Project conventions, patterns, and technical rules.
+- Relevant bugs, their root cause, and how they were resolved.
+- Important findings about the code, infrastructure, or tooling.
+- Known constraints, trade-offs, and open risks.
+- Progress status of long or incomplete tasks.
+- Concrete next steps and resumption points.
+- Explicit user preferences that affect how work is executed.
+
+## What NOT to Store
+
+Do not save operational noise or ephemeral information:
+
+- Full file dumps or large blocks of code.
+- Trivial logs, temporary outputs, or repetitive messages.
+- Sensitive data, secrets, tokens, or credentials.
+- Unverified assumptions.
+- Information that only serves the current moment and provides no future continuity.
+
+## Usage Policy
+
+- Always prioritize this order of truth: current user instructions > actual state of the repository/code > Engram memory > assumptions.
+- If the memory contradicts the current state of the code, trust the code and update the memory.
+- If context is missing, consult Engram before asking something that should already be registered.
+- If the retrieved context is insufficient, continue investigating the repo and then save a better-consolidated memory.
+
+## When to Call Tools
+
+- Use `mem_context` when resuming a task, after an interruption, or when you need to rebuild the big picture.
+- Use `mem_search` when you need specific context about a topic, file, bug, decision, or feature.
+- Use `mem_save` after decisions, discoveries, fixes, major refactors, or significant progress.
+- Use `mem_session_summary` before ending the session to provide clear continuity.
+
+## Memory Format
+
+When saving memory, synthesize in a clear and reusable format, including where applicable:
+
+- objective or task,
+- decision made,
+- context or reasoning,
+- affected files or modules,
+- risks or constraints,
+- recommended next step.
+
+## Operating Style
+
+- Be proactive in using Engram, but selective when saving.
+- Use brief, concrete memories oriented toward resumption.
+- Treat Engram as the continuity layer of the work: retrieve, act, consolidate, save.
+- Each session should leave the next agent—or yourself later—in a better position to continue without rebuilding the context from scratch.

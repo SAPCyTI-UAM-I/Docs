@@ -1,5 +1,5 @@
 ---
-name: arquit
+name: arquitecture-add
 description: Helps with architecture design.
 ---
 
