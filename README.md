@@ -48,6 +48,26 @@
 | [`SDD/SPEC_INDEX.md`](SDD/SPEC_INDEX.md) | Índice maestro de specs |
 | [`SDD/templates/`](SDD/templates/) | Plantillas: SPEC, PHASE, PROGRESS, IMPLEMENTATION-PLAN |
 
+## Herramientas y Contexto entre Agentes
+
+El proyecto utiliza agentes IA (Cursor) para asistir en la redacción de specs, implementación y revisión de código. Para mantener continuidad entre sesiones se emplean las siguientes herramientas:
+
+| Herramienta | Propósito |
+|-------------|-----------|
+| **Engram** (MCP server) | Memoria persistente compartida entre agentes. Almacena decisiones arquitectónicas, convenciones, bugs resueltos, progreso y próximos pasos. Organizada por proyecto: `plan-sdd-arc` (planificación/arquitectura) y `sapcyti` (implementación). |
+| **Rules** (`.cursor/rules/`) | Reglas cargadas automáticamente en cada sesión: convenciones del proyecto (`sapcyti`), protocolo de memoria (`engram`), y ejecución atómica de tareas (`task_execution`). |
+| **Skills** (`.cursor/skills/`) | Flujos paso a paso para tareas específicas: `implement-spec`, `write-spec`, `review-code`. |
+
+### ¿Cómo funciona Engram?
+
+Engram es un servidor MCP (Model Context Protocol) que provee memoria persistente a los agentes. Al inicio de cada sesión, el agente recupera contexto previo (`mem_context` / `mem_search`). Tras trabajo significativo, guarda la información (`mem_save`). Al cerrar sesión, genera un resumen (`mem_session_summary`). Esto permite que sesiones futuras arranquen con conocimiento de lo ya decidido.
+
+### Resumen de sesiones
+
+| Documento | Contenido |
+|-----------|-----------|
+| [`resumen-propuesta.md`](resumen-propuesta.md) | Síntesis de decisiones, artefactos creados y cambios al marco documental |
+
 ---
 
 ## Orden de lectura por rol

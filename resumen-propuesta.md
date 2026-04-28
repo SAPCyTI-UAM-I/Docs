@@ -156,7 +156,7 @@ Otros documentos se consultan solo cuando la tarea lo requiere, nunca preventiva
 
 ### Skills creados
 
-3 skills disponibles en `.cursor/skills/` y `.windsurf/skills/`:
+3 skills disponibles en `.cursor/skills/`:
 
 - **implement-spec** — Qué cargar y qué pasos seguir para implementar una spec
 - **write-spec** — Qué cargar y qué pasos seguir para redactar una spec nueva
@@ -181,6 +181,45 @@ Otros documentos se consultan solo cuando la tarea lo requiere, nunca preventiva
 Esto **relaja** el principio de "referencia sobre duplicación" solo dentro de la spec, porque el costo de un LLM cargando un archivo completo por pocas líneas es mayor que duplicar esas líneas.
 
 **Referencia:** [`SDD/templates/SPEC-TEMPLATE.md`](SDD/templates/SPEC-TEMPLATE.md)
+
+---
+
+## 6. Artefactos creados en las sesiones de trabajo
+
+A lo largo de las sesiones de planificación y diseño se generaron los siguientes artefactos:
+
+### Documentos de referencia
+
+| Artefacto | Ubicación | Propósito |
+|-----------|-----------|-----------|
+| SDD-theory | [`SDD-theory/SDD-theory.md`](SDD-theory/SDD-theory.md) | Teoría y reglas de SDD (10 secciones) |
+| Banco de memoria | [`README.md`](README.md) | Índice general de toda la documentación |
+| Resumen de propuesta | [`resumen-propuesta.md`](resumen-propuesta.md) | Este documento — síntesis de decisiones y cambios |
+| Estructura propuesta | [`estructura-propuesta.md`](estructura-propuesta.md) | Reorganización de carpetas (pendiente de ejecutar) |
+
+### Plantillas SDD
+
+| Artefacto | Ubicación |
+|-----------|-----------|
+| SPEC-TEMPLATE | [`SDD/templates/SPEC-TEMPLATE.md`](SDD/templates/SPEC-TEMPLATE.md) |
+| PHASE-TEMPLATE | [`SDD/templates/PHASE-TEMPLATE.md`](SDD/templates/PHASE-TEMPLATE.md) |
+| PROGRESS-TEMPLATE | [`SDD/templates/PROGRESS-TEMPLATE.md`](SDD/templates/PROGRESS-TEMPLATE.md) |
+| IMPLEMENTATION-PLAN-TEMPLATE | [`SDD/templates/IMPLEMENTATION-PLAN-TEMPLATE.md`](SDD/templates/IMPLEMENTATION-PLAN-TEMPLATE.md) |
+
+### Configuración de agentes IA
+
+Reglas y skills cargados automáticamente por el IDE (ver §4 para detalle de skills y capas de contexto).
+
+| Artefacto | Ubicación | Propósito |
+|-----------|-----------|----------|
+| Rules: sapcyti | `.cursor/rules/sapcyti.mdc` | Convenciones del proyecto |
+| Rules: engram | `.cursor/rules/engram.mdc` | Protocolo de memoria persistente entre agentes |
+| Rules: task execution | `.cursor/rules/task_execution.mdc` | Protocolo de ejecución atómica de tareas |
+| Skills | `.cursor/skills/` | 3 flujos: implement-spec, write-spec, review-code (detalle en §4) |
+
+### Memoria persistente (Engram)
+
+Se configuró **Engram** como sistema de memoria persistente entre sesiones y agentes. Esto permite que múltiples agentes IA compartan contexto sobre decisiones, convenciones, bugs y progreso sin depender de la ventana de contexto de un solo chat. La memoria se organiza por proyecto (`plan-sdd-arc` para planificación, `sapcyti` para implementación).
 
 ---
 

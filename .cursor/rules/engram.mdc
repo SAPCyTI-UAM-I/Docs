@@ -1,12 +1,21 @@
 ---
+trigger: always_on
 description: Engram as persistent context; retrieve with mem_* before acting, save after significant work
-alwaysApply: true
+globs:
 ---
 
 # Engram as Context Manager
 
 Use Engram as the primary persistent context system across sessions.
 Your goal is not to store everything, but to preserve useful, durable, and reusable context to continue work with precision.
+
+## Project Selection (MANDATORY)
+
+**At the start of EVERY conversation:**
+1. Ask the user: "¿En qué proyecto estamos trabajando? Opciones: `sapcyti` (implementación) o `plan-sdd-arc` (planificación/arquitectura)"
+2. Wait for explicit confirmation before proceeding with any memory operations.
+3. Use ONLY the confirmed project name in all `project` parameters for mem_* calls.
+4. If the user is unsure, default to `sapcyti` for código/SAPCyTI o `plan-sdd-arc` para especificaciones/diseño.
 
 ## Expected Behavior
 
@@ -49,6 +58,7 @@ Do not save operational noise or ephemeral information:
 
 - Use `mem_context` when resuming a task, after an interruption, or when you need to rebuild the big picture.
 - Use `mem_search` when you need specific context about a topic, file, bug, decision, or feature.
+- **BEFORE `mem_save`:** Ask user: "¿Guardar esta memoria en el proyecto `[CONFIRMED_PROJECT]`?"
 - Use `mem_save` after decisions, discoveries, fixes, major refactors, or significant progress.
 - Use `mem_session_summary` before ending the session to provide clear continuity.
 
