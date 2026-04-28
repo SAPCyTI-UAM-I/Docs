@@ -1,0 +1,54 @@
+---
+description: Core conventions for SAPCyTI development
+globs:
+alwaysApply: true
+---
+
+# SAPCyTI — Agent Rules
+
+You are working on SAPCyTI, a system for postgraduate administration at UAM Iztapalapa.
+
+## Architecture
+- Modular monolith, hexagonal architecture (ports & adapters), DDD
+- Backend: Java 21, Spring Boot 3.x, PostgreSQL 16, Flyway, MapStruct
+- Frontend: Angular 17+, TypeScript strict, separate repo (sapcyti-spa)
+- Multi-tenant via `X-Graduate-Id` header
+
+## Backend conventions
+- Base package: `mx.uam.sapcyti`
+- Modules: `configuration`, `identity`, `academic`, `offering`, `enrollment`
+- Layers per module: `domain/{model,port/in,port/out,service}`, `application/service`, `infrastructure/{adapter/in,adapter/out,mapper,acl,security}`
+- Domain model uses JPA annotations directly — NO separate Entity classes
+- MapStruct for DTO↔Domain only (compile-time)
+- DTOs: `{Name}Request`, `{Name}Response` in `adapter/in/dto/`
+- Ports: `{Name}RepositoryPort` (out), `{Name}InputPort` (in)
+- Migrations: `V{N}__{description}.sql`
+- Logging: SLF4J only, NO `System.out.println`
+- Cross-module: ID references only, via output ports
+
+## Frontend conventions
+- Shell + Core + Shared + Feature modules (lazy-loaded)
+- i18n: `@ngx-translate`, keys in `assets/i18n/{lang}.json`
+- SCSS, BEM, responsive-first
+
+## DevOps
+- GitFlow, Conventional Commits
+- CI: lint → build → test → security → coverage (≥80%)
+- Docker multi-stage, env vars only
+
+## SDD workflow
+- Every task requires an approved spec (🔵) before coding
+- Specs live in `sdd/specs/iteration-{N}/`
+- PR message format: `feat({module}): SPEC-{NNN} {description}`
+
+## What to load per task type
+- **Implementing a spec:** Read ONLY the spec file. It is self-contained.
+- **Writing a spec:** Read `design/Architecture.md` (relevant sections) + the HU + `technologies/{area}.md`
+- **Reviewing code:** Read the spec + `technologies/testing.md`
+
+## Do NOT
+- Import across bounded contexts — use output ports
+- Add framework imports to domain layer beyond `jakarta.persistence.*`
+- Hardcode strings in Angular — use i18n keys
+- Use `@SpringBootTest` for unit tests
+- Create files outside the scope defined in the spec
