@@ -1,103 +1,71 @@
-# Phase 5 — Integration, Docker and Verification
+# Phase 5 — Integration, Docker & End-to-End Verification
 
-> **Spec:** `Architecture.md` — Iteration 1, §5 (Container diagram), §7 (Deployment view) | **Status:** 🔲 Not started
-> **Drivers:** CON-2 (on-premise), QA-5 (cloud portability), CON-6 (repeatable deployment), CON-3 (export adapter placeholder), CON-4 (WordPress adapter placeholder)
+> **ADD Iteration:** 1–2
+> **Drivers:** CON-2 (on-premise), QA-5 (cloud portability), CON-3 (export)
+> **Status:** 🔲 Not started
 
-**Goal:** Dockerize both projects, configure Docker Compose for the full stack (Nginx + Backend API + PostgreSQL), create placeholder ports for future adapters, and verify the end-to-end flow.
+**Goal:** Dockerize both projects, create the full Docker Compose stack (Nginx + API + DB), and perform end-to-end smoke testing of the Program Configuration API through the SPA.
 
-> **Environment:** Full stack runs locally via `docker compose -p sapcyti-dev up -d`. SPA accessible at `localhost:80`, API at `localhost:8080`, PostgreSQL at `localhost:5432`.
+> **Environment:** Full Docker Compose stack on `localhost`.
+> **Ref:** [`technologies/devops.md`](../SDD/technologies/devops.md) — Docker and deployment strategy
+
+### User Stories (HU)
+
+> **No user stories apply directly to this phase.** Phase 5 is DevOps infrastructure (Dockerization, Compose, Nginx). It packages the application for deployment but does not add user-facing functionality.
 
 ---
 
-## A5.1 — Backend API Dockerization 🔲
+## A5.1 — Backend Dockerization 🔲
 
-- [ ] **T5.1.1** Create multi-stage `Dockerfile` for Backend — Stage 1: Maven build with dependency caching; Stage 2: JRE 21 runtime; expose port 8080
-  - Image builds reproducibly; final image contains only runtime dependencies
-- [ ] **T5.1.2** Configure Docker `HEALTHCHECK` — `curl -f http://localhost:8080/actuator/health || exit 1`; interval 30s, timeout 10s, retries 3
-  - Container restarts automatically on health failure
-- [ ] **T5.1.3** Configure runtime environment variables — `DB_URL`, `DB_USER`, `DB_PASS`, `SPRING_PROFILES_ACTIVE` resolved from `.env`
-  - Same image runs in any environment (Factor X)
-- [ ] **T5.1.4** Create `.dockerignore` — exclude `target/`, `.idea/`, `.git/`, `*.md`
-  - Docker context minimized; faster builds
+> Specs: SPEC-009 (TBD — Docker and Compose configuration)
 
-## A5.2 — SPA Dockerization 🔲
+- [ ] **T5.1.1** Create backend `Dockerfile` — multi-stage (Maven build → JRE 21 runtime), expose 8080, HEALTHCHECK via Actuator → SPEC-009
+- [ ] **T5.1.2** Create `docker-compose.yml` — full stack: Nginx (port 80) → API (port 8080) → PostgreSQL (port 5432) → SPEC-009
+- [ ] **T5.1.3** Create `.env.dev`, `.env.preprod` templates for each environment → SPEC-009
 
-- [ ] **T5.2.1** Create multi-stage `Dockerfile` for SPA — Stage 1: `npm ci` + `ng build --configuration production`; Stage 2: Nginx serving static assets from `dist/`
-  - Production build optimized; Nginx serves static files efficiently
-- [ ] **T5.2.2** Create `nginx.conf` — reverse proxy `/api` → `http://api:8080`; serve SPA static assets; security headers (CSP, X-Frame-Options, X-Content-Type-Options)
-  - Single entry point for both SPA and API; security headers applied (QA-2 partial)
-- [ ] **T5.2.3** Configure SPA client-side routing — `try_files $uri $uri/ /index.html` for Angular routing compatibility
-  - Deep links and browser refresh work correctly
+## A5.2 — SPA Dockerization & Smoke Test 🔲
 
-## A5.3 — Docker Compose Configuration 🔲
+> Specs: SPEC-009
 
-- [ ] **T5.3.1** Create `docker-compose.yml` — services: `nginx` (SPA + reverse proxy, port 80), `api` (Backend, port 8080), `db` (PostgreSQL, port 5432); shared internal network
-  - Full stack defined in single file; topology matches §7 Deployment view
-- [ ] **T5.3.2** Create `.env.dev` — all environment variables for local development with safe defaults
-  - `docker compose --env-file .env.dev up` starts everything with correct configuration
-- [ ] **T5.3.3** Configure named volumes — `sapcyti-db-data` for PostgreSQL data persistence
-  - Database state survives `docker compose down` / `up` cycles
-- [ ] **T5.3.4** Configure resource limits — `mem_limit` and `cpus` per service (API: 1GB/1cpu, DB: 512MB/0.5cpu, Nginx: 256MB/0.25cpu)
-  - Services don't starve each other on shared host
-- [ ] **T5.3.5** Configure service dependencies — `api` depends on `db` (health check); `nginx` depends on `api`
-  - Services start in correct order; no connection errors on startup
-
-## A5.4 — Future Adapter Placeholders 🔲
-
-- [ ] **T5.4.1** Create `ExportPort` interface — output port placeholder in domain layer for TXT/XLSX generation (CON-3); javadoc documents future implementation with Apache POI
-  - Port ready for implementation in Iteration 5 (HU-09)
-- [ ] **T5.4.2** Create `WordPressPort` interface — output port placeholder for asynchronous REST integration with WordPress (CON-4); javadoc documents planned async HTTP client
-  - Port ready for future implementation
-- [ ] **T5.4.3** Document pending adapters in `PENDING_ADAPTERS.md` — list of ports without implementations, target iteration, driver reference
-  - Technical debt tracked and visible (CON-6)
-
-## A5.5 — End-to-End Verification 🔲
-
-- [ ] **T5.5.1** Verify Docker Compose startup — `docker compose -p sapcyti-dev up -d`; all three services reach `healthy` state
-  - Full stack operational with single command
-- [ ] **T5.5.2** Verify tenant flow — SPA: select program → query parameters → verify `X-Graduate-Id` header arrives at backend with correct value
-  - Multi-tenant pipeline working end-to-end (QA-4)
-- [ ] **T5.5.3** Verify Flyway migrations — connect to PostgreSQL; verify `graduate_programs` and `configuration_parameters` tables exist; seed data present
-  - Schema version-controlled and reproducible
-- [ ] **T5.5.4** Verify Actuator — `curl http://localhost:8080/actuator/health` returns `{"status": "UP"}` with database indicator
-  - Health check operational for monitoring and Docker HEALTHCHECK
-- [ ] **T5.5.5** Run test suites — `mvn test` (backend, ≥80% JaCoCo) + `ng test --code-coverage` (SPA, ≥80% istanbul)
-  - All quality gates pass in containerized environment
-- [ ] **T5.5.6** Document final stack versions — record exact versions of all dependencies: Spring Boot, Java, PostgreSQL, Angular, Node, Nginx, Docker Compose
-  - Reproducible environment baseline established
+- [ ] **T5.2.1** Create SPA `Dockerfile` — multi-stage (`npm ci` + `ng build` → Nginx static serve) → SPEC-009
+- [ ] **T5.2.2** Create Nginx config — reverse proxy `/api/` → backend, static assets for SPA, security headers → SPEC-009
+- [ ] **T5.2.3** End-to-end smoke test — `docker compose up`, verify: SPA loads, GraduateProgram CRUD via API, Flyway migrations run → SPEC-009
 
 ---
 
 ## Deliverables
 
-- [ ] **E5.1** Backend Dockerfile — multi-stage build, health check, env var configuration
-- [ ] **E5.2** SPA Dockerfile + nginx.conf — production build served by Nginx with reverse proxy and security headers
-- [ ] **E5.3** docker-compose.yml + .env.dev — full stack starts with `docker compose up`; topology matches Architecture.md §7
-- [ ] **E5.4** Adapter placeholders — `ExportPort`, `WordPressPort` interfaces documented with target iteration
-- [ ] **E5.5** Verification report — end-to-end flow, test results, stack versions documented
+- [ ] **E5.1** `docker compose up` starts full stack without errors — Specs: SPEC-009
+- [ ] **E5.2** SPA accessible on `localhost:80`, API on `localhost/api/` — Specs: SPEC-009
+- [ ] **E5.3** Health check passes: `curl localhost:8080/actuator/health` returns UP — Specs: SPEC-009
+- [ ] **E5.4** Program Configuration CRUD works end-to-end through Docker stack — Specs: SPEC-009
 
 ---
 
-## Verified Stack Versions
+## Transition Criteria
 
-| Component | Version |
-|-----------|---------|
-| Spring Boot | — |
-| Java | 21 |
-| PostgreSQL | — |
-| Angular | — |
-| Node.js | — |
-| Nginx | — |
-| Docker Compose | — |
-| Flyway | — |
-| MapStruct | — |
+- [ ] `docker compose up --build` succeeds from clean state
+- [ ] `docker compose down -v && docker compose up` starts clean (Flyway migrations idempotent)
+- [ ] SPA ↔ API communication works through Nginx reverse proxy
+- [ ] No port conflicts, no volume permission issues
+- [ ] All linked specs are ✅ Implemented
+- [ ] No regressions from Phases 1–4
 
-> Versions will be recorded during implementation.
+---
+
+## Risks
+
+| # | Risk | Impact | Probability | Mitigation |
+|---|------|--------|-------------|------------|
+| R-5.1 | Docker not installed on dev machine | Alto | Baja | `PREREQUISITES.md` lists Docker as required; `setup.ps1` checks |
+| R-5.2 | Nginx config routing issues | Medio | Media | Test with curl before SPA integration |
 
 ---
 
 ## Notes and Decisions
 
-| # | Date | Decision | Context |
-|---|------|----------|---------|
-| — | — | — | — |
+> Las decisiones se registran en [`progress.md`](progress.md) Decision Log.
+
+| # | Decision ID | Summary |
+|---|-------------|---------|
+| — | — | — |

@@ -1,73 +1,78 @@
-# Phase 3 — Application Layer and REST API
+# Phase 3 — Program Configuration: Application & API (BC-04)
 
-> **Spec:** `Architecture.md` — Iteration 1, §6.1 (component responsibilities), §10 (interfaces) | **Status:** 🔲 Not started
-> **Drivers:** QA-3 (parameterization), QA-4 (multi-tenant), CON-5 (flexible rules), CON-6 (predictable structure)
+> **ADD Iteration:** 1
+> **Drivers:** QA-3 (parameterization), QA-4 (multi-tenant), CON-5 (flexible rules)
+> **Status:** 🔲 Not started
 
-**Goal:** Implement input ports, application services (use cases), REST controllers (driving adapters), the Configuration Adapter for cross-module parameter access, and Spring Boot Actuator for health checks and metrics.
+**Goal:** Implement use cases, REST controllers, and MapStruct mappers for the Program Configuration bounded context, exposing a complete CRUD API for GraduateProgram and ConfigurationParameter.
 
-> **Environment:** Backend runs against PostgreSQL with Flyway-migrated schema from Phase 2. API testable via `curl` or Postman.
+> **Environment:** Backend against PostgreSQL from `docker-compose.dev.yml`.
+> **Domain Schema:** [`program-configuration.schema.json`](../SDD/domain/schemas/program-configuration.schema.json) — Commands: `CreateGraduateProgramCommand`, `SetConfigurationParameterCommand`
+> **Domain Features:** [`features/program-configuration/`](../SDD/domain/features/program-configuration/) — `graduate_program_management.feature`, `configuration_parameter_management.feature`
+
+### User Stories (HU)
+
+> **No user stories apply directly to this phase.** BC-04 (Program Configuration) is a *supporting sub-domain*. The CRUD API for programs and parameters supports QA-3/QA-4 and is consumed by downstream BCs that implement HU-06, HU-07, HU-15, HU-21.
 
 ---
 
-## A3.1 — Input Ports 🔲
+## A3.1 — GraduateProgram Use Cases & API 🔲
 
-- [ ] **T3.1.1** Create `GetGraduateProgramInputPort` — interface with `getById(Long id)`, `getAll()`
-  - Use case contract defined in domain layer
-- [ ] **T3.1.2** Create `GetConfigurationParameterInputPort` — interface with `getByProgramAndKey(Long programId, String key)`, `getAllByProgram(Long programId)`
-  - Parameter retrieval scoped by program (QA-4)
-- [ ] **T3.1.3** Create `ManageConfigurationParameterInputPort` — interface with `create(...)`, `update(...)`, `delete(...)`
-  - Mutation operations defined independently from REST layer
+> Specs: SPEC-006 (TBD — GraduateProgram application layer and REST API)
 
-## A3.2 — Application Services (Use Cases) 🔲
+- [ ] **T3.1.1** Create input ports: `CreateGraduateProgramInputPort`, `GetGraduateProgramInputPort`, `UpdateGraduateProgramInputPort` → SPEC-006
+- [ ] **T3.1.2** Create use case implementations: `CreateGraduateProgramUseCase`, `GetGraduateProgramUseCase`, `UpdateGraduateProgramUseCase` — with duplicate name validation → SPEC-006
+- [ ] **T3.1.3** Create DTOs: `CreateGraduateProgramRequest`, `GraduateProgramResponse` — with `@Valid` constraints → SPEC-006
+- [ ] **T3.1.4** Create `GraduateProgramMapper.java` (MapStruct) — Request/Response ↔ Domain → SPEC-006
+- [ ] **T3.1.5** Create `GraduateProgramController.java` — endpoints `POST /api/programs`, `GET /api/programs`, `GET /api/programs/{id}`, `PUT /api/programs/{id}` — `@PreAuthorize("hasRole('COORDINATOR')")` → SPEC-006
 
-- [ ] **T3.2.1** Create `GetGraduateProgramUseCase` — implements `GetGraduateProgramInputPort`; delegates to `GraduateProgramRepositoryPort`
-  - Orchestration layer between driving adapters and domain; no business logic — pure delegation
-- [ ] **T3.2.2** Create `GetConfigurationParameterUseCase` — implements `GetConfigurationParameterInputPort`; retrieves parameters filtered by `graduateProgramId`
-  - Query results always scoped to tenant context (QA-4)
-- [ ] **T3.2.3** Create `ManageConfigurationParameterUseCase` — implements `ManageConfigurationParameterInputPort`; validates uniqueness, creates/updates/deletes parameters
-  - Business rule validation before persistence (QA-3)
+## A3.2 — ConfigurationParameter Use Cases & API 🔲
 
-## A3.3 — REST Controllers (Driving Adapters) 🔲
+> Specs: SPEC-007 (TBD — ConfigurationParameter application layer and REST API)
 
-- [ ] **T3.3.1** Create `GraduateProgramController` — `GET /api/programs`, `GET /api/programs/{id}`; JSON responses
-  - Programs endpoint functional and documented
-- [ ] **T3.3.2** Create `ConfigurationParameterController` — `GET /api/programs/{programId}/parameters`, `GET /api/programs/{programId}/parameters/{key}`, `POST`, `PUT`, `DELETE`
-  - Full CRUD for configuration parameters scoped per program
-- [ ] **T3.3.3** Create request/response DTOs — `GraduateProgramResponse`, `ConfigurationParameterRequest`, `ConfigurationParameterResponse`
-  - API contract separated from domain model
-- [ ] **T3.3.4** Implement Bean Validation — `@Valid` on request DTOs; `@NotBlank`, `@Size` constraints; localized validation messages via `MessageSource`
-  - Invalid input rejected at controller boundary with structured error response
-- [ ] **T3.3.5** Implement `GlobalExceptionHandler` — `@ControllerAdvice` with `@ExceptionHandler`; standardized error format: `{error, message, timestamp, fieldErrors[]}`
-  - Consistent error responses across all API endpoints
-
-## A3.4 — Configuration Adapter 🔲
-
-- [ ] **T3.4.1** Create `ConfigurationAdapter` — service that reads parameters from repository filtered by program; implements an output port consumable by other modules
-  - Future modules (Enrollment, Academic Offering) can read program-specific rules without depending on the Configuration module directly
-- [ ] **T3.4.2** Expose adapter as output port interface — `ConfigurationQueryPort` with `getParameter(String key, Long programId): String`
-  - Cross-module access follows port-based communication policy (§4.1)
-
-## A3.5 — Actuator and Health Checks 🔲
-
-- [ ] **T3.5.1** Configure Actuator endpoints — `/actuator/health` (liveness + readiness), `/actuator/prometheus` (Micrometer metrics), `/actuator/info`
-  - Health check usable by Docker `HEALTHCHECK` and monitoring stack
-- [ ] **T3.5.2** Configure build info in `/actuator/info` — Git SHA and version via `spring-boot-maven-plugin`
-  - Deployment traceability from running instance
+- [ ] **T3.2.1** Create input ports: `SetConfigurationParameterInputPort`, `GetConfigurationParametersInputPort`, `DeleteConfigurationParameterInputPort` → SPEC-007
+- [ ] **T3.2.2** Create use case implementations — with UPPER_SNAKE_CASE key validation, program existence check → SPEC-007
+- [ ] **T3.2.3** Create DTOs: `SetConfigurationParameterRequest`, `ConfigurationParameterResponse` → SPEC-007
+- [ ] **T3.2.4** Create `ConfigurationParameterController.java` — nested under programs: `POST /api/programs/{id}/parameters`, `GET /api/programs/{id}/parameters`, `GET /api/programs/{id}/parameters/{key}`, `DELETE /api/programs/{id}/parameters/{key}` → SPEC-007
+- [ ] **T3.2.5** Create `GlobalExceptionHandler.java` — `@ControllerAdvice` for standard error format (`{ "error": "...", "message": "..." }`) → SPEC-007
 
 ---
 
 ## Deliverables
 
-- [ ] **E3.1** Input ports — interfaces defining use case contracts in domain layer
-- [ ] **E3.2** Application services — use case implementations orchestrating domain and ports
-- [ ] **E3.3** REST controllers — functional endpoints with validation and error handling; testable via curl/Postman
-- [ ] **E3.4** Configuration Adapter — cross-module port for program-specific parameter access
-- [ ] **E3.5** Actuator configured — `/actuator/health` returns `UP`; `/actuator/prometheus` exports metrics
+- [ ] **E3.1** GraduateProgram CRUD returns 200/201/404/409 via REST API — Specs: SPEC-006
+- [ ] **E3.2** ConfigurationParameter CRUD works scoped by program — Specs: SPEC-007
+- [ ] **E3.3** Duplicate program name returns 409 — Specs: SPEC-006
+- [ ] **E3.4** Invalid key format returns 400 with descriptive message — Specs: SPEC-007
+- [ ] **E3.5** GlobalExceptionHandler produces consistent error format — Specs: SPEC-007
+
+---
+
+## Transition Criteria
+
+- [ ] `mvn clean verify` passes with ≥80% coverage
+- [ ] Controller tests (`@WebMvcTest`) cover happy path and error flows from Gherkin features
+- [ ] Use case tests (Mockito) verify duplicate name, empty fields, UPPER_SNAKE_CASE validation
+- [ ] All Gherkin scenarios in `graduate_program_management.feature` mapped to test cases
+- [ ] All Gherkin scenarios in `configuration_parameter_management.feature` mapped to test cases
+- [ ] All linked specs are ✅ Implemented
+- [ ] No regressions from Phase 2
+
+---
+
+## Risks
+
+| # | Risk | Impact | Probability | Mitigation |
+|---|------|--------|-------------|------------|
+| R-3.1 | Security annotations without Spring Security configured | Medio | Alta | Phase 3 is pre-security; use `@PreAuthorize` annotations but Security config deferred to Phase 6 |
+| R-3.2 | GlobalExceptionHandler error format changes later | Bajo | Media | Define error contract in spec; all future phases conform to it |
 
 ---
 
 ## Notes and Decisions
 
-| # | Date | Decision | Context |
-|---|------|----------|---------|
-| — | — | — | — |
+> Las decisiones se registran en [`progress.md`](progress.md) Decision Log.
+
+| # | Decision ID | Summary |
+|---|-------------|---------|
+| — | — | — |

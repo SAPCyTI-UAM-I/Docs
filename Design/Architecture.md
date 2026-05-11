@@ -49,12 +49,16 @@ The architectural drivers were taken from [ArchitecturalDrivers.md](../Architect
 | ID | User Story |
 | --- | ------------------- |
 | **HU-01** | As a system user, I want to log in using a username and password to access the main screen with the options corresponding to my user type. |
+| **HU-02** | As a registered user, I want to recover my password when I have forgotten it so that I can restore my access to the system. |
+| **HU-03** | As an authenticated user, I want to log out when I am done using the system to protect my information and prevent unauthorized access. |
 | **HU-06** | As a Coordinator, I want to select a term and upload the CSV file for schedules and lotteries to enable enrollment so that students can view available courses. |
 | **HU-07** | As a Student, I want to access the enrollment module to select the courses I will take during the term. |
 | **HU-08** | As a Professor/Advisor, I want to review the UEAs my students have selected and formally authorize their enrollment. |
 | **HU-09** | As a Coordinator or Assistant, I want to generate the enrollment form in PDF for an approved student to formalize the registration with School Systems. |
+| **HU-10** | As a Coordinator, I want to manually modify the enrollment status of any student and view a general summary to correct workflow errors or administratively finalize the process. |
 | **HU-15** | As a Coordinator, I want to register a student with their personal and academic data. |
 | **HU-21** | As a Coordinator, I want to register a professor in the system. |
+| **HU-28** | As a Coordinator (or User), I want to change the access password to maintain account security or recover it. |
 
 #### Quality attributes
 
