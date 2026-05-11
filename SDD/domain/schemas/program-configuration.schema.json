@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "program-configuration.schema.json",
+  "title": "BC-04 — Program Configuration",
+  "description": "Contrato de datos para el Bounded Context de Configuración del Programa. Define el Aggregate Root GraduateProgram con sus ConfigurationParameters, los comandos de gestión y los read models. Satisface QA-3 (parametrización de reglas de negocio) y QA-4 (soporte multi-programa hasta 9 posgrados divisionales).",
+  "definitions": {
+    "GraduateProgram": {
+      "type": "object",
+      "description": "Aggregate Root. Representa un programa de posgrado de la UAM. Contiene la configuración paramétrica de reglas de negocio por programa, habilitando el soporte multi-programa (QA-4).",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Identificador único generado por la BD."
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1,
+          "description": "Nombre oficial del programa de posgrado. Ej: 'Ciencias y Tecnologías de la Información'."
+        },
+        "division": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1,
+          "description": "División académica a la que pertenece. Ej: 'CBI', 'CBS', 'CSH'."
+        },
+        "configurationParameters": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ConfigurationParameter" },
+          "description": "Parámetros de configuración de reglas de negocio propios de este programa."
+        }
+      },
+      "required": ["name", "division"]
+    },
+
+    "ConfigurationParameter": {
+      "type": "object",
+      "description": "Value Object inmutable. Par clave-valor que externaliza una regla de negocio del programa de posgrado. Permite modificar fechas, cupos y criterios sin cambiar código fuente (QA-3).",
+      "properties": {
+        "key": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1,
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "description": "Clave identificadora del parámetro. Convención UPPER_SNAKE_CASE. Ej: 'MAX_COURSES_PER_TERM', 'CREDIT_LIMIT', 'ENROLLMENT_DEADLINE'."
+        },
+        "value": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Valor del parámetro como string. La interpretación (numérico, fecha, booleano) depende de la clave."
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Descripción legible del propósito del parámetro. Facilita el onboarding de nuevos coordinadores."
+        }
+      },
+      "required": ["key", "value"]
+    },
+
+    "WellKnownKeys": {
+      "type": "string",
+      "description": "Claves de configuración conocidas que otros Bounded Contexts consumen. Documentadas para trazabilidad inter-contexto.",
+      "enum": [
+        "MAX_COURSES_PER_TERM",
+        "CREDIT_LIMIT_PER_TERM",
+        "ENROLLMENT_START_DATE",
+        "ENROLLMENT_END_DATE",
+        "MAX_STUDENTS_PER_ADVISOR",
+        "ACADEMIC_LEVEL",
+        "PROGRAM_TYPE"
+      ]
+    },
+
+    "CreateGraduateProgramCommand": {
+      "type": "object",
+      "description": "Comando para crear un nuevo programa de posgrado. Ejecutado por el Coordinador o SYSTEM_ADMIN.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "division": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "initialParameters": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ConfigurationParameter" },
+          "description": "Parámetros iniciales opcionales. Si no se proveen, se usan los valores por defecto del sistema."
+        }
+      },
+      "required": ["name", "division"]
+    },
+
+    "UpdateGraduateProgramCommand": {
+      "type": "object",
+      "description": "Comando para actualizar los datos básicos de un programa de posgrado.",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "division": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        }
+      },
+      "required": ["id", "name", "division"]
+    },
+
+    "SetConfigurationParameterCommand": {
+      "type": "object",
+      "description": "Comando para crear o actualizar un parámetro de configuración dentro de un programa de posgrado. Si la clave ya existe, se reemplaza el valor. Satisface QA-3.",
+      "properties": {
+        "graduateProgramId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$"
+        },
+        "value": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "required": ["graduateProgramId", "key", "value"]
+    },
+
+    "DeleteConfigurationParameterCommand": {
+      "type": "object",
+      "description": "Comando para eliminar un parámetro de configuración de un programa.",
+      "properties": {
+        "graduateProgramId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "key": {
+          "type": "string"
+        }
+      },
+      "required": ["graduateProgramId", "key"]
+    },
+
+    "GraduateProgramResponse": {
+      "type": "object",
+      "description": "Read model para respuesta API. Incluye datos del programa y sus parámetros.",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "name": { "type": "string" },
+        "division": { "type": "string" },
+        "configurationParameters": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ConfigurationParameter" }
+        }
+      }
+    },
+
+    "GraduateProgramListResponse": {
+      "type": "object",
+      "description": "Read model para listar programas de posgrado (sin parámetros detallados).",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "name": { "type": "string" },
+        "division": { "type": "string" },
+        "parameterCount": { "type": "integer", "description": "Número de parámetros configurados." }
+      }
+    }
+  }
+}

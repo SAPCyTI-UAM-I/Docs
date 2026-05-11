@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "audit.schema.json",
+  "title": "BC-05 — Audit",
+  "description": "Data contract for the Audit Bounded Context. Defines AuditEvent aggregate for cross-cutting audit logging. Captures security events (HIGH), domain mutations (STANDARD), and optional read operations (LOW). Supports multi-tenant filtering via graduateProgramId.",
+  "definitions": {
+    "AuditEvent": {
+      "type": "object",
+      "description": "Aggregate Root. Records a system event for compliance and traceability. Captures actor, action, target entity, severity, and context. Conformist (R3) to BC-06 for actor identity, Conformist (R4) to BC-04 for program scope.",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the event occurred."
+        },
+        "actorId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "userId from BC-06 Identity & Access. References the user who triggered the action."
+        },
+        "actorRole": {
+          "type": "string",
+          "enum": ["SYSTEM_ADMIN", "COORDINATOR", "ASSISTANT", "PROFESSOR", "STUDENT", "SPEAKER", "ANONYMOUS"],
+          "description": "Role of the actor at the time of the event."
+        },
+        "action": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "What happened. E.g. 'LOGIN_SUCCESS', 'STUDENT_REGISTERED', 'ENROLLMENT_APPROVED'."
+        },
+        "entityType": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Type of the affected entity. E.g. 'User', 'Student', 'Enrollment'."
+        },
+        "entityId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "ID of the affected entity."
+        },
+        "details": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "Additional context. JSON-encoded extra data for detailed audit trail."
+        },
+        "severity": { "$ref": "#/definitions/AuditSeverity" },
+        "ipAddress": {
+          "type": "string",
+          "maxLength": 45,
+          "description": "IP address of the request origin. IPv4 or IPv6."
+        },
+        "graduateProgramId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Multi-tenant scope from BC-04. Enables per-program audit filtering."
+        }
+      },
+      "required": ["timestamp", "actorId", "actorRole", "action", "severity", "graduateProgramId"]
+    },
+
+    "AuditSeverity": {
+      "type": "object",
+      "description": "Value Object indicating audit event importance.",
+      "properties": {
+        "level": { "$ref": "#/definitions/AuditSeverityLevel" }
+      },
+      "required": ["level"]
+    },
+
+    "AuditSeverityLevel": {
+      "type": "string",
+      "description": "HIGH: security events (login, RBAC violations, password changes). STANDARD: domain mutations (entity CRUD). LOW: read operations (configurable per environment).",
+      "enum": ["HIGH", "STANDARD", "LOW"]
+    },
+
+    "KnownAuditActions": {
+      "type": "string",
+      "description": "Well-known audit actions emitted by other Bounded Contexts. Documented for traceability.",
+      "enum": [
+        "LOGIN_SUCCESS",
+        "LOGIN_FAILED",
+        "PASSWORD_RESET_REQUESTED",
+        "PASSWORD_CHANGED",
+        "RBAC_VIOLATION_DETECTED",
+        "USER_CREATED",
+        "STUDENT_REGISTERED",
+        "PROFESSOR_REGISTERED",
+        "ACADEMIC_OFFER_UPLOADED",
+        "ENROLLMENT_PERIOD_OPENED",
+        "COURSES_SELECTED",
+        "ENROLLMENT_APPROVED_BY_ADVISOR",
+        "ENROLLMENT_REJECTED_BY_ADVISOR",
+        "ENROLLMENT_FINALIZED"
+      ]
+    },
+
+    "AuditEventResponse": {
+      "type": "object",
+      "description": "Read model for querying audit events.",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "actorId": { "type": "integer", "format": "int64" },
+        "actorRole": { "type": "string" },
+        "action": { "type": "string" },
+        "entityType": { "type": "string" },
+        "entityId": { "type": "integer", "format": "int64" },
+        "details": { "type": "string" },
+        "severityLevel": { "type": "string" },
+        "ipAddress": { "type": "string" },
+        "graduateProgramId": { "type": "integer", "format": "int64" }
+      }
+    }
+  }
+}

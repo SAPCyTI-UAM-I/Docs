@@ -1,0 +1,267 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "identity-access.schema.json",
+  "title": "BC-06 — Identity & Access",
+  "description": "Data contract for the Identity & Access Bounded Context. Defines the User aggregate with its Role, RefreshToken, and PasswordResetToken lifecycle. Covers authentication (HU-01), password recovery (HU-02), password change (HU-28), and RBAC enforcement (QA-1, QA-2).",
+  "definitions": {
+    "User": {
+      "type": "object",
+      "description": "Aggregate Root. System access account. Stores credentials and activation status. Serves as the authentication identity for all system actors (HU-01).",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Auto-generated primary key."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 255,
+          "description": "Unique login identifier. Used for authentication and password recovery."
+        },
+        "passwordHash": {
+          "type": "string",
+          "description": "BCrypt-hashed password. Never exposed in API responses. Work factor configurable via env var (default 12)."
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Whether the account is active. Inactive accounts cannot authenticate."
+        },
+        "role": {
+          "$ref": "#/definitions/Role"
+        },
+        "refreshTokens": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/RefreshToken" },
+          "description": "Active refresh tokens for this user. Supports concurrent sessions with device tracking."
+        },
+        "passwordResetToken": {
+          "$ref": "#/definitions/PasswordResetToken",
+          "description": "Current password reset token, if any. At most one active at a time."
+        }
+      },
+      "required": ["email", "passwordHash", "active", "role"]
+    },
+
+    "Role": {
+      "type": "object",
+      "description": "Value Object. User type assigned to an account. Determines menu options and visible permissions after login (QA-1).",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/RoleType"
+        }
+      },
+      "required": ["type"]
+    },
+
+    "RoleType": {
+      "type": "string",
+      "description": "Enum of system roles. Hierarchy: SYSTEM_ADMIN > COORDINATOR > ASSISTANT > PROFESSOR > STUDENT > SPEAKER.",
+      "enum": [
+        "SYSTEM_ADMIN",
+        "COORDINATOR",
+        "ASSISTANT",
+        "PROFESSOR",
+        "STUDENT",
+        "SPEAKER"
+      ]
+    },
+
+    "RefreshToken": {
+      "type": "object",
+      "description": "Entity within User aggregate. Persisted refresh token storing only the SHA-256 hash. Supports 'Remember me' via configurable TTL and concurrent session awareness via device tracking.",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "tokenHash": {
+          "type": "string",
+          "description": "SHA-256 hash of the opaque refresh token. The plaintext token is never persisted."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Expiration timestamp. Default 7 days; 30 days for remember-me."
+        },
+        "revoked": {
+          "type": "boolean",
+          "description": "Whether this token has been explicitly revoked (logout or password change)."
+        },
+        "deviceInfo": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "User-Agent or device identifier for concurrent session awareness."
+        }
+      },
+      "required": ["tokenHash", "expiresAt", "revoked"]
+    },
+
+    "PasswordResetToken": {
+      "type": "object",
+      "description": "Value Object. Time-limited token for password recovery flow (HU-02). SHA-256 hashed, 30 min TTL, single-use. Lifecycle: create() → isExpired() → isUsed() → markAsUsed().",
+      "properties": {
+        "tokenHash": {
+          "type": "string",
+          "description": "SHA-256 hash of the reset token sent via email."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Expiration timestamp. Default 30 minutes from creation."
+        },
+        "used": {
+          "type": "boolean",
+          "description": "Single-use flag. Once used, the token cannot be reused."
+        }
+      },
+      "required": ["tokenHash", "expiresAt", "used"]
+    },
+
+    "LoginCommand": {
+      "type": "object",
+      "description": "Command to authenticate a user. Produces a JWT access token and a refresh token on success (HU-01).",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rememberMe": {
+          "type": "boolean",
+          "description": "If true, refresh token TTL is extended to 30 days."
+        },
+        "deviceInfo": {
+          "type": "string",
+          "description": "Browser User-Agent for session tracking."
+        }
+      },
+      "required": ["email", "password"]
+    },
+
+    "RefreshTokenCommand": {
+      "type": "object",
+      "description": "Command to exchange a valid refresh token for a new access token.",
+      "properties": {
+        "refreshToken": {
+          "type": "string",
+          "description": "Opaque refresh token (plaintext). Server hashes it and looks up the stored hash."
+        }
+      },
+      "required": ["refreshToken"]
+    },
+
+    "LogoutCommand": {
+      "type": "object",
+      "description": "Command to revoke a specific refresh token (logout from one device).",
+      "properties": {
+        "refreshToken": {
+          "type": "string"
+        }
+      },
+      "required": ["refreshToken"]
+    },
+
+    "ForgotPasswordCommand": {
+      "type": "object",
+      "description": "Command to request a password reset email (HU-02). Always returns success to prevent email enumeration.",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        }
+      },
+      "required": ["email"]
+    },
+
+    "ResetPasswordCommand": {
+      "type": "object",
+      "description": "Command to reset a password using a valid token received via email (HU-02).",
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "Plaintext token from the reset email. Server hashes it for lookup."
+        },
+        "newPassword": {
+          "type": "string",
+          "minLength": 8,
+          "description": "New password. Must meet complexity requirements."
+        }
+      },
+      "required": ["token", "newPassword"]
+    },
+
+    "ChangePasswordCommand": {
+      "type": "object",
+      "description": "Command to change a user's password (HU-28). Self-change requires current password. Coordinator-change skips it.",
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Target user. For self-change, must match the authenticated user."
+        },
+        "currentPassword": {
+          "type": "string",
+          "description": "Required for self-change. Not required when coordinator changes another user's password."
+        },
+        "newPassword": {
+          "type": "string",
+          "minLength": 8
+        }
+      },
+      "required": ["userId", "newPassword"]
+    },
+
+    "AuthResponse": {
+      "type": "object",
+      "description": "Read model returned after successful login or token refresh.",
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "description": "JWT signed with RSA-256. Contains userId, role, graduateProgramId. TTL: 15 min."
+        },
+        "refreshToken": {
+          "type": "string",
+          "description": "Opaque token. Sent via HttpOnly cookie in production."
+        },
+        "role": {
+          "$ref": "#/definitions/RoleType"
+        },
+        "expiresIn": {
+          "type": "integer",
+          "description": "Access token TTL in seconds."
+        }
+      }
+    },
+
+    "JwtClaims": {
+      "type": "object",
+      "description": "Claims embedded in the JWT access token. Used by all downstream BCs for RBAC and multi-tenant context.",
+      "properties": {
+        "sub": {
+          "type": "string",
+          "description": "Subject — userId as string."
+        },
+        "role": {
+          "$ref": "#/definitions/RoleType"
+        },
+        "graduateProgramId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Multi-tenant context. Scopes all downstream queries."
+        },
+        "iat": {
+          "type": "integer",
+          "description": "Issued at — Unix timestamp."
+        },
+        "exp": {
+          "type": "integer",
+          "description": "Expiration — Unix timestamp. Default iat + 900 (15 min)."
+        }
+      }
+    }
+  }
+}

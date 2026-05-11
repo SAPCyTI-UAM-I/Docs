@@ -2,6 +2,7 @@
 
 > **Índice maestro de todas las specs.** Cada spec se vincula desde aquí y desde el `phaseX.md` correspondiente.
 > Para crear una nueva spec, usa la plantilla [`templates/SPEC-TEMPLATE.md`](templates/SPEC-TEMPLATE.md).
+> **Artefactos de dominio:** [`domain/ContextMap.md`](domain/ContextMap.md) | [`domain/schemas/`](domain/schemas/) | [`domain/features/`](domain/features/)
 
 ---
 

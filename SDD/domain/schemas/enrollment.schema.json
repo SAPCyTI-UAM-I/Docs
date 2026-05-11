@@ -1,0 +1,236 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sapcyti.uam.mx/schemas/enrollment.schema.json",
+  "title": "Enrollment Bounded Context — Data Contract",
+  "description": "Schema contract for BC-01: Enrollment. Defines the aggregates Enrollment (AR) and UEASelection (Entity) as specified in Architecture.md §4 Domain Model. This schema is the single source of truth for data validation in .feature files and API contracts.",
+  "definitions": {
+    "EnrollmentStatus": {
+      "type": "string",
+      "enum": [
+        "PENDING_SELECTION",
+        "SELECTION_COMPLETED",
+        "APPROVED_BY_ADVISOR",
+        "FINALIZED"
+      ],
+      "description": "Domain-embedded state machine for the enrollment lifecycle. Transitions: PENDING_SELECTION → SELECTION_COMPLETED (completeSelection), SELECTION_COMPLETED → APPROVED_BY_ADVISOR (approveByAdvisor), SELECTION_COMPLETED → PENDING_SELECTION (rejectByAdvisor), APPROVED_BY_ADVISOR → FINALIZED (finalize)."
+    },
+    "UEASelection": {
+      "type": "object",
+      "description": "Entity — Record of a specific UEA group selection within an enrollment. Belongs to Enrollment aggregate lifecycle.",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Auto-generated unique identifier."
+        },
+        "uEAGroupId": {
+          "type": "integer",
+          "description": "ID-reference to UEAGroup in Academic Offering BC (BC-03). Resolved via AcademicOfferQueryPort."
+        },
+        "preselected": {
+          "type": "boolean",
+          "description": "True if the UEA was automatically pre-selected by the system based on the student's academic plan.",
+          "default": false
+        },
+        "approvedByAdvisor": {
+          "type": "boolean",
+          "description": "True if the advisor explicitly approved this specific UEA selection during HU-08.",
+          "default": false
+        }
+      },
+      "required": ["uEAGroupId", "preselected", "approvedByAdvisor"]
+    },
+    "Enrollment": {
+      "type": "object",
+      "description": "Aggregate Root — Represents the process of a student enrolling in a specific term. Manages the complete lifecycle via a domain-embedded state machine (HU-07, HU-08, HU-09).",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Auto-generated unique identifier."
+        },
+        "studentId": {
+          "type": "integer",
+          "description": "ID-reference to Student in Academic Management BC (BC-02). Resolved via StudentQueryPort."
+        },
+        "termId": {
+          "type": "integer",
+          "description": "ID-reference to Term in Academic Offering BC (BC-03). Must be in status IN_ENROLLMENT for course selection."
+        },
+        "graduateProgramId": {
+          "type": "integer",
+          "description": "ID-reference to GraduateProgram in Program Configuration BC (BC-04). Multi-tenant scope."
+        },
+        "status": {
+          "$ref": "#/definitions/EnrollmentStatus"
+        },
+        "creationDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Date when the enrollment was initiated."
+        },
+        "finalizationDate": {
+          "type": ["string", "null"],
+          "format": "date",
+          "description": "Date set during finalize() transition (HU-09). Null until enrollment reaches FINALIZED status."
+        },
+        "uEASelections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UEASelection"
+          },
+          "description": "List of UEA group selections within this enrollment. Composition relationship — selections belong to enrollment lifecycle."
+        }
+      },
+      "required": ["studentId", "termId", "graduateProgramId", "status", "creationDate", "uEASelections"]
+    },
+    "SelectCoursesCommand": {
+      "type": "object",
+      "description": "Command DTO for HU-07: Student selects courses. Input to SelectCoursesUseCase.",
+      "properties": {
+        "studentId": {
+          "type": "integer",
+          "description": "ID of the student making the selection. Must match JWT userId via RBAC."
+        },
+        "termId": {
+          "type": "integer",
+          "description": "ID of the term. Must be in IN_ENROLLMENT status."
+        },
+        "selectedUEAGroupIds": {
+          "type": "array",
+          "items": { "type": "integer" },
+          "minItems": 1,
+          "description": "IDs of UEAGroups the student selected. Each must exist with availableQuota > 0."
+        }
+      },
+      "required": ["studentId", "termId", "selectedUEAGroupIds"]
+    },
+    "ApproveEnrollmentCommand": {
+      "type": "object",
+      "description": "Command DTO for HU-08: Advisor approves enrollment. Input to ApproveEnrollmentUseCase.",
+      "properties": {
+        "enrollmentId": {
+          "type": "integer",
+          "description": "ID of the enrollment to approve."
+        },
+        "advisorId": {
+          "type": "integer",
+          "description": "ID of the advisor (Professor). Must be the student's assigned advisor."
+        },
+        "approvedUEAGroupIds": {
+          "type": "array",
+          "items": { "type": "integer" },
+          "minItems": 1,
+          "description": "Final list of approved UEAGroup IDs after advisor review. May differ from student's original selection."
+        }
+      },
+      "required": ["enrollmentId", "advisorId", "approvedUEAGroupIds"]
+    },
+    "RejectEnrollmentCommand": {
+      "type": "object",
+      "description": "Command DTO for HU-08: Advisor rejects enrollment, returning it to PENDING_SELECTION.",
+      "properties": {
+        "enrollmentId": {
+          "type": "integer",
+          "description": "ID of the enrollment to reject."
+        },
+        "advisorId": {
+          "type": "integer",
+          "description": "ID of the advisor. Must be the student's assigned advisor."
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500,
+          "description": "Mandatory explanation for the rejection."
+        }
+      },
+      "required": ["enrollmentId", "advisorId", "reason"]
+    },
+    "FinalizeEnrollmentCommand": {
+      "type": "object",
+      "description": "Command DTO for HU-09: Coordinator finalizes enrollment.",
+      "properties": {
+        "enrollmentId": {
+          "type": "integer",
+          "description": "ID of the enrollment to finalize. Must be in APPROVED_BY_ADVISOR status."
+        }
+      },
+      "required": ["enrollmentId"]
+    },
+    "EnrollmentFormPDF": {
+      "type": "object",
+      "description": "Read model for on-demand PDF generation (HU-09). Not persisted — generated from Enrollment + cross-context data.",
+      "properties": {
+        "documentTitle": {
+          "type": "string",
+          "const": "SOLICITUD DE UEA - GRUPO A ESTUDIOS DE POSGRADO"
+        },
+        "studentName": {
+          "type": "string",
+          "description": "Full name from Student.PersonalData (BC-02)."
+        },
+        "matricula": {
+          "type": "string",
+          "description": "Student enrollment ID from Student.enrollmentId (BC-02)."
+        },
+        "division": {
+          "type": "string",
+          "description": "Division name, e.g. 'CBI'."
+        },
+        "graduateProgram": {
+          "type": "string",
+          "description": "Program name from GraduateProgram.name (BC-04)."
+        },
+        "level": {
+          "type": "string",
+          "enum": ["MAESTRIA", "DOCTORADO"],
+          "description": "Academic level from Student.AcademicInformation.programType (BC-02)."
+        },
+        "trimester": {
+          "type": "string",
+          "description": "Term code from Term.code (BC-03), e.g. '16I'."
+        },
+        "ueas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "clave": { "type": "string", "description": "UEA code, e.g. '2156053'." },
+              "nombre": { "type": "string", "description": "UEA name, e.g. 'Ingeniería de Software I'." },
+              "creditos": { "type": "integer", "description": "UEA credits, e.g. 9." },
+              "grupo": { "type": "string", "description": "Group code, e.g. 'CP33'." }
+            },
+            "required": ["clave", "nombre", "creditos", "grupo"]
+          }
+        }
+      },
+      "required": ["documentTitle", "studentName", "matricula", "division", "graduateProgram", "level", "trimester", "ueas"]
+    },
+    "SchoolSystemsExport": {
+      "type": "object",
+      "description": "Export model for CON-3: TXT/XLSX files for Sistemas Escolares UAM. Generated by SchoolSystemsExportAdapter.",
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["TXT", "XLSX"],
+          "description": "Export format as required by the Control Escolar office."
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "matricula": { "type": "string" },
+              "claveUEA": { "type": "string" },
+              "grupo": { "type": "string" },
+              "trimestre": { "type": "string" },
+              "programa": { "type": "string" },
+              "fechaFinalizacion": { "type": "string", "format": "date" }
+            },
+            "required": ["matricula", "claveUEA", "grupo", "trimestre", "programa", "fechaFinalizacion"]
+          }
+        }
+      },
+      "required": ["format", "records"]
+    }
+  }
+}

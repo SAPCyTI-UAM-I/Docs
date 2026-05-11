@@ -6,23 +6,31 @@ globs:
 # Write Spec
 
 ## Context to load
+
 1. The task description from the relevant `phaseX.md`.
-2. The relevant section(s) of `design/Architecture.md` — only the section referenced by the task, not the whole file.
-3. The relevant HU from `vision/HU/HU-XX.md`.
-4. `technologies/{area}.md` for the area being specified (backend, frontend, testing).
-5. The template: `sdd/templates/SPEC-TEMPLATE.md`.
+2. The relevant section(s) of `Design/Architecture.md` — only the section referenced by the task, not the whole file.
+3. The relevant HU from `visionDocs/HU/HU-XX.md`.
+4. `SDD/technologies/{area}.md` for the area being specified (backend, frontend, testing).
+5. The template: `SDD/templates/SPEC-TEMPLATE.md`.
+6. `SDD/domain/ContextMap.md` — read ONLY the section for the relevant Bounded Context and its relations.
+7. `SDD/domain/schemas/{bc-name}.schema.json` — if it exists, use it as the data contract for types, fields, and commands.
+8. `SDD/domain/features/{bc-name}/` — if Gherkin features exist, reference the relevant scenarios in the spec's Acceptance Criteria.
 
 ## Steps
+
 1. Read the task and identify the bounded context, drivers, and affected layers.
 2. Read the Architecture.md section for the relevant domain model / component.
 3. Copy the essential context (3-10 lines) from Architecture.md into the spec's "Architectural Context" field — do NOT just reference, include the relevant snippet.
-4. Fill all template sections. Leave nothing as placeholder.
-5. Define concrete acceptance criteria (testable, not vague).
-6. List exact file paths to create/modify.
-7. Define edge cases and error handling.
-8. Set `Status: 🔲 Draft`.
+4. If a JSON Schema exists for the BC, use its definitions to set exact field names, types, and constraints in the spec's Technical Design.
+5. If Gherkin features exist for the BC, cross-reference the relevant scenarios and map them to the spec's Acceptance Criteria and Edge Cases.
+6. Fill all template sections. Leave nothing as placeholder.
+7. Define concrete acceptance criteria (testable, not vague).
+8. List exact file paths to create/modify.
+9. Define edge cases and error handling.
+10. Set `Status: 🔲 Draft`.
 
 ## Output
-- One spec file: `sdd/specs/iteration-{N}/SPEC-{NNN}_{kebab-case}.md`
-- Update `sdd/SPEC_INDEX.md` with the new entry.
+
+- One spec file: `SDD/specs/iteration-{N}/SPEC-{NNN}_{kebab-case}.md`
+- Update `SDD/theory/SPEC_INDEX.md` with the new entry.
 - Link the spec from the task in `phaseX.md`.

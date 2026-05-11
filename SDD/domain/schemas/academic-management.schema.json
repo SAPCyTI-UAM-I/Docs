@@ -1,0 +1,237 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "academic-management.schema.json",
+  "title": "BC-02 — Academic Management",
+  "description": "Data contract for the Academic Management Bounded Context. Defines Student and Professor aggregates with their value objects, registration commands, and read models. Covers student registration (HU-15) and professor registration (HU-21).",
+  "definitions": {
+    "Student": {
+      "type": "object",
+      "description": "Aggregate Root. Student enrolled in a graduate program. Aggregates personal data and academic information. Maintains an ID-based reference to their faculty advisor (Professor) and to their User account in BC-06. Derived from HU-15.",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Auto-generated primary key."
+        },
+        "enrollmentId": {
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1,
+          "description": "Matrícula — unique institutional enrollment identifier. E.g. '2123803361'."
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "ID-based reference to User aggregate in BC-06 Identity & Access. Not a direct object reference (DDD aggregate boundary)."
+        },
+        "graduateProgramId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "ID-based reference to GraduateProgram in BC-04 Program Configuration. Multi-tenant scope."
+        },
+        "advisorId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "ID-based reference to the assigned Professor (advisor). Nullable until assigned."
+        },
+        "personalData": {
+          "$ref": "#/definitions/PersonalData"
+        },
+        "academicInformation": {
+          "$ref": "#/definitions/AcademicInformation"
+        }
+      },
+      "required": ["enrollmentId", "userId", "graduateProgramId", "personalData", "academicInformation"]
+    },
+
+    "Professor": {
+      "type": "object",
+      "description": "Aggregate Root. Academic staff member who teaches courses and advises students. Identified by institutional employee number. Derived from HU-21.",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Auto-generated primary key."
+        },
+        "employeeNumber": {
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1,
+          "description": "Unique institutional employee number."
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "ID-based reference to User aggregate in BC-06 Identity & Access."
+        },
+        "graduateProgramId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "ID-based reference to GraduateProgram in BC-04."
+        },
+        "personalData": {
+          "$ref": "#/definitions/PersonalData"
+        }
+      },
+      "required": ["employeeNumber", "userId", "graduateProgramId", "personalData"]
+    },
+
+    "PersonalData": {
+      "type": "object",
+      "description": "Value Object shared by Student and Professor aggregates within this BC. Contains identity data of a person.",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1,
+          "description": "Given name."
+        },
+        "firstLastName": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1,
+          "description": "Apellido Paterno — paternal last name."
+        },
+        "secondLastName": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Apellido Materno — maternal last name. Optional."
+        },
+        "nationality": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Nationality. E.g. 'Mexicana'. Required for students, optional for professors."
+        }
+      },
+      "required": ["firstName", "firstLastName"]
+    },
+
+    "AcademicInformation": {
+      "type": "object",
+      "description": "Value Object exclusive to Student. Contains data about the student's academic program.",
+      "properties": {
+        "undergraduateDegree": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1,
+          "description": "Carrera de Licenciatura — original undergraduate degree."
+        },
+        "programType": {
+          "$ref": "#/definitions/ProgramType"
+        },
+        "admissionDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Date the student was admitted to the graduate program."
+        }
+      },
+      "required": ["undergraduateDegree", "programType", "admissionDate"]
+    },
+
+    "ProgramType": {
+      "type": "string",
+      "description": "Type of graduate program.",
+      "enum": ["MAESTRIA", "DOCTORADO"]
+    },
+
+    "RegisterStudentCommand": {
+      "type": "object",
+      "description": "Command to register a new student. Executed by COORDINATOR. Orchestrates: validate uniqueness → generate password (PasswordGenerationService) → hash password (PasswordEncoderPort from BC-06) → create User with STUDENT role (BC-06) → create Student aggregate → persist. Single transaction. Returns entity + one-time plaintext password.",
+      "properties": {
+        "enrollmentId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Matrícula."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Unique email for login. Validated for uniqueness against BC-06."
+        },
+        "graduateProgramId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Target graduate program from BC-04."
+        },
+        "advisorId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Assigned advisor (Professor). Optional at registration."
+        },
+        "firstName": { "type": "string", "minLength": 1 },
+        "firstLastName": { "type": "string", "minLength": 1 },
+        "secondLastName": { "type": "string" },
+        "nationality": { "type": "string", "minLength": 1 },
+        "undergraduateDegree": { "type": "string", "minLength": 1 },
+        "programType": { "$ref": "#/definitions/ProgramType" },
+        "admissionDate": { "type": "string", "format": "date" }
+      },
+      "required": ["enrollmentId", "email", "graduateProgramId", "firstName", "firstLastName", "nationality", "undergraduateDegree", "programType", "admissionDate"]
+    },
+
+    "RegisterProfessorCommand": {
+      "type": "object",
+      "description": "Command to register a new professor. Executed by COORDINATOR. Orchestrates: validate uniqueness → generate password → hash → create User with PROFESSOR role (BC-06) → create Professor aggregate → persist. Single transaction.",
+      "properties": {
+        "employeeNumber": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique institutional employee number."
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "graduateProgramId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "firstName": { "type": "string", "minLength": 1 },
+        "firstLastName": { "type": "string", "minLength": 1 },
+        "secondLastName": { "type": "string" }
+      },
+      "required": ["employeeNumber", "email", "graduateProgramId", "firstName", "firstLastName"]
+    },
+
+    "StudentResponse": {
+      "type": "object",
+      "description": "Read model for student data. Returned on registration and queries.",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "enrollmentId": { "type": "string" },
+        "email": { "type": "string" },
+        "firstName": { "type": "string" },
+        "firstLastName": { "type": "string" },
+        "secondLastName": { "type": "string" },
+        "nationality": { "type": "string" },
+        "undergraduateDegree": { "type": "string" },
+        "programType": { "$ref": "#/definitions/ProgramType" },
+        "admissionDate": { "type": "string", "format": "date" },
+        "advisorId": { "type": "integer", "format": "int64" },
+        "graduateProgramId": { "type": "integer", "format": "int64" },
+        "generatedPassword": {
+          "type": "string",
+          "description": "One-time plaintext password. Only returned on registration, never on queries."
+        }
+      }
+    },
+
+    "ProfessorResponse": {
+      "type": "object",
+      "description": "Read model for professor data.",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "employeeNumber": { "type": "string" },
+        "email": { "type": "string" },
+        "firstName": { "type": "string" },
+        "firstLastName": { "type": "string" },
+        "secondLastName": { "type": "string" },
+        "graduateProgramId": { "type": "integer", "format": "int64" },
+        "generatedPassword": {
+          "type": "string",
+          "description": "One-time plaintext password. Only returned on registration."
+        }
+      }
+    }
+  }
+}

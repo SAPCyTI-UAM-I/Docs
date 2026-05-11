@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "academic-offering.schema.json",
+  "title": "BC-03 — Academic Offering",
+  "description": "Data contract for the Academic Offering Bounded Context. Defines Term lifecycle (state machine), AcademicOffer, UEAGroup, UEA, and Schedule aggregates/entities. Covers CSV import (HU-06), term management, and enrollment period control.",
+  "definitions": {
+    "Term": {
+      "type": "object",
+      "description": "Aggregate Root. Academic period with a 5-state lifecycle state machine: PLANNING → OFFER_LOADED → IN_ENROLLMENT → IN_PROGRESS → COMPLETED. Guard conditions enforce valid state transitions.",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "code": {
+          "type": "string",
+          "maxLength": 10,
+          "description": "Term code. E.g. '25P' (2025 Primavera), '25O' (2025 Otoño)."
+        },
+        "status": { "$ref": "#/definitions/TermStatus" },
+        "graduateProgramId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Scope to a specific graduate program via BC-04 (R8)."
+        }
+      },
+      "required": ["code", "status", "graduateProgramId"]
+    },
+
+    "TermStatus": {
+      "type": "string",
+      "description": "State machine states for Term lifecycle.",
+      "enum": ["PLANNING", "OFFER_LOADED", "IN_ENROLLMENT", "IN_PROGRESS", "COMPLETED"]
+    },
+
+    "AcademicOffer": {
+      "type": "object",
+      "description": "Aggregate Root. Set of UEA groups offered in a specific term. Created from CSV import (HU-06).",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "termId": { "type": "integer", "format": "int64" },
+        "ueaGroups": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/UEAGroup" }
+        }
+      },
+      "required": ["termId"]
+    },
+
+    "UEAGroup": {
+      "type": "object",
+      "description": "Entity within AcademicOffer. Specific section of a UEA within the quarterly offer. The unit selectable by students (HU-07). availableQuota is decremented on advisor approval (HU-08), NOT on student selection.",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "groupCode": {
+          "type": "string",
+          "maxLength": 10,
+          "description": "Group code. E.g. 'CP33', 'CP34'."
+        },
+        "quota": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total student capacity. Initialized from CSV."
+        },
+        "availableQuota": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Remaining availability. Initialized equal to quota on CSV import."
+        },
+        "ueaId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Reference to UEA aggregate (course catalog)."
+        },
+        "professorId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Reference to Professor in BC-02 (R9). Resolved during CSV import via ProfessorQueryPort."
+        },
+        "schedules": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Schedule" }
+        }
+      },
+      "required": ["groupCode", "quota", "availableQuota", "ueaId", "professorId"]
+    },
+
+    "Schedule": {
+      "type": "object",
+      "description": "Value Object. Time block assigned to a group.",
+      "properties": {
+        "day": {
+          "type": "string",
+          "enum": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"]
+        },
+        "startTime": { "type": "string", "format": "time" },
+        "endTime": { "type": "string", "format": "time" }
+      },
+      "required": ["day", "startTime", "endTime"]
+    },
+
+    "UEA": {
+      "type": "object",
+      "description": "Aggregate Root. Teaching-Learning Unit from the academic catalog. Independent of any term or offer.",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "code": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Institutional UEA code. E.g. '2156053'."
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "UEA name. E.g. 'Ingeniería de Software I'."
+        },
+        "credits": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Credit value of the UEA."
+        }
+      },
+      "required": ["code", "name", "credits"]
+    },
+
+    "UploadAcademicOfferCommand": {
+      "type": "object",
+      "description": "Command to upload a CSV file with schedules and lotteries for a term (HU-06). Processed by CsvAcademicOfferAdapter (ACL). Term must be in PLANNING state. Transitions Term to OFFER_LOADED on success.",
+      "properties": {
+        "termId": { "type": "integer", "format": "int64" },
+        "csvFile": {
+          "type": "string",
+          "format": "binary",
+          "description": "Multipart CSV file. Parsed by CsvParserPort (ACL)."
+        }
+      },
+      "required": ["termId", "csvFile"]
+    },
+
+    "OpenEnrollmentCommand": {
+      "type": "object",
+      "description": "Command to open the enrollment period for a term. Transitions Term from OFFER_LOADED to IN_ENROLLMENT. Requires COORDINATOR role.",
+      "properties": {
+        "termId": { "type": "integer", "format": "int64" }
+      },
+      "required": ["termId"]
+    },
+
+    "CsvImportResult": {
+      "type": "object",
+      "description": "Read model returned after CSV upload. Contains parsed data and validation report.",
+      "properties": {
+        "totalGroupsImported": { "type": "integer" },
+        "totalUeasResolved": { "type": "integer" },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Non-fatal warnings (e.g. duplicate rows skipped)."
+        },
+        "errors": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Row-level errors that prevented import of specific rows."
+        }
+      }
+    },
+
+    "AcademicOfferResponse": {
+      "type": "object",
+      "description": "Read model for the full academic offer of a term.",
+      "properties": {
+        "termId": { "type": "integer", "format": "int64" },
+        "termCode": { "type": "string" },
+        "termStatus": { "$ref": "#/definitions/TermStatus" },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ueaGroupId": { "type": "integer", "format": "int64" },
+              "ueaCode": { "type": "string" },
+              "ueaName": { "type": "string" },
+              "credits": { "type": "integer" },
+              "groupCode": { "type": "string" },
+              "quota": { "type": "integer" },
+              "availableQuota": { "type": "integer" },
+              "professorName": { "type": "string" },
+              "schedules": {
+                "type": "array",
+                "items": { "$ref": "#/definitions/Schedule" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
