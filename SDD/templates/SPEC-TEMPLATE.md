@@ -6,6 +6,8 @@
 > **Phase:** {N} | **ADD Iteration:** {N}
 > **Bounded Context:** {nombre del módulo}
 > **Drivers:** {HU-XX, QA-X, CON-X — referencia a [ArchitecturalDrivers.md](../../ArchitecturalDrivers.md)}
+> **Domain Schema:** [`{bc-name}.schema.json`](../domain/schemas/{bc-name}.schema.json) — data contract for types, fields, and commands
+> **Domain Features:** [`domain/features/{bc-name}/`](../domain/features/{bc-name}/) — Gherkin scenarios mapped to Acceptance Criteria
 > **Depends on:** [SPEC-{NNN}]({ruta relativa}) — must be ✅ before implementation
 > **Blocks:** [SPEC-{NNN}]({ruta relativa}) — cannot start until this is ✅
 > **External Dependencies:**
@@ -87,12 +89,16 @@ invariantes, o decisiones que aplican a esta spec. Incluir la sección de origen
 
 ### 4.1 Domain Model
 
+> **Source of truth:** Field names, types, and constraints MUST match the definitions in
+> [`{bc-name}.schema.json`](../domain/schemas/{bc-name}.schema.json). Do NOT invent fields — derive them from the schema.
+
 ```java
 // {Clase}.java — {DDD Type: Aggregate Root | Entity | Value Object}
 // Puede usar anotaciones JPA (@Entity, @Id, @Column, etc.)
 // Referencia: Architecture.md §4 — {nombre de la entidad}
+// Schema: {bc-name}.schema.json#/definitions/{Clase}
 public class {Clase} {
-    // {campos con tipos y constraints}
+    // {campos con tipos y constraints — copied from schema definitions}
 }
 ```
 
@@ -150,10 +156,14 @@ Response 4XX: { "error": "...", "message": "..." }
 
 ## 6. Edge Cases & Error Handling
 
-| # | Scenario | Expected Behavior | HTTP Status (si aplica) |
-|---|----------|-------------------|------------------------|
-| EC-1 | {escenario} | {comportamiento esperado} | {código} |
-| EC-2 | {escenario} | {comportamiento esperado} | {código} |
+> **Source:** Derive edge cases from the `@BadPath` and error flow scenarios in
+> [`domain/features/{bc-name}/`](../domain/features/{bc-name}/). Each error scenario in a `.feature` file
+> should map to a row below.
+
+| # | Scenario | Expected Behavior | HTTP Status (si aplica) | Feature Ref |
+|---|----------|-------------------|------------------------|-------------|
+| EC-1 | {escenario} | {comportamiento esperado} | {código} | `{file}.feature` §{scenario name} |
+| EC-2 | {escenario} | {comportamiento esperado} | {código} | `{file}.feature` §{scenario name} |
 
 ---
 
@@ -210,6 +220,9 @@ Response 4XX: { "error": "...", "message": "..." }
 ## 11. References
 
 - **Architecture:** [`Architecture.md §{N}`](../../Design/Architecture.md) — {sección relevante}
+- **Context Map:** [`ContextMap.md`](../domain/ContextMap.md) — {BC section and relevant relationships}
+- **Domain Schema:** [`{bc-name}.schema.json`](../domain/schemas/{bc-name}.schema.json) — data contract
+- **Domain Features:** [`domain/features/{bc-name}/`](../domain/features/{bc-name}/) — Gherkin scenarios
 - **Iteration Plan:** [`IterationPlan.md`](../../Design/IterationPlan.md) — Iteration {N}
 - **Decision Log:** [`progress.md`](../../implementations/progress.md) — D-{NNN}
 - **Technology Stack:** [`technologies/{area}.md`](../technologies/{area}.md)
