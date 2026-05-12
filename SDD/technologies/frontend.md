@@ -1,7 +1,7 @@
 # Frontend Technology Stack — SAPCyTI
 
-> **Fuente de verdad** para versiones, librerías y reglas del frontend (SPA).
-> Referenciado desde specs y [`progress.md`](../../implementations/progress.md).
+> **Source of truth** for frontend (SPA) versions, libraries, and rules.
+> Referenced from specs and [`progress.md`](../../implementations/progress.md).
 
 ---
 
@@ -28,14 +28,14 @@
 
 ## Styling & UI Components
 
-> **Regla:** Utilizar componentes predefinidos de **PrimeNG** (modo _unstyled_). Crear componentes UI base desde cero solo si no existen en PrimeNG. Angular Material está descartado para evitar choques con Tailwind.
+> **Rule:** Use pre-built **PrimeNG** components (_unstyled_ mode). Create base UI components from scratch only if they don't exist in PrimeNG. Angular Material is discarded to avoid conflicts with Tailwind.
 
 | Tool             | Purpose                                                                       |
 | ---------------- | ----------------------------------------------------------------------------- |
-| Tailwind CSS     | Utility-first CSS framework (sin usar convenciones BEM).                      |
-| PrimeNG          | Componentes y directivas UI base.                                             |
-| CSS Base         | CSS puro para overrides excepcionales. Sin SCSS.                              |
-| Responsive-first | Mobile-first media queries vía modificadores Tailwind (`md:`, `lg:`). (CON-7) |
+| Tailwind CSS     | Utility-first CSS framework (without using BEM conventions).                      |
+| PrimeNG          | Base UI components and directives.                                             |
+| CSS Base         | Pure CSS for exceptional overrides. No SCSS.                              |
+| Responsive-first | Mobile-first media queries via Tailwind modifiers (`md:`, `lg:`). (CON-7) |
 
 ## Browser Support (CON-7)
 
@@ -53,7 +53,7 @@
 
 ### Folder Structure (Standalone Components)
 
-Arquitectura basada exclusivamente en componentes Standalone (sin `NgModules`).
+Architecture based exclusively on Standalone Components (no `NgModules`).
 
 ```text
 src/app/
@@ -89,9 +89,9 @@ src/app/
 
 ### Dependency Rules
 
-- **core/** — No se importa como módulo. Sus servicios usan `providedIn: 'root'` y los interceptores se registran en `app.config.ts`.
-- **shared/** — Los componentes _standalone_ se importan directamente en el parámetro `imports: []` del componente destino solo cuando se necesitan.
-- **features/** — Rutas lazy-loaded mediante `loadChildren: () => import('./features/enrollment/enrollment.routes').then(m => m.ENROLLMENT_ROUTES)`. Ningún feature folder debe importar de otro feature folder de forma transversal.
+- **core/** — Not imported as a module. Its services use `providedIn: 'root'` and interceptors are registered in `app.config.ts`.
+- **shared/** — _Standalone_ components are imported directly into the `imports: []` array of the target component only when needed.
+- **features/** — Lazy-loaded routes using `loadChildren: () => import('./features/enrollment/enrollment.routes').then(m => m.ENROLLMENT_ROUTES)`. No feature folder should cross-import from another feature folder.
 - **models/** — Pure TypeScript interfaces; no Angular dependencies.
 
 ### Naming Conventions
@@ -115,7 +115,7 @@ src/app/
 
 ### Internationalization (QA-6)
 
-- `@ngx-translate` configured via `provideTranslateService` en `app.config.ts`.
+- `@ngx-translate` configured via `provideTranslateService` in `app.config.ts`.
 - Translation files: `assets/i18n/{lang}.json`
 - Default language: `es` (Spanish)
 - Key format: `{MODULE}.{COMPONENT}.{KEY}` — e.g., `ENROLLMENT.COURSE_SELECTION.TITLE`
@@ -130,19 +130,19 @@ src/app/
 
 | Tool       | Purpose                                                 |
 | ---------- | ------------------------------------------------------- |
-| Vitest     | Unit Testing y Code Coverage (reemplaza Jasmine/Karma). |
+| Vitest     | Unit Testing and Code Coverage (replaces Jasmine/Karma).|
 | Playwright | End-to-End (E2E) Testing.                               |
 
 ### Deployment
 
 | Component | Purpose                                                                               |
 | --------- | ------------------------------------------------------------------------------------- |
-| Nginx     | Servidor web HTTP en contenedor Docker. Fallback 404 siempre enrutado a `index.html`. |
+| Nginx     | HTTP web server in a Docker container. 404 fallback always routed to `index.html`.    |
 
-### Linting & Formatting (Obligatorios)
+### Linting & Formatting (Mandatory)
 
 | Tool            | Purpose                                                                            |
 | --------------- | ---------------------------------------------------------------------------------- |
-| ESLint          | Code quality (con `@angular-eslint`).                                              |
-| Prettier        | Auto-formateo. Requiere `prettier-plugin-tailwindcss` para ordenamiento de clases. |
-| `.editorconfig` | Reglas de identación unificadas sobre el editor.                                   |
+| ESLint          | Code quality (with `@angular-eslint`).                                             |
+| Prettier        | Auto-formatting. Requires `prettier-plugin-tailwindcss` for class sorting.         |
+| `.editorconfig` | Unified indentation rules across the editor.                                       |

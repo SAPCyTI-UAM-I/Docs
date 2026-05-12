@@ -724,22 +724,22 @@ enrollment/                         # Enrollment bounded context
 
 #### 6.2.- SAPCyTI SPA (Angular)
 
-The SPA is organized into a shell, feature modules, core services (authentication, HTTP, tenant context, i18n), and shared components. In Iteration 3, the Core module was refined to explicitly define the authentication and authorization sub-components, and a Login feature module was added. In Iteration 4, the Entity Management Module was decomposed into concrete views for student and professor CRUD, the Login Module was extended with password recovery views, and the internationalization infrastructure (QA-6) was integrated as a cross-cutting concern via `@ngx-translate` in the Core module. In Iteration 5, the Enrollment Module placeholder was decomposed into three role-scoped sub-modules: Coordinator Enrollment, Student Enrollment, and Advisor Enrollment.
+The SPA is organized into a shell, domain-driven feature folders (lazily loaded via standalone routes), core providers (authentication, HTTP, tenant context, i18n), and shared standalone components. In Iteration 3, the Core was refined to explicitly define the authentication and authorization sub-components, and an Auth feature route was added. In Iteration 4, the Academic Catalog feature was decomposed into concrete views for student and professor CRUD, the Auth feature was extended with password recovery views, and the internationalization infrastructure (QA-6) was integrated as a cross-cutting concern in the core application config. In Iteration 5, the Enrollment feature placeholder was decomposed into three role-scoped sub-folders: Coordinator Enrollment, Student Enrollment, and Advisor Enrollment.
 ```mermaid
 flowchart TB
-    subgraph SPA["SAPCyTI SPA"]
+    subgraph SPA["SAPCyTI SPA (Standalone Components)"]
         SHELL["Shell / Layout\nMain Routing\nRole-based menu rendering"]
 
-        subgraph Features["Feature Modules"]
-            subgraph LoginMod["Login Module"]
+        subgraph Features["Feature Routes/Folders"]
+            subgraph LoginMod["Auth Feature"]
                 LOGINFORM["Login Form\nHU-01"]
                 FORGOTPWD["Forgot Password View\nHU-02"]
                 RESETPWD["Reset Password View\nHU-02"]
             end
 
-            DASH["Dashboard Module"]
+            DASH["Dashboard Feature"]
 
-            subgraph EnrollMod["Enrollment Module"]
+            subgraph EnrollMod["Enrollment Feature"]
                 subgraph CoordEnroll["Coordinator Enrollment"]
                     TERMLIST["Term List Component"]
                     CSVUPLOAD["CSV Upload Component\nHU-06"]
@@ -756,7 +756,7 @@ flowchart TB
                 end
             end
 
-            subgraph EntityMod["Entity Management Module"]
+            subgraph EntityMod["Academic Catalog Feature"]
                 STUDLIST["Student List Component"]
                 STUDFORM["Student Form Component\nHU-15"]
                 PROFLIST["Professor List Component"]
@@ -765,19 +765,18 @@ flowchart TB
             end
         end
 
-        subgraph Core["Core"]
+        subgraph Core["Core Providers"]
             AUTHINT["Auth Interceptor\nJWT + Accept-Language"]
-            AUTHGUARD["Role Auth Guard\nCanActivate + role check"]
+            AUTHGUARD["Role Auth Guard\nCanActivateFn + role check"]
             AUTHSTATE["Auth State Service\ncurrentUser$ + token lifecycle"]
             TENANT["Tenant Context\nGraduate program selection"]
-            HTTP["HTTP Client\nBase API configuration"]
-            I18N["TranslateModule\n@ngx-translate/core"]
+            HTTP["HTTP Access\nBase API configuration"]
+            I18N["Translation Config\nprovideTranslateService()"]
         end
 
         subgraph Shared["Shared"]
             UICOMP["UI Components\nTables, Forms, Messages, 403 Page"]
             LANGSW["Language Switcher Component\nes / en toggle"]
-            PIPES["Pipes\ntranslate pipe"]
         end
     end
 
@@ -806,32 +805,31 @@ flowchart TB
 
 | Component | Responsibilities |
 | ---------- | ----------------- |
-| **Shell / Layout** | Application structure (menu, top bar, container); high-level routing; loading feature modules; conditionally renders menu items based on `currentUser$.role` from AuthStateService — only role-appropriate options visible after login (HU-01). Hosts the Language Switcher in the top bar. |
-| **Login Form** (Login Module) | Login form (email, password, "Remember me" checkbox); calls AuthStateService.login(); displays generic error on failure; navigates to role-specific dashboard on success. Includes "¿Olvidaste tu contraseña?" link to Forgot Password View. Implements HU-01 UI. |
-| **Forgot Password View** (Login Module) | Form with email field + "Send Email" button + "Back to Login" link. On submit, calls `POST /api/auth/forgot-password`. Always displays generic success message regardless of whether the email exists (no information leakage). Implements HU-02 request phase. |
-| **Reset Password View** (Login Module) | Accessed via email link (`/auth/reset-password?token=...`). Form with "New Password" + "Confirm Password" fields with complexity validation. On submit, calls `POST /api/auth/reset-password` with token and new password. Implements HU-02 reset phase. |
-| **Dashboard Module** (Feature) | Role-specific landing page after login; summary views per user type. |
-| **Enrollment Module** (Feature) | Enrollment-related views decomposed into three role-scoped sub-modules (Iteration 5). See Coordinator Enrollment, Student Enrollment, and Advisor Enrollment below. |
+| **Shell / Layout** | Application structure (menu, top bar, container); high-level standalone routing; loading feature routes; conditionally renders menu items based on `currentUser$.role` from AuthStateService — only role-appropriate options visible after login (HU-01). Hosts the Language Switcher in the top bar. |
+| **Login Form** (Auth Feature) | Login form (email, password, "Remember me" checkbox); calls AuthStateService.login(); displays generic error on failure; navigates to role-specific dashboard on success. Includes "¿Olvidaste tu contraseña?" link to Forgot Password View. Implements HU-01 UI. |
+| **Forgot Password View** (Auth Feature) | Form with email field + "Send Email" button + "Back to Login" link. On submit, calls `POST /api/auth/forgot-password`. Always displays generic success message regardless of whether the email exists (no information leakage). Implements HU-02 request phase. |
+| **Reset Password View** (Auth Feature) | Accessed via email link (`/auth/reset-password?token=...`). Form with "New Password" + "Confirm Password" fields with complexity validation. On submit, calls `POST /api/auth/reset-password` with token and new password. Implements HU-02 reset phase. |
+| **Dashboard Feature** | Role-specific landing page after login; summary views per user type. |
+| **Enrollment Feature** | Enrollment-related views decomposed into three role-scoped sub-folders (Iteration 5). See Coordinator Enrollment, Student Enrollment, and Advisor Enrollment below. |
 | **Term List Component** (Coordinator Enrollment) | Paginated table of academic terms with status indicators (`PLANNING`, `OFFER_LOADED`, `IN_ENROLLMENT`, `IN_PROGRESS`, `COMPLETED`). Action buttons for CSV upload and enrollment opening. Requires COORDINATOR role. Implements HU-06 navigation. Added in Iteration 5. |
 | **CSV Upload Component** (Coordinator Enrollment) | File upload form for CSV schedules and lotteries. Displays a validation report after upload (errors per row, warnings, summary of imported groups and UEAs). Shows the academic offer in a reviewable table before the Coordinator opens enrollment. Requires COORDINATOR role. Implements HU-06. Added in Iteration 5. |
 | **Enrollment Form Generation Component** (Coordinator Enrollment) | Student selection view (searchable list of students with `APPROVED_BY_ADVISOR` or `FINALIZED` enrollment status). For each student, shows their approved course selections and provides "Finalize" (state transition) and "Download PDF" / "Export TXT/XLSX" buttons. Requires COORDINATOR or ASSISTANT role. Implements HU-09 and CON-3. Added in Iteration 5. |
 | **Course Selection Component** (Student Enrollment) | Available courses view with remaining quota, schedules, and assigned professors. Students select groups from the academic offer; client-side schedule conflict detection provides immediate UX feedback (server validates authoritatively). Submit button calls `SelectCoursesUseCase`. Requires STUDENT role. Implements HU-07. Added in Iteration 5. |
 | **Advisor Enrollment List Component** (Advisor Enrollment) | Paginated table of advised students whose enrollments are in `SELECTION_COMPLETED` state. Columns: student name, enrollment ID, number of selected courses, submission date. Click navigates to Enrollment Review Component. Requires PROFESSOR role. Added in Iteration 5. |
 | **Enrollment Review Component** (Advisor Enrollment) | Detailed view of a student's selected courses with schedule and credit details. Approve and Reject buttons (reject requires a reason text field). On approval, calls `ApproveEnrollmentUseCase`; on rejection, calls `RejectEnrollmentUseCase`. Requires PROFESSOR role. Implements HU-08. Added in Iteration 5. |
-| **Student List Component** (Entity Management) | Paginated table of students with search/filter. Columns: name, email, enrollment ID, program type, admission date, status. "Create Student" button navigates to Student Form. Requires COORDINATOR role. |
-| **Student Form Component** (Entity Management) | Create/edit student form with fields: first name, first last name, second last name, email, nationality, enrollment ID, program type, undergraduate degree, admission date, advisor selection. Auto-generates password on creation (displayed once). Bean Validation aligned with backend. Implements HU-15. |
-| **Professor List Component** (Entity Management) | Paginated table of professors with search/filter. Columns: name, email, employee number, status. "Create Professor" button navigates to Professor Form. Requires COORDINATOR role. |
-| **Professor Form Component** (Entity Management) | Create/edit professor form with fields: first name, first last name, second last name, email, employee number. Auto-generates password on creation (displayed once). Implements HU-21. |
-| **Change Password Component** (Entity Management) | Two modes: (a) Self-change — accessible from user profile menu; requires current password + new password + confirm. (b) Coordinator-change — accessible from student/professor detail view; requires only new password + confirm. Implements HU-28. |
-| **Auth Interceptor** (Core) | Angular `HttpInterceptor`; attaches `Authorization: Bearer <accessToken>` header to all API requests (except auth endpoints); injects `Accept-Language` header with current locale for i18n backend responses (QA-6); on 401 response, transparently attempts token refresh via refresh token cookie — retries original request on success, redirects to login on failure. |
-| **Role Auth Guard** (Core) | Angular `CanActivate` guard; reads `data.roles` from route definition; decodes JWT to extract role claim; allows navigation if user role is in allowed list; redirects to 403 page (wrong role) or login page (unauthenticated). UX convenience only — all authorization enforced server-side. |
+| **Student List Component** (Academic Catalog) | Paginated table of students with search/filter. Columns: name, email, enrollment ID, program type, admission date, status. "Create Student" button navigates to Student Form. Requires COORDINATOR role. |
+| **Student Form Component** (Academic Catalog) | Create/edit student form with fields: first name, first last name, second last name, email, nationality, enrollment ID, program type, undergraduate degree, admission date, advisor selection. Auto-generates password on creation (displayed once). Bean Validation aligned with backend. Implements HU-15. |
+| **Professor List Component** (Academic Catalog) | Paginated table of professors with search/filter. Columns: name, email, employee number, status. "Create Professor" button navigates to Professor Form. Requires COORDINATOR role. |
+| **Professor Form Component** (Academic Catalog) | Create/edit professor form with fields: first name, first last name, second last name, email, employee number. Auto-generates password on creation (displayed once). Implements HU-21. |
+| **Change Password Component** (Academic Catalog) | Two modes: (a) Self-change — accessible from user profile menu; requires current password + new password + confirm. (b) Coordinator-change — accessible from student/professor detail view; requires only new password + confirm. Implements HU-28. |
+| **Auth Interceptor** (Core) | Angular `HttpInterceptorFn`; attaches `Authorization: Bearer <accessToken>` header to all API requests (except auth endpoints); injects `Accept-Language` header with current locale for i18n backend responses (QA-6); on 401 response, transparently attempts token refresh via refresh token cookie — retries original request on success, redirects to login on failure. |
+| **Role Auth Guard** (Core) | Angular `CanActivateFn` guard; reads `data.roles` from route definition; decodes JWT to extract role claim; allows navigation if user role is in allowed list; redirects to 403 page (wrong role) or login page (unauthenticated). UX convenience only — all authorization enforced server-side. |
 | **Auth State Service** (Core) | Holds access token in memory (never localStorage — XSS mitigation); exposes `currentUser$` Observable with decoded JWT claims (id, email, role, graduateProgramId); provides `login()`, `logout()`, `isAuthenticated()`, `hasRole()` methods; on bootstrap, attempts silent refresh via HttpOnly refresh token cookie to restore session. |
 | **Tenant Context** (Core) | Manages the active graduate program selection; includes `X-Graduate-Id` header in API requests. |
-| **HTTP Client** (Core) | Base Angular HttpClient configuration; base API URL; timeout handling. |
-| **TranslateModule** (Core) | `@ngx-translate/core` + `@ngx-translate/http-loader` configuration. `TranslateModule.forRoot()` with `HttpLoaderFactory` loading JSON files from `assets/i18n/`. Default language: Spanish (`es`). Provides `TranslateService` for programmatic access and `translate` pipe for templates. Implements QA-6 SPA-side infrastructure. |
-| **Language Switcher Component** (Shared) | Toggle between Spanish (`es`) and English (`en`); persists selection in `localStorage`; emits change to `TranslateService`. Placed in the Shell/Layout top bar. Visual indicator of current language. |
-| **UI Components** (Shared) | Reusable components (data tables with pagination, form controls, notification messages, error pages including 403 Access Denied); all use translation keys via `translate` pipe. |
-| **Pipes** (Shared) | Includes the `translate` pipe from `@ngx-translate` re-exported for use across all feature modules. |
+| **HTTP Access** (Core) | Base Angular Http client config; base API URL; timeout handling via `provideHttpClient()`. |
+| **Translation Config** (Core) | `@ngx-translate/core` + `@ngx-translate/http-loader` configuration via `provideTranslateService`. Default language: Spanish (`es`). Provides `TranslateService` for programmatic access and `translate` pipe capabilities. Implements QA-6 SPA-side infrastructure. |
+| **Language Switcher Component** (Shared) | Standalone Component. Toggle between Spanish (`es`) and English (`en`); persists selection in `localStorage`; emits change to `TranslateService`. Placed in the Shell/Layout top bar. Visual indicator of current language. |
+| **UI Components** (Shared) | Reusable Standalone Components (PrimeNG wrapped data tables with pagination, form controls, notification messages, error pages including 403 Access Denied); all use translation keys. |
 
 ### 7.- Deployment view
 
