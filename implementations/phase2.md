@@ -18,7 +18,7 @@
 
 ## A2.1 — GraduateProgram Aggregate Root 🔲
 
-> Specs: SPEC-004 (TBD — GraduateProgram domain model and persistence)
+> Specs: [SPEC-004](../SDD/specs/iteration-1/SPEC-004_graduate-program-domain-persistence.md) — GraduateProgram domain model and persistence
 
 - [ ] **T2.1.1** Create `GraduateProgram.java` — `@Entity`, fields from `program-configuration.schema.json#/definitions/GraduateProgram`: `id`, `name`, `division`; invariants: name not blank max 200, division not blank → SPEC-004
 - [ ] **T2.1.2** Create `GraduateProgramRepositoryPort.java` — output port interface in `domain/port/out/` → SPEC-004
@@ -27,7 +27,7 @@
 
 ## A2.2 — ConfigurationParameter Value Object 🔲
 
-> Specs: SPEC-005 (TBD — ConfigurationParameter persistence and isolation)
+> Specs: [SPEC-005](../SDD/specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md) — ConfigurationParameter persistence and isolation
 
 - [ ] **T2.2.1** Create `ConfigurationParameter.java` — `@Embeddable` or `@Entity` composed by GraduateProgram; fields from schema: `key` (UPPER_SNAKE_CASE), `value`, `description` → SPEC-005
 - [ ] **T2.2.2** Create `ConfigurationParameterRepositoryPort.java` — output port for parameter CRUD scoped by `graduateProgramId` → SPEC-005
@@ -38,10 +38,10 @@
 
 ## Deliverables
 
-- [ ] **E2.1** GraduateProgram entity persists and retrieves from PostgreSQL — Specs: SPEC-004
-- [ ] **E2.2** ConfigurationParameter CRUD works scoped by `graduateProgramId` — Specs: SPEC-005
-- [ ] **E2.3** Flyway migrations run clean on empty database — Specs: SPEC-004, SPEC-005
-- [ ] **E2.4** Multi-tenant isolation: parameters from program 1 never visible to program 2 — Specs: SPEC-005
+- [ ] **E2.1** GraduateProgram entity persists and retrieves from PostgreSQL — Specs: [SPEC-004](../SDD/specs/iteration-1/SPEC-004_graduate-program-domain-persistence.md)
+- [ ] **E2.2** ConfigurationParameter CRUD works scoped by `graduateProgramId` — Specs: [SPEC-005](../SDD/specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md)
+- [ ] **E2.3** Flyway migrations run clean on empty database — Specs: [SPEC-004](../SDD/specs/iteration-1/SPEC-004_graduate-program-domain-persistence.md), [SPEC-005](../SDD/specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md)
+- [ ] **E2.4** Multi-tenant isolation: parameters from program 1 never visible to program 2 — Specs: [SPEC-005](../SDD/specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md)
 
 ---
 

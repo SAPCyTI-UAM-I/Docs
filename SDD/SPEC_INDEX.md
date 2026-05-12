@@ -10,7 +10,7 @@
 
 | Total Specs | 🔲 Draft | 🔵 Approved | ✅ Implemented | ⛔ Blocked |
 |-------------|----------|-------------|----------------|-----------|
-| 0 | 0 | 0 | 0 | 0 |
+| 2 | 2 | 0 | 0 | 0 |
 
 ---
 
@@ -22,12 +22,8 @@
 
 | Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
 |---------|-------|-------|----|---------|------------|--------|
-| — | — | — | — | — | — | — |
-
-<!-- Example:
-| [SPEC-001](specs/iteration-1/SPEC-001_graduate-program-domain.md) | GraduateProgram Domain Model | 2 | Configuration | QA-3, QA-4 | — | 🔲 Draft |
-| [SPEC-002](specs/iteration-1/SPEC-002_configuration-parameter-persistence.md) | ConfigurationParameter VO & Persistence | 2 | Configuration | QA-3, QA-4 | SPEC-001 | 🔲 Draft |
--->
+| [SPEC-004](specs/iteration-1/SPEC-004_graduate-program-domain-persistence.md) | GraduateProgram — dominio y persistencia | 2 | BC-04 Program Configuration | QA-3, QA-4 | — | 🔲 Draft |
+| [SPEC-005](specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md) | ConfigurationParameter — persistencia y aislamiento | 2 | BC-04 Program Configuration | QA-3, QA-4 | SPEC-004 | 🔲 Draft |
 
 > **Note:** Phases 0 and 1 are ✅ Completed — no retroactive specs needed.
 > **Dependencies:** Each spec declares its own dependencies in its header (`Depends on:`, `Blocks:`, `External Dependencies:`). Open the spec to see the full detail.
