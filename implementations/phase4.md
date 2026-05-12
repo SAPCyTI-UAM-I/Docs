@@ -20,7 +20,7 @@
 
 > Specs: SPEC-008 (TBD — Angular project scaffold and Core module)
 
-- [ ] **T4.1.1** Create Angular project with Angular CLI — TypeScript strict mode, SCSS, routing enabled → SPEC-008
+- [ ] **T4.1.1** Create Angular project with Angular CLI — TypeScript strict mode, CSS, routing enabled → SPEC-008
 - [ ] **T4.1.2** Configure ESLint + `@angular-eslint` — code quality rules per `technologies/frontend.md` → SPEC-008
 - [ ] **T4.1.3** Create `CoreModule` — singleton services: `AuthService`, `TenantService`, `HttpErrorInterceptor` → SPEC-008
 - [ ] **T4.1.4** Create `SharedModule` — reusable UI components, pipes, language switcher → SPEC-008
@@ -61,7 +61,7 @@
 
 | # | Risk | Impact | Probability | Mitigation |
 |---|------|--------|-------------|------------|
-| R-4.1 | Angular version breaking changes with `@ngx-translate` | Medio | Baja | Pin `@ngx-translate/core@^15` compatible with Angular 17+ |
+| R-4.1 | Angular version breaking changes with `@ngx-translate` | Medio | Baja | Pin `@ngx-translate/core` compatible with Angular |
 | R-4.2 | CORS issues between SPA and backend | Bajo | Media | Backend `WebConfig` already allows `localhost:4200` |
 
 ---

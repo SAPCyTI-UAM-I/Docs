@@ -50,11 +50,11 @@
 - **Profiles:** `dev`, `preprod`, `prod`
 
 ### Frontend
-- **Framework:** Angular 17+, TypeScript strict mode
+- **Framework:** Angular, TypeScript strict mode
 - **Structure:** Shell + Core + Shared + Feature modules
 - **i18n:** `@ngx-translate`, keys in `assets/i18n/{lang}.json`
 - **HTTP:** `HttpClient` with interceptors for JWT and tenant header
-- **Style:** SCSS, BEM naming, responsive-first
+- **Style:** Tailwind CSS, PrimeNG, CSS puro, responsive-first
 
 ### DevOps
 - **Branching:** GitFlow (`main`, `develop`, `feature/*`, `release/*`, `hotfix/*`)

@@ -12,7 +12,7 @@ You are working on SAPCyTI, a system for postgraduate administration at UAM Izta
 
 - Modular monolith, hexagonal architecture (ports & adapters), DDD
 - Backend: Java 21, Spring Boot 3.x, PostgreSQL 16, Flyway, MapStruct
-- Frontend: Angular 17+, TypeScript strict, separate repo (sapcyti-spa)
+- Frontend: Angular, TypeScript strict, separate repo (sapcyti-spa)
 - Multi-tenant via `X-Graduate-Id` header
 
 ## Backend conventions
@@ -32,7 +32,7 @@ You are working on SAPCyTI, a system for postgraduate administration at UAM Izta
 
 - Shell + Core + Shared + Feature modules (lazy-loaded)
 - i18n: `@ngx-translate`, keys in `assets/i18n/{lang}.json`
-- SCSS, BEM, responsive-first
+- Tailwind CSS, PrimeNG, CSS puro (sin preprocesadores), responsive-first
 
 ## DevOps
 

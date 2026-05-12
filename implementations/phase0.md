@@ -58,7 +58,7 @@
 
 ## A0.4 — Local Development Environment ✅
 
-- [x] **T0.4.1** Document prerequisites in `PREREQUISITES.md` — Java 21, Maven 3.9+, Node.js 20 LTS, npm 10+, Angular CLI 17+, Docker Desktop, Git
+- [x] **T0.4.1** Document prerequisites in `PREREQUISITES.md` — Java 21, Maven 3.9+, Node.js, npm, Angular CLI, Docker Desktop, Git
   - Prerequisites documented with download links and verify commands
 - [x] **T0.4.2** Create `docker-compose.dev.yml` for local PostgreSQL — PostgreSQL 16-alpine, persistent volume, port 5432, dev credentials
   - `docker-compose.dev.yml` in `sapcyti-api/` with health check and named volume
@@ -66,7 +66,7 @@
   - Both `setup.sh` (Linux/macOS) and `setup.ps1` (Windows) created
 - [x] **T0.4.4** Create `.env.example` files — template with all required environment variables and example values
   - `.env.example` created in both repos with documented variables
-- [x] **T0.4.5** Configure `.editorconfig` — 4-space indentation (Java), 2-space (TS/HTML/SCSS), LF line endings, UTF-8, trim trailing whitespace
+- [x] **T0.4.5** Configure `.editorconfig` — 4-space indentation (Java), 2-space (TS/HTML/CSS), LF line endings, UTF-8, trim trailing whitespace
   - `.editorconfig` created in both repos with language-specific rules
 - [x] **T0.4.6** Create `docker-compose.override.yml` example — documented in README Quick Start section
   - Override pattern documented; not committed (in `.gitignore`)

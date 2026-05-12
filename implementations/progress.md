@@ -79,7 +79,7 @@
 - Created implementation plan with 6 phases (0–5) for Iteration 1
 - Structured all documents following project template conventions
 - Phase dependencies defined: P0 → P1 → P2 → P3 → P5; P0 → P4 → P5
-- Technology stack confirmed: Spring Boot 3.x (Java 21) + Angular 17+ + PostgreSQL
+- Technology stack confirmed: Spring Boot 3.x (Java 21) + Angular + PostgreSQL
 - Deployment strategy: local Docker first, on-premise server after Iteration 2
 
 ### Session — 2026-04-24 (Phase 1 Implementation)
@@ -122,7 +122,7 @@
   - `PREREQUISITES.md` with required tools and versions
   - `docker-compose.dev.yml` (PostgreSQL 16, persistent volume, health check)
   - `setup.sh` + `setup.ps1` (prerequisite check → PostgreSQL → npm install → build)
-  - `.env.example` in both repos, `.editorconfig` (4sp Java, 2sp TS/HTML/SCSS)
+  - `.env.example` in both repos, `.editorconfig` (4sp Java, 2sp TS/HTML/CSS)
 - **Completed A0.5** (4/5 tasks): CI/CD pipelines
   - PR Validation: Backend (3 jobs: lint/build-test/security), SPA (4 jobs: lint/test/audit/build)
   - Merge & Deploy: Both repos (build-test → Docker GHCR push → deploy stub)

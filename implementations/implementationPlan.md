@@ -116,7 +116,7 @@ graph LR
 > Full details in [`SDD/technologies/`](../SDD/technologies/).
 
 **Backend:** See [`technologies/backend.md`](../SDD/technologies/backend.md) — Spring Boot 3.4.5 (Java 21) + Spring Data JPA + PostgreSQL 16 + Flyway + MapStruct
-**Frontend:** See [`technologies/frontend.md`](../SDD/technologies/frontend.md) — Angular 17+ + TypeScript + SCSS
+**Frontend:** See [`technologies/frontend.md`](../SDD/technologies/frontend.md) — Angular + TypeScript + Tailwind CSS
 **Testing:** See [`technologies/testing.md`](../SDD/technologies/testing.md) — JUnit 5 + Mockito + JaCoCo ≥80%
 **DevOps:** See [`technologies/devops.md`](../SDD/technologies/devops.md) — Docker + Docker Compose + GitHub Actions
 
