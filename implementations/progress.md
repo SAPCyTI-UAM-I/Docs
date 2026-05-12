@@ -9,7 +9,7 @@
 | Phase | Status | Progress | Last Updated |
 |-------|--------|----------|--------------|
 | 0 — Project setup | 🔵 In progress | 34/40 tasks (6 manual) | 2026-04-19 |
-| 1 — Backend init | ✅ Completed | 10/10 tasks | 2026-04-24 |
+| 1 — Backend init | ✅ Completed | 17/17 checklist items | 2026-05-12 |
 | 2 — Domain model | 🔲 Not started | 0/10 tasks | — |
 | 3 — REST API | 🔲 Not started | 0/12 tasks | — |
 | 4 — SPA init | 🔲 Not started | 0/16 tasks | — |
@@ -52,6 +52,7 @@
 | D-007 | 2026-04-24 | Project created manually (no Spring Initializr) | `start.spring.io` unreachable from dev environment; `pom.xml` written manually | Spring Initializr download |
 | D-008 | 2026-04-24 | `TenantFilter` and `TenantContext` placed in `shared/tenant` | Cross-cutting concern not owned by any bounded context | Inside `configuration` module |
 | D-009 | 2026-04-24 | `checkstyle.xml`: `LineLength` moved to `Checker` level | Checkstyle 10.x (maven-checkstyle-plugin 3.6.0) requires it outside `TreeWalker` | No change (broke build) |
+| D-010 | 2026-05-12 | Dev PostgreSQL published on host **port 5433** (`docker-compose.dev.yml`); default `DB_URL` uses `localhost:5433` | Another PostgreSQL on Windows often owns **5432**, causing authentication failures when the app connected to the wrong instance | Keep **5432** inside the container only; document override via `DB_URL` |
 
 ---
 
@@ -81,6 +82,14 @@
 - Phase dependencies defined: P0 → P1 → P2 → P3 → P5; P0 → P4 → P5
 - Technology stack confirmed: Spring Boot 3.x (Java 21) + Angular 17+ + PostgreSQL
 - Deployment strategy: local Docker first, on-premise server after Iteration 2
+
+### Session — 2026-05-12 (Phase 1 — Docs checklist + specs + local run)
+
+- Cerrado el checklist completo en [`phase1.md`](phase1.md) (A1.1–A1.3, entregables, criterios de transición); fase marcada **✅ Completed**.
+- [`SPEC_INDEX.md`](../SDD/SPEC_INDEX.md): **SPEC-001**, **SPEC-002**, **SPEC-003** → **✅ Implemented**; SPEC-004/005 siguen en borrador (Phase 2).
+- Cabeceras de SPEC-001–003 alineadas con estado **Implemented**.
+- Implementación y arranque local verificados en repo **`sapcyti-api`**: `mvn verify`, `spring-boot:run` con perfil `dev` y PostgreSQL vía Docker; decisión **D-010** (puerto host **5433**).
+- **README** de `sapcyti-api`: sección explícita *Run locally* (PowerShell, variables, health check).
 
 ### Session — 2026-04-24 (Phase 1 Implementation)
 

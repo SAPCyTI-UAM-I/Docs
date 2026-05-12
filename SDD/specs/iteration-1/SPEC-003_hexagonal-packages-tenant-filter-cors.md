@@ -1,6 +1,6 @@
 # SPEC-003: Paquetes hexagonales, TenantFilter y CORS
 
-> **Status:** 🔲 Draft | 🔵 Approved | ✅ Implemented | ⛔ Blocked | 🔄 Amended
+> **Status:** ✅ Implemented | 🔲 Draft | 🔵 Approved | ⛔ Blocked | 🔄 Amended
 > **Author:** SAPCyTI SDD
 > **Date:** 2026-05-12
 > **Phase:** 1 | **ADD Iteration:** 1

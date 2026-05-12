@@ -1,6 +1,6 @@
 # SPEC-002: Configuración, perfiles Spring y logging estructurado
 
-> **Status:** 🔲 Draft | 🔵 Approved | ✅ Implemented | ⛔ Blocked | 🔄 Amended
+> **Status:** ✅ Implemented | 🔲 Draft | 🔵 Approved | ⛔ Blocked | 🔄 Amended
 > **Author:** SAPCyTI SDD
 > **Date:** 2026-05-12
 > **Phase:** 1 | **ADD Iteration:** 1
