@@ -12,7 +12,8 @@
 | 1 — Backend init | ✅ Completed | 10/10 tasks | 2026-04-24 |
 | 2 — Domain model | 🔲 Not started | 0/10 tasks | — |
 | 3 — REST API | 🔲 Not started | 0/12 tasks | — |
-| 4 — SPA init | 🔲 Not started | 0/16 tasks | — |
+| 4A — SPA scaffold | ✅ Completed | 8/8 tasks | 2026-05-12 |
+| 4 — SPA core arch | 🔲 Not started | 0/? tasks | — |
 | 5 — Integration | 🔲 Not started | 0/17 tasks | — |
 
 **Legend:** 🔲 Not started | 🔵 In progress | ✅ Completed | ⛔ Blocked
@@ -21,9 +22,9 @@
 
 ## Current Phase
 
-**Phase:** 1 — Backend project initialization ✅ COMPLETED  
-**Next phase:** 2 — Domain model and persistence  
-**Next step:** Begin [`phase2.md`](phase2.md) — A2.1 (GraduateProgram aggregate, ConfigurationParameter entity, JPA adapters, Flyway migrations)
+**Phase:** 4A — SPA Scaffold & Tooling ✅ COMPLETED  
+**Next phase:** 4 — SPA Core Architecture (SPEC-008B)  
+**Next step:** Begin [`phase4.md`](phase4.md) — SPEC-008B (Core Providers, Shell, i18n)
 
 ### Pending Manual Tasks (Phase 0)
 
@@ -52,6 +53,10 @@
 | D-007 | 2026-04-24 | Project created manually (no Spring Initializr) | `start.spring.io` unreachable from dev environment; `pom.xml` written manually | Spring Initializr download |
 | D-008 | 2026-04-24 | `TenantFilter` and `TenantContext` placed in `shared/tenant` | Cross-cutting concern not owned by any bounded context | Inside `configuration` module |
 | D-009 | 2026-04-24 | `checkstyle.xml`: `LineLength` moved to `Checker` level | Checkstyle 10.x (maven-checkstyle-plugin 3.6.0) requires it outside `TreeWalker` | No change (broke build) |
+| D-010 | 2026-05-12 | ESLint flat config (`eslint.config.mjs`) en lugar de `.eslintrc.json` | Angular 21 genera flat config por defecto; esquema más moderno y oficial | `.eslintrc.json` (legado, deprecado en ESLint 9+) |
+| D-011 | 2026-05-12 | `eslint.config.mjs` (extensión `.mjs`) en lugar de `.js` | `commitlint.config.js` usa CJS; agregar `"type":"module"` al `package.json` lo rompería; `.mjs` fuerza ESM por archivo sin afectar el resto | Agregar `"type":"module"` al `package.json` |
+| D-012 | 2026-05-12 | Vitest vía `@angular/build:unit-test` (integración nativa Angular 21) | Angular 21 incluye soporte Vitest nativo; `@analogjs/vitest-angular` no es necesario y genera conflictos de módulos ESM | `@analogjs/vitest-angular` |
+| D-013 | 2026-05-12 | PostCSS configurado en `.postcssrc.json` en lugar de `postcss.config.js` | Formato JSON equivalente, ya existía en el proyecto; sin impacto funcional | `postcss.config.js` (especificado en SPEC-008A) |
 
 ---
 
@@ -59,7 +64,7 @@
 
 | # | Date | Description | Status | Resolution |
 |---|------|-------------|--------|------------|
-| B-001 | 2026-04-19 | `npm` not available in current environment | ⚠️ Tracked | Configuration files created manually; user must run `npm install` on local machine |
+| B-001 | 2026-04-19 | `npm` not available in current environment | ✅ Resolved | `pnpm` disponible y usado como package manager en `sapcyti-spa` |
 
 ---
 
@@ -105,6 +110,19 @@
 - Decisions D-007 through D-009 recorded
 - **All deliverables met:** E1.1 (`mvn clean compile` ✅), E1.2 (package structure ✅), E1.3 (7/7 tests ✅), E1.4 (profiles ✅)
 - Next: Phase 2 — Domain model and persistence (GraduateProgram, ConfigurationParameter, JPA adapters, Flyway migrations)
+
+### Session — 2026-05-12 (Phase 4A — SPA Scaffold & Tooling)
+
+- **Completado A4A.1**: Angular 21.2.10 con strict mode, routing, CSS puro, standalone components, pnpm
+- **Completado A4A.2**: Dependencias instaladas — Tailwind CSS 4 (PostCSS), PrimeNG 21 + @primeuix/themes + primeicons, @ngx-translate/core + http-loader
+- **Completado A4A.3**: Tooling configurado
+  - ESLint: `ng add @angular-eslint/schematics` → `eslint.config.mjs` (flat config ESM) — D-010, D-011
+  - Prettier: `.prettierrc` completo + `prettier-plugin-tailwindcss` + `.prettierignore` + scripts `lint`/`format`
+  - Vitest: `@angular/build:unit-test` (nativo Angular 21, sin `@analogjs`) — D-012; 2/2 tests pasan
+- **Completado A4A.4**: Carpetas `core/`, `shared/`, `features/`, `models/`, `assets/i18n/` con `.gitkeep`; archivos `environment.ts` / `environment.prod.ts`
+- **Verificaciones**: `ng serve` → HTTP 200 ✅ | `ng build --configuration production` → sin errores ✅ | `pnpm run lint` → ESLint + Prettier ✅ | `ng test` → Vitest 2/2 ✅
+- Decisiones D-010 a D-013 registradas; B-001 resuelto
+- **Siguiente:** Phase 4 — SPEC-008B (Core Providers, Shell & i18n)
 
 ### Session — 2026-04-19 (Phase 0 Implementation)
 
