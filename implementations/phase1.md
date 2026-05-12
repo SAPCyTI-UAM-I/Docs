@@ -16,7 +16,7 @@
 
 ## A1.1 — Spring Boot Project Creation 🔲
 
-> Specs: SPEC-001 (TBD — Spring Boot skeleton and Maven configuration)
+> Specs: [SPEC-001 — Spring Boot y build Maven](../SDD/specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md)
 
 - [ ] **T1.1.1** Create `pom.xml` — Java 21, Spring Boot 3.4.5, Maven wrapper; all dependencies from [`technologies/backend.md`](../SDD/technologies/backend.md): `spring-boot-starter-web`, `data-jpa`, `validation`, `actuator`, `flyway-core`, `flyway-database-postgresql`, `postgresql`, `mapstruct`, `logstash-logback-encoder` → SPEC-001
 - [ ] **T1.1.2** Add build plugins: `spring-boot-maven-plugin`, `maven-compiler-plugin` (Java 21 + MapStruct processor), `jacoco-maven-plugin` (≥80%), `maven-checkstyle-plugin` (Google Java Style) → SPEC-001
@@ -25,7 +25,7 @@
 
 ## A1.2 — Configuration & Profiles 🔲
 
-> Specs: SPEC-002 (TBD — Application configuration and profiles)
+> Specs: [SPEC-002 — Configuración, perfiles y logging](../SDD/specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md)
 
 - [ ] **T1.2.1** Create `application.yml` — DataSource via env vars (`DB_URL`, `DB_USER`, `DB_PASS`), JPA ddl-auto=validate, Flyway enabled, Actuator endpoints (`/health`, `/info`, `/prometheus`) → SPEC-002
 - [ ] **T1.2.2** Create profile files: `application-dev.yml`, `application-preprod.yml`, `application-prod.yml` — switching behavior via `SPRING_PROFILES_ACTIVE` → SPEC-002
@@ -33,8 +33,10 @@
 
 ## A1.3 — Hexagonal Package Structure 🔲
 
-> Specs: SPEC-003 (TBD — Module package layout and multi-tenant infrastructure)
+> Specs: [SPEC-003 — Paquetes hexagonales, tenant y CORS](../SDD/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md)
 > Ref: [`Architecture.md §6.1`](../Design/Architecture.md) — Module package structure
+
+**Paquete base Java:** `mx.uam.sapcyti` (subpaquetes por BC como en SPEC-003 y Architecture §6.1).
 
 - [ ] **T1.3.1** Create `configuration` module package tree: `domain/model`, `domain/port/in`, `domain/port/out`, `application/service`, `infrastructure/adapter/in/dto`, `infrastructure/adapter/out`, `infrastructure/mapper` — each with `package-info.java` documenting hexagonal layer → SPEC-003
 - [ ] **T1.3.2** Create placeholder module packages: `identity` (with `security/`), `academic` (with `domain/service/`, `mapper/`), `offering` (with `acl/`), `enrollment` (with `acl/`), `audit` — each with `package-info.java` documenting BC, sub-domain, and iteration scope → SPEC-003
@@ -47,10 +49,10 @@
 
 ## Deliverables
 
-- [ ] **E1.1** Compilable Maven project — `mvn clean compile` succeeds with all dependencies — Specs: SPEC-001
-- [ ] **E1.2** Configuration profiles — `application.yml` + profiles functional with env var resolution — Specs: SPEC-002
-- [ ] **E1.3** Hexagonal package structure — directories per §6.1 with `package-info.java` — Specs: SPEC-003
-- [ ] **E1.4** Functional tenant filter — unit tests validate `X-Graduate-Id` propagation to `TenantContext` and MDC — Specs: SPEC-003
+- [ ] **E1.1** Compilable Maven project — `mvn clean compile` succeeds with all dependencies — [SPEC-001](../SDD/specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md)
+- [ ] **E1.2** Configuration profiles — `application.yml` + profiles functional with env var resolution — [SPEC-002](../SDD/specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md)
+- [ ] **E1.3** Hexagonal package structure — directories per §6.1 with `package-info.java` — [SPEC-003](../SDD/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md)
+- [ ] **E1.4** Functional tenant filter — unit tests validate `X-Graduate-Id` propagation to `TenantContext` and MDC — [SPEC-003](../SDD/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md)
 
 ---
 
@@ -60,7 +62,7 @@
 - [ ] `mvn test` passes all TenantFilter and TenantContext tests
 - [ ] Package tree matches `Architecture.md §6.1` exactly (6 BC modules + shared)
 - [ ] Configuration profiles switch via `SPRING_PROFILES_ACTIVE` env var
-- [ ] All linked specs in this phase are ✅ Implemented
+- [ ] Las specs [SPEC-001](../SDD/specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md), [SPEC-002](../SDD/specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md) y [SPEC-003](../SDD/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md) están ✅ Implemented
 - [ ] No regressions from Phase 0
 
 ---

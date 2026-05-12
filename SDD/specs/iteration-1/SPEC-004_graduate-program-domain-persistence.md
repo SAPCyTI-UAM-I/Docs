@@ -8,7 +8,7 @@
 > **Drivers:** [QA-3](../../../ArchitecturalDrivers.md), [QA-4](../../../ArchitecturalDrivers.md) — parametrización multi-programa; soporte hasta 9 posgrados divisionales
 > **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json) — contrato para tipos, campos y comandos
 > **Domain Features:** [`domain/features/program-configuration/`](../../domain/features/program-configuration/) — escenarios Gherkin enlazados a criterios de aceptación
-> **Depends on:** —
+> **Depends on:** [SPEC-003](SPEC-003_hexagonal-packages-tenant-filter-cors.md) — árbol de paquetes `configuration` y convenciones hexagonales
 > **Blocks:** [SPEC-005](SPEC-005_configuration-parameter-persistence-isolation.md) — la tabla y entidad de parámetros referencian `graduate_programs`
 > **External Dependencies:**
 >   - [ ] Ninguna — Phase 2 solo dominio + Flyway + adaptador JPA
@@ -250,7 +250,7 @@ Persistencia vía JPA con parámetros enlazados — sin SQL concatenado. RBAC y 
 - **Iteration Plan:** [`IterationPlan.md`](../../../Design/IterationPlan.md)
 - **Decision Log:** [`progress.md`](../../../implementations/progress.md)
 - **Technology Stack:** [`technologies/backend.md`](../../technologies/backend.md), [`technologies/testing.md`](../../technologies/testing.md)
-- **Related Specs:** [SPEC-005](SPEC-005_configuration-parameter-persistence-isolation.md)
+- **Related Specs:** [SPEC-003](SPEC-003_hexagonal-packages-tenant-filter-cors.md), [SPEC-005](SPEC-005_configuration-parameter-persistence-isolation.md)
 
 ---
 

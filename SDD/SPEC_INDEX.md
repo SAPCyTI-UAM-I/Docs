@@ -10,7 +10,7 @@
 
 | Total Specs | 🔲 Draft | 🔵 Approved | ✅ Implemented | ⛔ Blocked |
 |-------------|----------|-------------|----------------|-----------|
-| 2 | 2 | 0 | 0 | 0 |
+| 5 | 5 | 0 | 0 | 0 |
 
 ---
 
@@ -22,10 +22,13 @@
 
 | Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
 |---------|-------|-------|----|---------|------------|--------|
-| [SPEC-004](specs/iteration-1/SPEC-004_graduate-program-domain-persistence.md) | GraduateProgram — dominio y persistencia | 2 | BC-04 Program Configuration | QA-3, QA-4 | — | 🔲 Draft |
+| [SPEC-001](specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md) | Spring Boot y build Maven | 1 | Plataforma | CON-1, CON-6 | — | 🔲 Draft |
+| [SPEC-002](specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md) | Configuración, perfiles y logging | 1 | Plataforma | QA-3, QA-4, CON-6 | SPEC-001 | 🔲 Draft |
+| [SPEC-003](specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md) | Paquetes hexagonales, tenant y CORS | 1 | Plataforma + layout BC | QA-4, CON-6, QA-3 | SPEC-001, SPEC-002 | 🔲 Draft |
+| [SPEC-004](specs/iteration-1/SPEC-004_graduate-program-domain-persistence.md) | GraduateProgram — dominio y persistencia | 2 | BC-04 Program Configuration | QA-3, QA-4 | SPEC-003 | 🔲 Draft |
 | [SPEC-005](specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md) | ConfigurationParameter — persistencia y aislamiento | 2 | BC-04 Program Configuration | QA-3, QA-4 | SPEC-004 | 🔲 Draft |
 
-> **Note:** Phases 0 and 1 are ✅ Completed — no retroactive specs needed.
+> **Note:** Phase 0 (PostgreSQL dev via Docker) no tiene spec formal. Phase 1 queda cubierta por SPEC-001–003; [`phase1.md`](../implementations/phase1.md) enlaza las tareas a esas specs.
 > **Dependencies:** Each spec declares its own dependencies in its header (`Depends on:`, `Blocks:`, `External Dependencies:`). Open the spec to see the full detail.
 
 ---
