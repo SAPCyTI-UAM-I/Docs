@@ -22,7 +22,9 @@ All specs are derived from the machine-readable artifacts in [`SDD/domain/`](../
 |-------|--------|-------|
 | **0** — Project Setup | 🔵 In progress | 34/40 tasks done; 6 manual pending |
 | **1** — Backend Init | 🔲 Pending | Requires recreation — no source code in repo |
-| **2–9** | 🔲 Not started | Defined below |
+| **2–3** | 🔲 Not started | Defined below |
+| **4A** — SPA Scaffold & Tooling | 🔲 Not started | New — project creation, dependencies, tooling |
+| **4–9** | 🔲 Not started | Defined below |
 
 ---
 
@@ -34,7 +36,8 @@ All specs are derived from the machine-readable artifacts in [`SDD/domain/`](../
 | **1** | Backend Project Initialization | Spring Boot skeleton, hexagonal packages, multi-tenant filter | Iteration 1 | All (scaffolding) | — | 0 (no specs) |
 | **2** | Program Configuration — Domain & Persistence | GraduateProgram AR, ConfigurationParameter VO, JPA, Flyway | Iteration 1 | BC-04 | [`program-configuration.schema.json`](../SDD/domain/schemas/program-configuration.schema.json) · [`features/program-configuration/`](../SDD/domain/features/program-configuration/) | TBD |
 | **3** | Program Configuration — Application & API | Use cases, REST controllers, Configuration Adapter | Iteration 1 | BC-04 | Same as Phase 2 | TBD |
-| **4** | SPA Project Initialization | Angular project, Core module, tenant context, responsive shell | Iteration 1 | — | — | TBD |
+| **4A** | SPA Project Scaffold & Tooling | Angular CLI project, dependency installation, ESLint/Prettier/Vitest tooling, folder structure | Iteration 1 | — | — | 1 (SPEC-008A) |
+| **4** | SPA Core Architecture & Shell | Core providers (auth stubs, tenant, i18n), Shell layout, shared components, lazy loading routes | Iteration 1 | — | — | 1 (SPEC-008B) |
 | **5** | Integration, Docker & E2E Verification | Dockerize backend + SPA, Docker Compose, end-to-end smoke test | Iteration 1–2 | — | — | TBD |
 | **6** | Security Infrastructure & Authentication | JWT auth, Spring Security, RBAC, login/logout flow (HU-01, HU-03) | Iteration 3 | BC-06 | [`identity-access.schema.json`](../SDD/domain/schemas/identity-access.schema.json) · [`features/identity-access/`](../SDD/domain/features/identity-access/) | TBD |
 | **7** | Entity Management & Credential Flows | Student/Professor CRUD (HU-15, HU-21), password recovery/change (HU-02, HU-28), i18n | Iteration 4 | BC-02, BC-06 | [`academic-management.schema.json`](../SDD/domain/schemas/academic-management.schema.json) · [`features/academic-management/`](../SDD/domain/features/academic-management/) · [`features/identity-access/`](../SDD/domain/features/identity-access/) | TBD |
@@ -50,9 +53,10 @@ All specs are derived from the machine-readable artifacts in [`SDD/domain/`](../
 ```mermaid
 graph LR
     P0["Phase 0<br/>Project Setup"] --> P1["Phase 1<br/>Backend Init"]
-    P0 --> P4["Phase 4<br/>SPA Init"]
+    P0 --> P4A["Phase 4A<br/>SPA Scaffold"]
     P1 --> P2["Phase 2<br/>BC-04 Domain"]
     P2 --> P3["Phase 3<br/>BC-04 API"]
+    P4A --> P4["Phase 4<br/>SPA Core"]
     P3 --> P5["Phase 5<br/>Integration"]
     P4 --> P5
     P5 --> P6["Phase 6<br/>BC-06 Security"]
@@ -66,8 +70,9 @@ graph LR
 | **1** | 0 | Requires repos, CI/CD, quality tools |
 | **2** | 1 | Requires Spring Boot skeleton and hexagonal packages |
 | **3** | 2 | Requires domain model, ports, and JPA adapters |
-| **4** | 0 | Requires repo, ESLint, coverage tools |
-| **5** | 3, 4 | Requires functional backend API + SPA project |
+| **4A** | 0 | Requires repo and quality tools; creates Angular project |
+| **4** | 4A | Requires Angular project, dependencies, and tooling configured |
+| **5** | 3, 4 | Requires functional backend API + SPA with core architecture |
 | **6** | 5 | Requires Docker stack verified; security is cross-cutting |
 | **7** | 6 | Requires auth infrastructure (JWT, RBAC, UserRepositoryPort) |
 | **8** | 7 | Requires Academic Management entities (ProfessorQueryPort for CSV import) |
@@ -101,7 +106,8 @@ graph LR
 | **DevOps setup** | CON-6 (student developers) | 0 | — |
 | **Backend structure** | CON-1 (Java + OSS), CON-6 (modular monolith), QA-4 (multi-tenant) | 1 | — |
 | **Parameterization** | QA-3 (config without code), QA-4 (multi-program), CON-1 | 2, 3 | `program-configuration.schema.json`, `features/program-configuration/` |
-| **Frontend structure** | CON-7 (browsers, responsive), CON-6, QA-4 (tenant) | 4 | — |
+| **Frontend scaffold** | CON-7 (browsers, responsive), CON-6 | 4A | — |
+| **Frontend architecture** | CON-7 (browsers, responsive), CON-6, QA-4 (tenant), QA-6 (i18n) | 4 | — |
 | **Deployment** | CON-2 (on-premise), QA-5 (cloud portability), CON-3, CON-4 | 5 | — |
 | **Security** | QA-1 (RBAC), QA-2 (CWE Top 25), HU-01 (login), HU-03 (logout) | 6 | `identity-access.schema.json`, `features/identity-access/` |
 | **Entity management** | HU-15 (student), HU-21 (professor), QA-6 (i18n), HU-02, HU-28 | 7 | `academic-management.schema.json`, `features/academic-management/` |
@@ -211,7 +217,8 @@ graph LR
 | 1 | Backend Init | All | 10 | 3 | 🔲 Pending |
 | 2 | BC-04 Domain & Persistence | BC-04 | 8 | 2 | 🔲 Not started |
 | 3 | BC-04 Application & API | BC-04 | 7 | 2 | 🔲 Not started |
-| 4 | SPA Init | — | 8 | 1 | 🔲 Not started |
+| 4A | SPA Scaffold & Tooling | — | 13 | 1 (SPEC-008A) | 🔲 Not started |
+| 4 | SPA Core Architecture & Shell | — | 15 | 1 (SPEC-008B) | 🔲 Not started |
 | 5 | Integration & Docker | — | 6 | 1 | 🔲 Not started |
 | 6 | BC-06 Security | BC-06 | 10 | 3 | 🔲 Not started |
 | 7 | BC-02 Entities & Credentials | BC-02, BC-06 | 10 | 4 | 🔲 Not started |
