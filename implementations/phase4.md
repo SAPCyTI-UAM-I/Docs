@@ -24,7 +24,7 @@
 
 ## A4.1 — Application Bootstrap & Provider Registration 🔲
 
-> Specs: SPEC-008B (TBD — SPA Core Providers, Shell & i18n Infrastructure)
+> Specs: [SPEC-008B](../SDD/specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md)
 
 - [ ] **T4.1.1** Configure `app.config.ts` — register `provideHttpClient(withInterceptors([...]))`, `provideRouter(routes)`, `provideTranslateService()`, PrimeNG providers → SPEC-008B
 - [ ] **T4.1.2** Configure `app.routes.ts` — base routes with lazy loading placeholder for features (`auth/`, `dashboard/`, `enrollment/`, `academic-catalog/`) → SPEC-008B

@@ -17,7 +17,7 @@
 
 ## A4A.1 — Angular Project Creation (Manual) 🔲
 
-> Specs: SPEC-008A (TBD — Angular project scaffold and tooling configuration)
+> Specs: [SPEC-008A](../SDD/specs/iteration-1/SPEC-008A_angular-project-scaffold-tooling.md)
 
 - [ ] **T4A.1.1** Execute `ng new sapcyti-spa` with Angular CLI — TypeScript strict mode, routing enabled, CSS (no SCSS) → SPEC-008A
 - [ ] **T4A.1.2** Verify `ng serve` starts without errors on `http://localhost:4200` → SPEC-008A
