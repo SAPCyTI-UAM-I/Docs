@@ -9,7 +9,7 @@
 > **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json) — contrato para tipos, campos y comandos
 > **Domain Features:** [`domain/features/program-configuration/`](../../domain/features/program-configuration/) — escenarios Gherkin enlazados a criterios de aceptación
 > **Depends on:** [SPEC-003](SPEC-003_hexagonal-packages-tenant-filter-cors.md) — árbol de paquetes `configuration` y convenciones hexagonales
-> **Blocks:** [SPEC-005](SPEC-005_configuration-parameter-persistence-isolation.md) — la tabla y entidad de parámetros referencian `graduate_programs`
+> **Blocks:** [SPEC-005](SPEC-005_configuration-parameter-persistence-isolation.md) — la tabla y entidad de parámetros referencian `graduate_programs`; [SPEC-006](SPEC-006_graduate-program-application-rest-api.md) — API y casos de uso sobre este aggregate
 > **External Dependencies:**
 >   - [ ] Ninguna — Phase 2 solo dominio + Flyway + adaptador JPA
 

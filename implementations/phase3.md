@@ -18,7 +18,7 @@
 
 ## A3.1 — GraduateProgram Use Cases & API 🔲
 
-> Specs: SPEC-006 (TBD — GraduateProgram application layer and REST API)
+> Specs: [SPEC-006 — GraduateProgram application layer and REST API](../SDD/specs/iteration-1/SPEC-006_graduate-program-application-rest-api.md)
 
 - [ ] **T3.1.1** Create input ports: `CreateGraduateProgramInputPort`, `GetGraduateProgramInputPort`, `UpdateGraduateProgramInputPort` → SPEC-006
 - [ ] **T3.1.2** Create use case implementations: `CreateGraduateProgramUseCase`, `GetGraduateProgramUseCase`, `UpdateGraduateProgramUseCase` — with duplicate name validation → SPEC-006
@@ -28,7 +28,7 @@
 
 ## A3.2 — ConfigurationParameter Use Cases & API 🔲
 
-> Specs: SPEC-007 (TBD — ConfigurationParameter application layer and REST API)
+> Specs: [SPEC-007 — ConfigurationParameter application layer, nested API, and global errors](../SDD/specs/iteration-1/SPEC-007_configuration-parameter-application-rest-global-errors.md)
 
 - [ ] **T3.2.1** Create input ports: `SetConfigurationParameterInputPort`, `GetConfigurationParametersInputPort`, `DeleteConfigurationParameterInputPort` → SPEC-007
 - [ ] **T3.2.2** Create use case implementations — with UPPER_SNAKE_CASE key validation, program existence check → SPEC-007

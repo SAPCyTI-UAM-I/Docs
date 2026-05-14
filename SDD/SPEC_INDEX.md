@@ -10,7 +10,7 @@
 
 | Total Specs | 🔲 Draft | 🔵 Approved | ✅ Implemented | ⛔ Blocked |
 |-------------|----------|-------------|----------------|-----------|
-| 5 | 2 | 0 | 3 | 0 |
+| 7 | 4 | 0 | 3 | 0 |
 
 ---
 
@@ -27,6 +27,8 @@
 | [SPEC-003](specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md) | Paquetes hexagonales, tenant y CORS | 1 | Plataforma + layout BC | QA-4, CON-6, QA-3 | SPEC-001, SPEC-002 | ✅ Implemented |
 | [SPEC-004](specs/iteration-1/SPEC-004_graduate-program-domain-persistence.md) | GraduateProgram — dominio y persistencia | 2 | BC-04 Program Configuration | QA-3, QA-4 | SPEC-003 | 🔲 Draft |
 | [SPEC-005](specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md) | ConfigurationParameter — persistencia y aislamiento | 2 | BC-04 Program Configuration | QA-3, QA-4 | SPEC-004 | 🔲 Draft |
+| [SPEC-006](specs/iteration-1/SPEC-006_graduate-program-application-rest-api.md) | GraduateProgram — application layer and REST API | 3 | BC-04 Program Configuration | QA-3, QA-4, CON-5 | SPEC-004, SPEC-005 | 🔲 Draft |
+| [SPEC-007](specs/iteration-1/SPEC-007_configuration-parameter-application-rest-global-errors.md) | ConfigurationParameter — application layer, nested API, global errors | 3 | BC-04 Program Configuration | QA-3, QA-4, CON-5 | SPEC-005, SPEC-006 | 🔲 Draft |
 
 > **Note:** Phase 0 (PostgreSQL dev via Docker) no tiene spec formal. Phase 1 queda cubierta por SPEC-001–003; [`phase1.md`](../implementations/phase1.md) enlaza las tareas a esas specs.
 > **Dependencies:** Each spec declares its own dependencies in its header (`Depends on:`, `Blocks:`, `External Dependencies:`). Open the spec to see the full detail.

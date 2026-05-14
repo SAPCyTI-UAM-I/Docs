@@ -9,7 +9,7 @@
 > **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json)
 > **Domain Features:** [`domain/features/program-configuration/`](../../domain/features/program-configuration/) — especialmente `configuration_parameter_management.feature`
 > **Depends on:** [SPEC-004](SPEC-004_graduate-program-domain-persistence.md) — debe existir tabla `graduate_programs` y entidad `GraduateProgram`
-> **Blocks:** Puertos de lectura consumidos por Enrollment / Academic Offering / Academic Management (iteraciones posteriores)
+> **Blocks:** [SPEC-006](SPEC-006_graduate-program-application-rest-api.md), [SPEC-007](SPEC-007_configuration-parameter-application-rest-global-errors.md); puertos de lectura consumidos por Enrollment / Academic Offering / Academic Management (iteraciones posteriores)
 > **External Dependencies:**
 >   - [ ] Ninguna para Phase 2
 
