@@ -10,8 +10,8 @@
 |-------|--------|----------|--------------|
 | 0 — Project setup | 🔵 In progress | 34/40 tasks (6 manual) | 2026-04-19 |
 | 1 — Backend init | ✅ Completed | 17/17 checklist items | 2026-05-12 |
-| 2 — Domain model | 🔲 Not started | 0/10 tasks | — |
-| 3 — REST API | 🔲 Not started | 0/12 tasks | — |
+| 2 — Domain model | ✅ Completed | 10/10 tasks | 2026-05-17 |
+| 3 — REST API | ✅ Completed | 12/12 tasks | 2026-05-17 |
 | 4 — SPA init | 🔲 Not started | 0/16 tasks | — |
 | 5 — Integration | 🔲 Not started | 0/17 tasks | — |
 
@@ -21,9 +21,9 @@
 
 ## Current Phase
 
-**Phase:** 1 — Backend project initialization ✅ COMPLETED  
-**Next phase:** 2 — Domain model and persistence  
-**Next step:** Begin [`phase2.md`](phase2.md) — A2.1 (GraduateProgram aggregate, ConfigurationParameter entity, JPA adapters, Flyway migrations)
+**Phase:** 3 — Program Configuration REST API ✅ COMPLETED  
+**Next phase:** 4 — SPA initialization  
+**Next step:** Begin [`phase4.md`](phase4.md) — Angular project and shell layout
 
 ### Pending Manual Tasks (Phase 0)
 
@@ -53,6 +53,8 @@
 | D-008 | 2026-04-24 | `TenantFilter` and `TenantContext` placed in `shared/tenant` | Cross-cutting concern not owned by any bounded context | Inside `configuration` module |
 | D-009 | 2026-04-24 | `checkstyle.xml`: `LineLength` moved to `Checker` level | Checkstyle 10.x (maven-checkstyle-plugin 3.6.0) requires it outside `TreeWalker` | No change (broke build) |
 | D-010 | 2026-05-12 | Dev PostgreSQL published on host **port 5433** (`docker-compose.dev.yml`); default `DB_URL` uses `localhost:5433` | Another PostgreSQL on Windows often owns **5432**, causing authentication failures when the app connected to the wrong instance | Keep **5432** inside the container only; document override via `DB_URL` |
+| D-011 | 2026-05-17 | Phase 3: `MethodSecurityConfig` enables `@PreAuthorize` with `permitAll()` HTTP until Phase 6 | Full Spring Security deferred per `phase3.md` risk R-3.1 | Block all endpoints in Phase 6 |
+| D-012 | 2026-05-17 | JaCoCo excludes `*MapperImpl` (MapStruct generated) from coverage gate | Generated mapper bytecode is exercised via integration paths; unit tests mock mappers in `@WebMvcTest` | Add dedicated mapper integration tests if policy changes |
 
 ---
 
@@ -82,6 +84,14 @@
 - Phase dependencies defined: P0 → P1 → P2 → P3 → P5; P0 → P4 → P5
 - Technology stack confirmed: Spring Boot 3.x (Java 21) + Angular 17+ + PostgreSQL
 - Deployment strategy: local Docker first, on-premise server after Iteration 2
+
+### Session — 2026-05-17 (Phases 2–3 — BC-04 domain + REST API)
+
+- **Phase 2** verificada en `sapcyti-api` (entidades, puertos, adaptadores JPA, Flyway V1/V2, tests `@DataJpaTest`); `phase2.md` y SPEC-004/005 → **✅ Implemented**.
+- **Phase 3** implementada según SPEC-006/007: casos de uso, controladores REST, MapStruct, `GlobalExceptionHandler`, `MethodSecurityConfig`, excepciones de dominio.
+- Endpoints: `POST/GET/PUT /api/programs`, rutas anidadas `/api/programs/{id}/parameters`.
+- `mvn clean verify` ✅ (57 tests, cobertura ≥80% con exclusión `*MapperImpl`).
+- Decisiones D-011, D-012 registradas.
 
 ### Session — 2026-05-12 (Phase 1 — Docs checklist + specs + local run)
 

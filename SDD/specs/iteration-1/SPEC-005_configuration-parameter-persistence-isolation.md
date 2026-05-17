@@ -1,6 +1,6 @@
 # SPEC-005: ConfigurationParameter — persistencia, CRUD y aislamiento por programa
 
-> **Status:** 🔲 Draft | 🔵 Approved | ✅ Implemented | ⛔ Blocked | 🔄 Amended
+> **Status:** ✅ Implemented
 > **Author:** SAPCyTI SDD
 > **Date:** 2026-05-12
 > **Phase:** 2 | **ADD Iteration:** 1

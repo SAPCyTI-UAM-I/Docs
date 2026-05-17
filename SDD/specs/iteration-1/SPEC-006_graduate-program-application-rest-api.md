@@ -1,6 +1,6 @@
 # SPEC-006: GraduateProgram — Application Layer, Use Cases, and REST API
 
-> **Status:** 🔲 Draft | 🔵 Approved | ✅ Implemented | ⛔ Blocked | 🔄 Amended
+> **Status:** ✅ Implemented
 > **Author:** SAPCyTI SDD
 > **Date:** 2026-05-13
 > **Phase:** 3 | **ADD Iteration:** 1
