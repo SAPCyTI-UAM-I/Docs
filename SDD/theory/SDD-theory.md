@@ -394,37 +394,32 @@ El objetivo es **minimizar los tokens consumidos** en cada sesión. Las convenci
 
 ---
 
-## 10. Estructura de Carpetas SDD (Fusionada)
+## 10. Estructura de Carpetas SDD
 
-Referencia completa: [`README.md`](../README.md)
+Referencia completa: [`README.md`](../README.md) | Rutas canónicas: [`CANONICAL.md`](../../CANONICAL.md)
 
 ```text
-Docs/SDD_fusion/
-├── README.md                           ← Guía operativa fusionada
+Docs/SDD/
+├── README.md                           ← Guía operativa SDD
 ├── SPEC_INDEX.md                       ← Índice maestro de specs
 ├── theory/
 │   └── SDD-theory.md                   ← Este archivo (teoría y planeación)
 ├── templates/
-│   ├── SPEC-TEMPLATE.md                ← Plantilla para specs individuales
-│   ├── PHASE-TEMPLATE.md               ← Plantilla para phase files (task map)
-│   ├── PROGRESS-TEMPLATE.md            ← Plantilla para progress (solo memoria)
+│   ├── SPEC-TEMPLATE.md
+│   ├── PHASE-TEMPLATE.md
+│   ├── PROGRESS-TEMPLATE.md
 │   └── IMPLEMENTATION-PLAN-TEMPLATE.md
-├── technologies/
-│   ├── backend.md                      ← Java / Spring Boot
-│   ├── frontend.md                     ← Angular / TypeScript
-│   ├── testing.md                      ← Estrategia y herramientas de testing
-│   └── devops.md                       ← CI/CD, Docker, deployment
-├── domain/                              ← Artefactos de dominio DDD
-│   ├── ContextMap.md                   ← Context Map — BCs y relaciones
-│   ├── Summary.md                      ← Resumen de especificación DDD
-│   ├── schemas/                        ← Contratos de datos JSON Schema
-│   │   └── enrollment.schema.json
-│   └── features/                       ← Especificaciones Gherkin ejecutables
-│       └── enrollment/
-│           ├── student_selection.feature
-│           ├── advisor_approval.feature
-│           └── enrollment_finalization.feature
-└── specs/                              ← Specs de implementación por iteración
+├── technologies/                       ← (moverá a Docs/technologies/ en reorganización)
+│   ├── backend.md
+│   ├── frontend.md
+│   ├── testing.md
+│   └── devops.md
+├── domain/                             ← Artefactos de dominio DDD (fuente canónica)
+│   ├── ContextMap.md
+│   ├── Summary.md
+│   ├── schemas/
+│   └── features/
+└── specs/
     ├── iteration-1/
     ├── iteration-2/
     ├── iteration-3/
