@@ -24,9 +24,12 @@
 **Phase:** 4A — SPA Scaffold & Tooling ✅ COMPLETED  
 **Next phase:** 4 — SPA Core Architecture (SPEC-008B)  
 **Next step:** Begin [`phase4.md`](phase4.md) — SPEC-008B (Core Providers, Shell, i18n)
-**Phase:** 3 — Program Configuration REST API ✅ COMPLETED  
-**Next phase:** 4 — SPA initialization  
-**Next step:** Begin [`phase4.md`](phase4.md) — Angular project and shell layout
+
+## Phase History
+
+| Phase | Completed | Notes |
+|-------|-----------|-------|
+| 3 — Program Configuration REST API | 2026-05-17 | SPEC-006, SPEC-007 |
 
 ### Pending Manual Tasks (Phase 0)
 
