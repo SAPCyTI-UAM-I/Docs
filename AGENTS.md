@@ -77,4 +77,4 @@ Confirmar proyecto con el usuario al inicio de sesión si hay duda.
 - [Rutas canónicas](CANONICAL.md)
 - [Teoría SDD](SDD/theory/SDD-theory.md)
 - [Índice de specs](SDD/SPEC_INDEX.md)
-- [Onboarding](onboarding/README.md) (tras Hito B)
+- [Onboarding](onboarding/README.md)
