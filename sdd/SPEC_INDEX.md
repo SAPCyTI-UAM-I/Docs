@@ -14,6 +14,14 @@
 
 ---
 
+## Próxima spec sugerida
+
+| Spec | Phase | Estado | Acción |
+|------|-------|--------|--------|
+| [SPEC-008B](specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md) | 4 | 🔲 Draft | Aprobar → implementar ([`implementation/progress.md`](../implementation/progress.md)) |
+
+---
+
 ## Iteration 1 — System Structure (Phases 0–5)
 
 > **Goal:** Establish overall system structure, technology stack, deployment model, multi-tenant strategy.
@@ -46,59 +54,65 @@
 
 ## Iteration 2 — DevOps & Deployment
 
+> **Estado:** Planificado — sin specs redactadas aún.
 > **Goal:** Containerization strategy, CI/CD pipeline, deployment automation.
 > **Drivers:** QA-5, CON-2, CON-6
-> **Ref:** [`IterationPlan.md`](../design/IterationPlan.md) — Iteration 2
+> **Ref:** [`IterationPlan.md`](../design/IterationPlan.md) — Iteration 2 | Phase 5 en [`implementation/implementationPlan.md`](../implementation/implementationPlan.md)
 
 | Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
 |---------|-------|-------|----|---------|------------|--------|
-| — | — | — | — | — | — | — |
+| _TBD_ | Docker + E2E | 5 | — | QA-5 | SPEC-008B | Planificado |
 
 ---
 
 ## Iteration 3 — Security
 
+> **Estado:** Planificado — descomponer [`implementation/phase6.md`](../implementation/phase6.md) antes de SPEC-009+.
 > **Goal:** Authentication, RBAC, CWE Top 25 protection, login use case.
 > **Drivers:** QA-1, QA-2, HU-01
 > **Ref:** [`IterationPlan.md`](../design/IterationPlan.md) — Iteration 3
 
 | Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
 |---------|-------|-------|----|---------|------------|--------|
-| — | — | — | — | — | — | — |
+| _TBD_ | Security infrastructure | 6 | identity-access | HU-01, QA-1 | Phase 5 | Planificado |
 
 ---
 
 ## Iteration 4 — Entity Management & Credentials
 
+> **Estado:** Planificado — ver [`implementation/phase7.md`](../implementation/phase7.md).
 > **Goal:** Student/Professor CRUD, password flows, i18n.
 > **Drivers:** HU-15, HU-21, QA-6, HU-02, HU-28
 > **Ref:** [`IterationPlan.md`](../design/IterationPlan.md) — Iteration 4
 
 | Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
 |---------|-------|-------|----|---------|------------|--------|
-| — | — | — | — | — | — | — |
+| _TBD_ | Entity management | 7 | academic-management, identity-access | HU-15, HU-21 | Iteration 3 | Planificado |
 
 ---
 
 ## Iteration 4.1 — Bounded Context Refinement
 
+> **Estado:** Parcialmente cubierto por artefactos en [`sdd/domain/`](../domain/) — specs de refinamiento TBD.
 > **Goal:** Sub-domain classification, DDD strategic patterns, domain event contracts.
 > **Drivers:** QA-3, QA-4, QA-5, CON-6
 > **Ref:** [`IterationPlan.md`](../design/IterationPlan.md) — Iteration 4.1
 
 | Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
 |---------|-------|-------|----|---------|------------|--------|
-| — | — | — | — | — | — | — |
+| — | Domain events contracts | — | all | QA-3 | — | Planificado |
 
 ---
 
 ## Iteration 5 — Enrollment Workflow
 
+> **Estado:** Planificado — ver [`implementation/phase8.md`](../implementation/phase8.md), [`phase9.md`](../implementation/phase9.md).
 > **Goal:** CSV import, course selection, advisor approval, PDF generation, export to School Systems.
 > **Drivers:** HU-06, HU-07, HU-08, HU-09, CON-3
 > **Ref:** [`IterationPlan.md`](../design/IterationPlan.md) — Iteration 5
 
 | Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
 |---------|-------|-------|----|---------|------------|--------|
-| — | — | — | — | — | — | — |
+| _TBD_ | Academic offering + CSV | 8 | academic-offering | HU-06 | Phase 7 | Planificado |
+| _TBD_ | Enrollment workflow | 9 | enrollment | HU-07–09 | Phase 8 | Planificado |
 
