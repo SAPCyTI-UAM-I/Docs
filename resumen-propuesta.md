@@ -223,8 +223,18 @@ Se configuró **Engram** como sistema de memoria persistente entre sesiones y ag
 
 ---
 
+## Reorganización del banco de memoria (2026-05-17)
+
+**Completado** en rama `docs/reorganize-memory-bank`:
+
+- Estructura de carpetas según `estructura-propuesta.md` (`vision/`, `requirements/`, `design/`, `technologies/`, `implementation/`, `sdd/`)
+- `AGENTS.md`, `CANONICAL.md`, `onboarding/`, READMEs por carpeta
+- `scripts/verify-docs.sh` para validación continua
+- Carpeta `specifications/` eliminada; dominio canónico en `sdd/domain/`
+- Plantillas SDD refinadas (SPEC con frontmatter, DOMAIN-BC-TEMPLATE, Architecture-INDEX)
+
 ## Próximos pasos
 
-1. **Ejecutar la reorganización de carpetas** según `estructura-propuesta.md` y actualizar todos los links internos.
-2. **Escribir la primera spec** (SPEC-001) usando la plantilla actualizada para validar el flujo completo.
-3. **Validar el prompt protocol** en una sesión real de implementación con un LLM.
+1. **Aprobar e implementar SPEC-008B** (Phase 4 — SPA Core).
+2. **Redactar specs iteración 2–5** según `implementation/phase6.md` … `phase9.md`.
+3. **Ejecutar `scripts/verify-docs.sh`** semanalmente y tras cada cierre de spec.
