@@ -32,5 +32,5 @@ globs:
 ## Output
 
 - One spec file: `SDD/specs/iteration-{N}/SPEC-{NNN}_{kebab-case}.md`
-- Update `SDD/theory/SPEC_INDEX.md` with the new entry.
+- Update `SDD/SPEC_INDEX.md` with the new entry.
 - Link the spec from the task in `phaseX.md`.
