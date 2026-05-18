@@ -91,8 +91,9 @@ Este es el flujo que sigue SDD una vez que ya existen la arquitectura (`Architec
 **PASO 4 — Cierre.** Al mergear el PR se ejecutan estas acciones:
 1. Spec status pasa a ✅ Implemented
 2. Task en `phaseX.md` se marca como `[x]`
-3. Decisiones relevantes se registran en `progress.md` Decision Log
-4. Deuda técnica aceptada se registra en `progress.md` Technical Debt Registry
+3. Decisiones relevantes se registran en `implementation/decisions/D-NNN-slug.md` (un archivo por decisión)
+4. Notas de sesión en `implementation/sessions/YYYY-MM-DD-nombre.md`
+5. Deuda técnica aceptada: acordar ubicación (repo de código o docs); el dashboard está en `progress.md`
 
 ### 3.2 De fases a tareas
 

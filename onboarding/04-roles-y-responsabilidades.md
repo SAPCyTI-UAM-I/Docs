@@ -29,4 +29,4 @@
 
 - Sigue [`AGENTS.md`](../AGENTS.md) y skills en `.cursor/skills/`
 - Proyecto Engram `sapcyti` para código; `plan-sdd-arc` para este repo Docs
-- No sustituye `progress.md` para decisiones duraderas
+- No sustituye `implementation/decisions/` para decisiones duraderas ni `progress.md` para el dashboard global

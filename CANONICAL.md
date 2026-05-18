@@ -25,7 +25,9 @@
 | Plantillas SDD | [`sdd/templates/`](sdd/templates/) | |
 | Guía operativa SDD | [`sdd/README.md`](sdd/README.md) | |
 | Plan de implementación | [`implementation/implementationPlan.md`](implementation/implementationPlan.md) | Vista macro |
-| Memoria operativa | [`implementation/progress.md`](implementation/progress.md) | Estado fino |
+| Dashboard operativo | [`implementation/progress.md`](implementation/progress.md) | Estado global, fase actual |
+| Sesiones de trabajo | [`implementation/sessions/`](implementation/sessions/README.md) | Un archivo por sesión |
+| Decisiones | [`implementation/decisions/`](implementation/decisions/README.md) | Un archivo por D-xxx |
 | Fases de trabajo | [`implementation/phaseX.md`](implementation/) | |
 | Docs externos | [`external-references.md`](external-references.md) | Fuera de este repo |
 

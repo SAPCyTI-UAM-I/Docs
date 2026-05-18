@@ -1,87 +1,36 @@
-# Project Memory — SAPCyTI
+# Project Memory — SAPCyTI (dashboard)
 
-> This file is the **central project memory**. It records phase status, decisions, blockers, conventions, and session notes.
-> **Task tracking lives in `phaseX.md` files** — not here.
-> Update after each work session.
+> **Plantilla del dashboard.** Decisiones → `implementation/decisions/`. Sesiones → `implementation/sessions/`.  
+> No duplicar Decision Log ni Session Notes aquí. Ver [`onboarding/05-trabajo-en-equipo.md`](../../onboarding/05-trabajo-en-equipo.md).
 
 ---
 
 ## General Status
 
-| Phase | Status | Last Updated |
-|-------|--------|--------------|
-| 0 — Project setup | {emoji} {status} | {date} |
-| 1 — Backend init | {emoji} {status} | {date} |
-| 2 — Domain model | {emoji} {status} | {date} |
-| 3 — REST API | {emoji} {status} | {date} |
-| 4 — SPA init | {emoji} {status} | {date} |
-| 5 — Integration | {emoji} {status} | {date} |
-
-> **Task details:** See [`phase0.md`](phase0.md) … [`phase5.md`](phase5.md)
+| Phase | Status | Progress | Last Updated |
+|-------|--------|----------|--------------|
+| 0 — Project setup | {emoji} {status} | {progress} | {date} |
+| 1 — Backend init | {emoji} {status} | {progress} | {date} |
 
 **Legend:** 🔲 Not started | 🔵 In progress | ✅ Completed | ⛔ Blocked
+
+> **Vista macro:** [`implementationPlan.md`](../implementation/implementationPlan.md). Tareas: `phaseX.md`.
 
 ---
 
 ## Current Phase
 
-> **Regla:** Mantener un solo bloque `## Current Phase` en este archivo. No duplicar.
-
-**Phase:** {N} — {nombre} {status}
-**Next phase:** {N} — {nombre}
-**Next step:** {descripción breve con link al phaseX.md y spec relevante}
-
-> Notas efímeras de sesión → Engram (`mem_session_summary`). Decisiones duraderas → Decision Log abajo.
+**Phase:** {N} — {nombre} {status}  
+**Next phase:** {N} — {nombre}  
+**Next step:** {descripción con link a phaseX.md y spec}
 
 ---
 
-## Active Conventions
+## Phase History
 
-> Rules that every implementor (human or LLM) MUST follow.
-> For full technology details see [`technologies/`](../technologies/).
-
-### Backend
-- **Base package:** `mx.uam.sapcyti`
-- **Module packages:** `configuration`, `identity`, `academic`, `offering`, `enrollment`
-- **Hexagonal layers per module:** `domain/model`, `domain/port/in`, `domain/port/out`, `domain/service`, `application/service`, `infrastructure/adapter/in`, `infrastructure/adapter/out`, `infrastructure/mapper`, `infrastructure/acl`, `infrastructure/security`
-- **Domain model:** Classes in `domain/model/` with JPA annotations (`@Entity`, `@Id`, `@Column`). Validation in constructors.
-- **Mappers:** MapStruct, compile-time, in `infrastructure/mapper/` — for DTO ↔ Domain mapping only
-- **DTOs:** Request/Response suffixed, in `infrastructure/adapter/in/dto/`
-- **Cross-module:** ID-based references only. Via output ports. Single transaction.
-- **Tenant:** `X-Graduate-Id` header → `TenantContext` ThreadLocal → MDC
-- **Logging:** SLF4J, structured JSON in prod, plain in dev. NO `System.out.println`
-- **Migrations:** `V{N}__{description}.sql` in `db/migration/`
-- **Profiles:** `dev`, `preprod`, `prod`
-
-### Frontend
-- **Framework:** Angular, TypeScript strict mode
-- **Structure:** Shell + Core + Shared + Feature modules
-- **i18n:** `@ngx-translate`, keys in `assets/i18n/{lang}.json`
-- **HTTP:** `HttpClient` with interceptors for JWT and tenant header
-- **Style:** Tailwind CSS, PrimeNG, CSS puro, responsive-first
-
-### DevOps
-- **Branching:** GitFlow (`main`, `develop`, `feature/*`, `release/*`, `hotfix/*`)
-- **Commits:** Conventional Commits (commitlint + husky)
-- **CI:** GitHub Actions — lint → build → test → security scan → coverage
-- **Docker:** Multi-stage builds, env vars only, no host paths
-- **Coverage:** ≥80% JaCoCo (backend), ≥80% istanbul (frontend)
-
----
-
-## Decision Log
-
-| # | Date | Decision | Context | Discarded Alternatives |
-|---|------|----------|---------|------------------------|
-| D-001 | {date} | {decision} | {context} | {alternatives} |
-
----
-
-## Blockers and Issues
-
-| # | Date | Description | Status | Resolution |
-|---|------|-------------|--------|------------|
-| B-001 | {date} | {description} | {status emoji} | {resolution} |
+| Phase | Completed | Notes |
+|-------|-----------|-------|
+| {N} — {nombre} | {date} | {SPEC-xxx} — [sesión](../implementation/sessions/YYYY-MM-DD-nombre.md) |
 
 ---
 
@@ -93,51 +42,19 @@
 
 ---
 
-## Technical Debt Registry
+## Índices
 
-> Deuda técnica aceptada conscientemente. Cada entrada justifica por qué se acepta y cuándo se planea resolver.
+| Tipo | Índice |
+|------|--------|
+| Decisiones | [`decisions/README.md`](../implementation/decisions/README.md) |
+| Sesiones | [`sessions/README.md`](../implementation/sessions/README.md) |
 
-| # | Date | Description | Reason Accepted | Phase to Resolve | Status |
-|---|------|-------------|-----------------|------------------|--------|
-| TD-001 | {date} | {e.g., "No pagination on `findAll()` for ConfigurationParameter"} | {e.g., "Dataset <100 rows in MVP"} | {N} | 🔲 Open / ✅ Resolved |
-
----
-
-## Spec Amendment Log
-
-> Cuando una spec se modifica después de ser aprobada (🔵→🔄), registrar aquí el motivo y el impacto.
-> La spec misma tiene su Review Log; esta tabla da visibilidad global.
-
-| Date | Spec ID | Amendment | Reason | Impact |
-|------|---------|-----------|--------|--------|
-| {date} | [SPEC-{NNN}]({ruta}) | {qué cambió} | {por qué} | {specs afectadas, si hay} |
-
----
-
-## Session Notes
-
-### Session — {YYYY-MM-DD} ({topic})
-
-- {bullet points summarizing what was done}
-- {decisions referenced: D-{NNN}}
-- {next steps}
-
----
-
-## Future Iterations (Not Planned Yet)
-
-| Iteration | Goal | Drivers |
-|-----------|------|---------|
-| **{N}** | {goal} | {drivers} |
+**Siguiente ID decisión:** D-{NNN} — plantilla [`DECISION-TEMPLATE`](../implementation/templates/DECISION-TEMPLATE.md) en `implementation/templates/`
 
 ---
 
 ## Quick Reference
 
-- **General plan:** [`implementationPlan.md`](implementationPlan.md)
-- **Architecture:** [`Architecture.md`](../design/Architecture.md)
-- **Iteration plan:** [`IterationPlan.md`](../design/IterationPlan.md)
-- **Phase guides:** [`phase0.md`](phase0.md) … [`phase5.md`](phase5.md)
+- **General plan:** [`implementationPlan.md`](../implementation/implementationPlan.md)
+- **Phase guides:** [`phase0.md`](../implementation/phase0.md) … [`phase9.md`](../implementation/phase9.md)
 - **Spec index:** [`SPEC_INDEX.md`](../sdd/SPEC_INDEX.md)
-- **Technologies:** [`technologies/`](../technologies/)
-- **SDD theory:** [`sdd/theory/SDD-theory.md`](../theory/SDD-theory.md)

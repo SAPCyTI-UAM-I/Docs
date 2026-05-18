@@ -32,13 +32,20 @@
 
 ## Mantenimiento del banco de memoria
 
-1. **Al cerrar spec:** actualizar `sdd/SPEC_INDEX.md`, checkbox en `phaseX.md`, decisiones en `implementation/progress.md`.
-2. **Al cambiar arquitectura:** `design/Architecture.md` + specs afectadas (estado 🔄 Amended).
-3. **Al añadir bounded context:** completar `sdd/domain/` (ContextMap, schema, features) antes de la primera SPEC.
-4. **Semanal:** ejecutar `scripts/verify-docs.sh`.
-5. **Sesión con agente:** decisiones duraderas → `progress.md` Decision Log; continuidad de chat → Engram (`plan-sdd-arc` o `sapcyti`).
+1. **Al cerrar spec:** actualizar `sdd/SPEC_INDEX.md`, checkbox en `phaseX.md`; **coordinador** actualiza `implementation/progress.md` (dashboard).
+2. **Al cerrar sesión de trabajo:** **crear** `implementation/sessions/YYYY-MM-DD-nombre.md` (no editar sesiones ajenas ni volcar notas en `progress.md`).
+3. **Decisión durable (D-xxx):** **crear** `implementation/decisions/D-NNN-slug.md` (siguiente ID en [`decisions/README.md`](../implementation/decisions/README.md)).
+4. **Al cambiar arquitectura:** `design/Architecture.md` + specs afectadas (estado 🔄 Amended).
+5. **Al añadir bounded context:** completar `sdd/domain/` (ContextMap, schema, features) antes de la primera SPEC.
+6. **Semanal:** ejecutar `scripts/verify-docs.sh`.
+7. **Sesión con agente:** continuidad de chat → Engram (`plan-sdd-arc` o `sapcyti`); decisiones duraderas → `decisions/`, no Engram como fuente única.
+
+## Trabajo en equipo (3+ integrantes)
+
+Evitar conflictos en Git: **un archivo por sesión/decisión**, dashboard compartido solo para el coordinador. Detalle: [`05-trabajo-en-equipo.md`](05-trabajo-en-equipo.md).
 
 ## Referencias
 
 - Teoría completa: [`sdd/theory/SDD-theory.md`](../sdd/theory/SDD-theory.md)
 - Guía operativa: [`sdd/README.md`](../sdd/README.md)
+- Trabajo en equipo: [`05-trabajo-en-equipo.md`](05-trabajo-en-equipo.md)

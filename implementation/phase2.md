@@ -67,7 +67,7 @@
 
 ## Notes and Decisions
 
-> Las decisiones se registran en [`progress.md`](progress.md) Decision Log.
+> Las decisiones se registran en [`decisions/README.md`](decisions/README.md).
 
 | # | Decision ID | Summary |
 |---|-------------|---------|

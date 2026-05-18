@@ -6,7 +6,7 @@
 
 **Goal:** Create the Spring Boot project with the hexagonal package structure, multi-tenant support via `X-Graduate-Id` header, structured logging, and configuration profiles for all environments.
 
-> **Environment:** Backend runs locally via `mvn spring-boot:run` (or `./mvnw`) against PostgreSQL from `docker-compose.dev.yml` in the **`sapcyti-api`** repository (host port **5433** by default — see [`progress.md`](progress.md) D-010).
+> **Environment:** Backend runs locally via `mvn spring-boot:run` (or `./mvnw`) against PostgreSQL from `docker-compose.dev.yml` in the **`sapcyti-api`** repository (host port **5433** by default — see [D-014](decisions/D-014-postgres-port-5433.md)).
 
 > **Implementation:** Código fuente en el repo [`sapcyti-api`](https://github.com/SAPCyTI-UAM-I/sapcyti-api) (o carpeta hermana `../sapcyti-api/` respecto a este repo `Docs` en el workspace local UAM/SAP).
 
@@ -81,12 +81,12 @@
 
 ## Notes and Decisions
 
-> Las decisiones se registran en [`progress.md`](progress.md) Decision Log.
+> Las decisiones se registran en [`decisions/README.md`](decisions/README.md).
 > Aquí solo se referencian las relevantes a este phase.
 
 | # | Decision ID | Summary |
 |---|-------------|---------|
-| — | [D-007](progress.md) | Project created manually — Spring Initializr unreachable |
-| — | [D-008](progress.md) | TenantFilter in `shared/tenant` — cross-cutting concern |
-| — | [D-009](progress.md) | Checkstyle LineLength at Checker level |
-| — | [D-010](progress.md) | Dev DB host port 5433 — evita choque con PostgreSQL local en 5432 |
+| — | [D-007](decisions/D-007-manual-spring-boot-project.md) | Project created manually — Spring Initializr unreachable |
+| — | [D-008](decisions/D-008-tenant-shared-package.md) | TenantFilter in `shared/tenant` — cross-cutting concern |
+| — | [D-009](decisions/D-009-checkstyle-linelength.md) | Checkstyle LineLength at Checker level |
+| — | [D-014](decisions/D-014-postgres-port-5433.md) | Dev DB host port 5433 — evita choque con PostgreSQL local en 5432 |

@@ -75,9 +75,9 @@
 
 ## Notes and Decisions
 
-> Las decisiones se registran en [`progress.md`](../../implementation/progress.md) Decision Log.
+> Las decisiones se registran en [`decisions/`](../../implementation/decisions/README.md) — crear `D-NNN-slug.md`.
 > Aquí solo se referencian las relevantes a este phase.
 
 | # | Decision ID | Summary |
 |---|-------------|---------|
-| — | [D-{NNN}](../../implementation/progress.md) | {resumen breve} |
+| — | [D-{NNN}](../../implementation/decisions/D-{NNN}-slug.md) | {resumen breve} |

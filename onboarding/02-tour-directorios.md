@@ -10,7 +10,7 @@ Docs/
 ├── requirements/        ← Calidad y restricciones
 ├── design/              ← ADD, arquitectura, drivers
 ├── technologies/        ← Stack backend, frontend, testing, devops
-├── implementation/      ← Plan, progress, phaseX.md
+├── implementation/      ← Plan, dashboard, phaseX, sessions/, decisions/
 └── sdd/
     ├── theory/          ← Teoría SDD
     ├── domain/          ← DDD: Context Map, schemas, Gherkin
@@ -26,7 +26,7 @@ Docs/
 | `requirements/` | ¿Qué calidad y restricciones debe cumplir? |
 | `design/` | ¿Por qué se diseñó así? (ADD) |
 | `technologies/` | ¿Con qué stack se construye? |
-| `implementation/` | ¿En qué fase estamos y qué tareas quedan? |
+| `implementation/` | ¿En qué fase estamos? (`progress.md` dashboard, `phaseX.md`, `sessions/`, `decisions/`) |
 | `sdd/domain/` | ¿Cuáles son los bounded contexts y contratos de datos? |
 | `sdd/specs/` | ¿Qué implementar exactamente en código? |
 | `.cursor/` | Reglas y skills para agentes Cursor |

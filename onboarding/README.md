@@ -18,6 +18,7 @@ Guía paso a paso para integrantes nuevos del equipo (estudiantes, arquitectos, 
 | [02-tour-directorios.md](02-tour-directorios.md) | Mapa de carpetas y propósito | Sí |
 | [03-primera-tarea.md](03-primera-tarea.md) | Checklist primera implementación | Sí |
 | [04-roles-y-responsabilidades.md](04-roles-y-responsabilidades.md) | Arquitecto, implementador, revisor | Recomendado |
+| [05-trabajo-en-equipo.md](05-trabajo-en-equipo.md) | Sesiones/decisiones por archivo, rol coordinador | **Sí** (equipo ≥2) |
 
 ## Rutas canónicas
 

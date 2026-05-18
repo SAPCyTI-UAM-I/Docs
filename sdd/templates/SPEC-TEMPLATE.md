@@ -246,7 +246,7 @@ Response 4XX: { "error": "...", "message": "..." }
 - **Domain Schema:** [`{bc-name}.schema.json`](../domain/schemas/{bc-name}.schema.json) — data contract
 - **Domain Features:** [`domain/features/{bc-name}/`](../domain/features/{bc-name}/) — Gherkin scenarios
 - **Iteration Plan:** [`IterationPlan.md`](../../design/IterationPlan.md) — Iteration {N}
-- **Decision Log:** [`progress.md`](../../implementation/progress.md) — D-{NNN}
+- **Decision Log:** [`decisions/`](../../implementation/decisions/README.md) — D-{NNN}
 - **Technology Stack:** [`technologies/{area}.md`](../../technologies/{area}.md)
 - **Related Specs:** [SPEC-{NNN}]({ruta relativa}) — {relación}
 - **User Story:** [`HU-{NN}`](../../vision/HU/HU-{NN}.md)

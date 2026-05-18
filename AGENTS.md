@@ -60,16 +60,19 @@ Confirmar proyecto con el usuario al inicio de sesión si hay duda.
 
 | Tipo | Dónde |
 |------|-------|
-| Decisiones duraderas (D-xxx), convenciones, estado de fase | `implementation/progress.md` (Git) |
+| Decisiones duraderas (D-xxx) | `implementation/decisions/D-NNN-slug.md` (Git, un archivo por decisión) |
+| Estado global de fase (dashboard) | `implementation/progress.md` (Git — coordinador) |
+| Notas de sesión | `implementation/sessions/YYYY-MM-DD-nombre.md` (Git) |
 | Specs, dominio DDD, arquitectura | Este repo (Git) |
 | Continuidad de sesión, bugs en curso, "siguiente paso" | Engram MCP |
 | Índice de rutas | [`CANONICAL.md`](CANONICAL.md) |
 
 ## Orden de lectura (inicio de sesión implementación)
 
-1. [`implementation/progress.md`](implementation/progress.md) — fase actual
+1. [`implementation/progress.md`](implementation/progress.md) — dashboard (fase actual; solo lectura salvo coordinador)
 2. Spec asignada — único documento obligatorio para codificar
 3. On-demand solo si la spec lo indica
+4. Al cerrar sesión: crear `sessions/` y `decisions/` según [`onboarding/05-trabajo-en-equipo.md`](onboarding/05-trabajo-en-equipo.md)
 
 ## Enlaces rápidos
 

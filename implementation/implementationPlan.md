@@ -4,7 +4,7 @@
 
 This document is the **central index** for the SAPCyTI implementation plan. Per-phase task detail and checkboxes live in separate `phaseX.md` files. Each task in those files references a **Spec** from [`sdd/specs/`](../sdd/specs/).
 
-The [`progress.md`](progress.md) file is the **project memory**: decisions, blockers, conventions, and session notes — no task tracking.
+The [`progress.md`](progress.md) file is the **dashboard** (global status only). Decisions → [`decisions/`](decisions/README.md); sessions → [`sessions/`](sessions/README.md). Task tracking lives in `phaseX.md`.
 
 ### Domain Artifacts
 

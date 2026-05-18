@@ -43,7 +43,9 @@
 | Documento | Contenido |
 |-----------|-----------|
 | [`implementation/implementationPlan.md`](implementation/implementationPlan.md) | Fases, dependencias, criterios de transición |
-| [`implementation/progress.md`](implementation/progress.md) | Estado actual, decisiones, blockers, sesiones |
+| [`implementation/progress.md`](implementation/progress.md) | Dashboard: estado global y fase actual |
+| [`implementation/sessions/`](implementation/sessions/README.md) | Notas por sesión (un archivo por integrante/sesión) |
+| [`implementation/decisions/`](implementation/decisions/README.md) | Decisiones D-xxx (un archivo por decisión) |
 | [`implementation/phase0.md`](implementation/phase0.md) … [`phase9.md`](implementation/phase9.md) | Tareas por fase con links a specs (incl. [`phase4a.md`](implementation/phase4a.md)) |
 
 ## Dominio DDD (machine-readable)
@@ -90,8 +92,8 @@ Engram es un servidor MCP (Model Context Protocol) que provee memoria persistent
 
 ## Orden de lectura por rol
 
-**Estudiante nuevo:** Vision.md → este README → `progress.md` → `technologies/{área}.md` → la spec asignada
+**Estudiante nuevo:** Vision.md → este README → `progress.md` (dashboard) → [`05-trabajo-en-equipo.md`](onboarding/05-trabajo-en-equipo.md) si hay equipo → spec asignada
 
-**LLM (inicio de sesión):** [`AGENTS.md`](AGENTS.md) → `progress.md` → la spec a implementar (autocontenida)
+**LLM (inicio de sesión):** [`AGENTS.md`](AGENTS.md) → `progress.md` (dashboard) → la spec a implementar (autocontenida)
 
 **Arquitecto:** `ArchitecturalDrivers.md` → `Architecture.md` → `IterationPlan.md` → `sdd/domain/ContextMap.md` → `implementationPlan.md`
