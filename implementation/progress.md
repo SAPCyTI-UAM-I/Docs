@@ -89,7 +89,7 @@
 | **3** | Security cross-cutting concerns | QA-1, QA-2, HU-01 |
 | **4** | Entity management and credentials | HU-15, HU-21, QA-6, HU-02, HU-28 |
 | **4.1** | Bounded Context Map refinement | QA-3, QA-4, QA-5, CON-6 |
-| **5** | Enrollment workflow | HU-06, HU-07, HU-08, HU-09, CON-3 |
+| **5** | Enrollment workflow | HU-06, HU-07, HU-08, HU-09, HU-10, CON-3 |
 
 ---
 

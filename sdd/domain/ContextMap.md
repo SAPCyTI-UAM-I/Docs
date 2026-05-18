@@ -20,9 +20,9 @@ Estos contextos contienen las reglas de negocio más complejas y específicas de
 | :--- | :--- |
 | **Sub-Dominio** | Core |
 | **Aggregates** | `Enrollment` (AR), `UEASelection` (Entity) |
-| **Responsabilidad** | Ciclo de vida completo de la inscripción: selección de materias por el alumno (HU-07), aprobación/rechazo por asesor (HU-08), finalización por coordinador (HU-09). Generación on-demand de formato PDF. Exportación TXT/XLSX hacia Sistemas Escolares (CON-3). |
+| **Responsabilidad** | Ciclo de vida completo de la inscripción: selección de materias por el alumno (HU-07), aprobación/rechazo por asesor (HU-08), finalización por coordinador (HU-09), corrección administrativa de estados (HU-10). Generación on-demand de formato PDF. Exportación TXT/XLSX hacia Sistemas Escolares (CON-3). |
 | **Máquina de estados** | `PENDING_SELECTION` → `SELECTION_COMPLETED` → `APPROVED_BY_ADVISOR` → `FINALIZED` |
-| **Drivers satisfechos** | HU-07, HU-08, HU-09, CON-3, CON-5 |
+| **Drivers satisfechos** | HU-07, HU-08, HU-09, HU-10, CON-3, CON-5 |
 | **Complejidad** | Muy alta — proceso multi-actor con máquina de estados y validaciones cruzadas contra oferta académica y reglas del programa |
 
 #### BC-02: Academic Management (Gestión Académica)
@@ -80,8 +80,8 @@ Lógica genérica que podría ser reemplazada por un proveedor externo de identi
 | :--- | :--- |
 | **Sub-Dominio** | Generic |
 | **Aggregates** | `User` (AR), `Role` (VO), `RefreshToken` (Entity), `PasswordResetToken` (VO) |
-| **Responsabilidad** | Autenticación con JWT (HU-01). Ciclo de vida de tokens (access + refresh). Gestión de contraseñas (hashing, recuperación, cambio). Identidad RBAC. Gestión de sesiones concurrentes. |
-| **Drivers satisfechos** | HU-01, QA-1, QA-2, C003.2.1, C003.2.3 |
+| **Responsabilidad** | Autenticación con JWT (HU-01), cierre de sesión (HU-03). Ciclo de vida de tokens (access + refresh). Recuperación y cambio de contraseña (HU-02, HU-28). Identidad RBAC. Gestión de sesiones concurrentes. |
+| **Drivers satisfechos** | HU-01, HU-02, HU-03, HU-28, QA-1, QA-2, C003.2.1, C003.2.3 |
 | **Complejidad** | Media — patrones estándar de industria pero críticos en seguridad |
 
 ---
@@ -313,12 +313,16 @@ sequenceDiagram
 | Driver | BC-01 Enrollment | BC-02 Academic Mgmt | BC-03 Academic Offering | BC-04 Program Config | BC-05 Audit | BC-06 Identity & Access |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | HU-01 | | | | | | ✅ |
+| HU-02 | | | | | | ✅ |
+| HU-03 | | | | | | ✅ |
 | HU-06 | | | ✅ | | | |
 | HU-07 | ✅ | | | | | |
 | HU-08 | ✅ | | | | | |
 | HU-09 | ✅ | | | | | |
+| HU-10 | ✅ | | | | | |
 | HU-15 | | ✅ | | | | |
 | HU-21 | | ✅ | | | | |
+| HU-28 | | | | | | ✅ |
 | QA-1 | 🔗 | 🔗 | 🔗 | | 🔗 | ✅ |
 | QA-2 | 🔗 | 🔗 | 🔗 | | 🔗 | ✅ |
 | QA-3 | 🔗 | 🔗 | 🔗 | ✅ | | |

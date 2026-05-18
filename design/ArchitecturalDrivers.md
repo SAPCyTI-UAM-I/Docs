@@ -1,7 +1,7 @@
 # Architectural Drivers — SAPCyTI
 
 - **Autor**: Humberto Cervantes Maceda  
-- **Fecha**: 27/02/2026
+- **Fecha**: 27/02/2026 (HU MVP actualizadas según [`Architecture.md`](Architecture.md) §3 — mayo 2026)
 
 ---
 
@@ -53,20 +53,32 @@ Los cinco tipos de usuario acceden al sistema a través de un navegador web. El 
 
 ## 2. Requerimientos Funcionales Primarios
 
-Los requerimientos funcionales primarios se seleccionaron a partir de las 35 historias de usuario identificadas, priorizando aquellas que en conjunto conforman un **MVP (Minimum Viable Product)** cohesivo y de valor inmediato para la coordinación del posgrado.
+Los requerimientos funcionales primarios se seleccionaron a partir de las 35 historias de usuario en [`vision/HU/`](../vision/HU/00-INDICE.md), priorizando las que conforman el **MVP** planificado en el diseño ADD.
 
+> **Fuente de verdad (HU del MVP):** [`Architecture.md`](Architecture.md) §3 — *User stories (MVP)*.  
+> Este apartado reproduce el mismo conjunto en español y enlaza el detalle de cada tarjeta en `vision/HU/`. Si hay discrepancia, prevalece `Architecture.md`.
 
 ### Historias de usuario seleccionadas para el MVP
 
-| ID       | Historia de Usuario |
-| -------- | ------------------- |
-| **HU-01** | Como usuario del sistema (administrador, profesor u otro rol autorizado), quiero ingresar al sistema mediante mi login y contraseña, para acceder a la pantalla principal con las opciones correspondientes a mi tipo de usuario. |
-| **HU-15** | Como Coordinador del posgrado, quiero dar de alta a un alumno con sus datos personales y académicos, para administrar su expediente y permitir su acceso al sistema. |
-| **HU-21** | Como Coordinador del posgrado, quiero dar de alta a un profesor en el sistema, para que pueda impartir materias y asesorar alumnos. |
-| **HU-06** | Como Coordinador del Posgrado, quiero seleccionar un trimestre y cargar el archivo CSV de horarios y sorteos, para habilitar el sistema de inscripción y que los alumnos puedan visualizar las materias disponibles. |
-| **HU-07** | Como Alumno del posgrado, quiero acceder al módulo de inscripción para seleccionar las materias que cursaré en el trimestre, para registrar mi carga académica y avanzar en mi programa de estudios. |
-| **HU-08** | Como Profesor (Tutor o Asesor), quiero acceder a la lista de mis alumnos asesorados y revisar las UEA que han seleccionado, para validar que su carga académica sea la adecuada, realizando ajustes si es necesario, y autorizar formalmente su inscripción. |
-| **HU-09** | Como Coordinador o Asistente del Posgrado, quiero seleccionar a un alumno cuya carga académica ya fue aprobada para generar su formato de inscripción, para obtener el documento oficial en PDF que formaliza el registro de materias ante Sistemas Escolares. |
+| ID | Iter. ADD | Historia de Usuario | Detalle |
+| --- | --- | --- | --- |
+| **[HU-01](../vision/HU/HU-01.md)** | 3 | Como usuario del sistema (administrador, profesor u otro rol autorizado), quiero ingresar al sistema mediante mi login y contraseña, para acceder a la pantalla principal con las opciones correspondientes a mi tipo de usuario. | Seguridad / acceso |
+| **[HU-02](../vision/HU/HU-02.md)** | 4 | Como usuario registrado del sistema, quiero recuperar mi contraseña cuando la haya olvidado, para restablecer mi acceso al sistema. | Recuperación de contraseña |
+| **[HU-03](../vision/HU/HU-03.md)** | 3 | Como usuario autenticado del sistema, quiero cerrar mi sesión cuando termine de utilizar el sistema, para proteger mi información y evitar accesos no autorizados. | Cierre de sesión |
+| **[HU-06](../vision/HU/HU-06.md)** | 5 | Como Coordinador del Posgrado, quiero seleccionar un trimestre y cargar el archivo CSV de horarios y sorteos, para habilitar el sistema de inscripción y que los alumnos puedan visualizar las materias disponibles. | Oferta académica |
+| **[HU-07](../vision/HU/HU-07.md)** | 5 | Como Alumno del posgrado, quiero acceder al módulo de inscripción para seleccionar las materias que cursaré en el trimestre, para registrar mi carga académica y avanzar en mi programa de estudios. | Selección de UEA |
+| **[HU-08](../vision/HU/HU-08.md)** | 5 | Como Profesor (Tutor o Asesor), quiero acceder a la lista de mis alumnos asesorados y revisar las UEA que han seleccionado, para validar que su carga académica sea la adecuada, realizando ajustes si es necesario, y autorizar formalmente su inscripción. | Aprobación del asesor |
+| **[HU-09](../vision/HU/HU-09.md)** | 5 | Como Coordinador o Asistente del Posgrado, quiero seleccionar a un alumno cuya carga académica ya fue aprobada para generar su formato de inscripción, para obtener el documento oficial en PDF que formaliza el registro de materias ante Sistemas Escolares. | Formato PDF / exportación |
+| **[HU-10](../vision/HU/HU-10.md)** | 5 | Como Coordinador del Posgrado, quiero modificar manualmente el estado del proceso de inscripción de cualquier alumno y visualizar un resumen general, para corregir errores en el flujo o dar por finalizado el proceso de manera administrativa. | Gestión administrativa de estados |
+| **[HU-15](../vision/HU/HU-15.md)** | 4 | Como Coordinador del posgrado, quiero dar de alta a un alumno con sus datos personales y académicos, para administrar su expediente y permitir su acceso al sistema. | Alta de alumnos |
+| **[HU-21](../vision/HU/HU-21.md)** | 4 | Como Coordinador del posgrado, quiero dar de alta a un profesor en el sistema, para que pueda impartir materias y asesorar alumnos. | Alta de profesores |
+| **[HU-28](../vision/HU/HU-28.md)** | 4 | Como Coordinador del posgrado (o usuario), quiero cambiar la contraseña de acceso, para mantener la seguridad de la cuenta o recuperarla. | Cambio de contraseña |
+
+**Resumen por iteración ADD** (véase [`IterationPlan.md`](IterationPlan.md)):
+
+- **Iteración 3:** HU-01, HU-03 — infraestructura de seguridad y autenticación.
+- **Iteración 4:** HU-15, HU-21, HU-02, HU-28 — gestión de entidades y flujos de credenciales (+ QA-6 i18n).
+- **Iteración 5:** HU-06, HU-07, HU-08, HU-09, HU-10 — flujo de inscripción (+ CON-3 exportación TXT/XLSX).
 
 ---
 
