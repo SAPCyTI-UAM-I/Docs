@@ -7,6 +7,7 @@
 | [`AGENTS.md`](AGENTS.md) | Protocolo de carga de contexto para LLM |
 | [`CANONICAL.md`](CANONICAL.md) | Rutas canónicas y deprecadas |
 | [`onboarding/`](onboarding/) | Guía para integrantes nuevos |
+| [`MERGE-GUIDE.md`](MERGE-GUIDE.md) | Guía para revisores del PR de reorganización |
 
 ---
 

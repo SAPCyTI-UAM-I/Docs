@@ -33,7 +33,7 @@ Artefactos machine-readable del dominio: Context Map, contratos de datos (JSON S
 ## Rutas canónicas
 
 - Fuente de verdad: esta carpeta (`sdd/domain/`)
-- Carpeta `specifications/` eliminada — usar solo esta ruta
+- Dominio canónico único en esta ruta (carpeta legacy duplicada eliminada en reorganización 2026-05)
 
 ## Qué NO cargar
 

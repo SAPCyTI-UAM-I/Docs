@@ -28,7 +28,7 @@ Confirmar proyecto con el usuario al inicio de sesión si hay duda.
 | Cargar | No cargar |
 |--------|-----------|
 | Tarea en `phaseX.md` | `Architecture.md` completo |
-| Sección relevante de `design/Architecture.md` | `SDD-theory.md` |
+| Sección relevante de `design/Architecture.md` | `sdd/theory/SDD-theory.md` |
 | HU referenciada (`vision/HU/HU-XX.md`) | Specs no relacionadas |
 | `technologies/{area}.md` | |
 | `sdd/domain/ContextMap.md` (solo sección del BC) | |
