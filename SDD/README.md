@@ -8,7 +8,7 @@
 ## Estructura de este directorio
 
 ```text
-SDD_fusion/
+SDD/
 ├── README.md                         ← Este archivo
 ├── SPEC_INDEX.md                     ← Índice maestro de todas las specs
 ├── theory/
