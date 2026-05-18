@@ -43,14 +43,14 @@ You are working on SAPCyTI, a system for postgraduate administration at UAM Izta
 ## SDD workflow
 
 - Every task requires an approved spec (🔵) before coding
-- Specs live in `SDD/specs/iteration-{N}/`
+- Specs live in `sdd/specs/iteration-{N}/`
 - PR message format: `feat({module}): SPEC-{NNN} {description}`
 
 ## What to load per task type
 
 - **Implementing a spec:** Read ONLY the spec file. It is self-contained.
-- **Writing a spec:** Read `Design/Architecture.md` (relevant sections) + the HU + `SDD/technologies/{area}.md` + `SDD/domain/` artifacts (ContextMap, schema, features)
-- **Reviewing code:** Read the spec + `SDD/technologies/testing.md`
+- **Writing a spec:** Read `design/Architecture.md` (relevant sections) + the HU + `technologies/{area}.md` + `sdd/domain/` artifacts (ContextMap, schema, features)
+- **Reviewing code:** Read the spec + `technologies/testing.md`
 
 ## Do NOT
 

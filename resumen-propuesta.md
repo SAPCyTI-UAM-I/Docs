@@ -60,7 +60,7 @@ Para T2.1.1 se genera **SPEC-001** con: bounded context (Configuration), drivers
 - Diagramas ASCII reemplazados por listas y tablas.
 - Coordinador removido como actor técnico (es usuario del sistema).
 
-**Referencia completa:** [`SDD/theory/SDD-theory.md`](SDD/theory/SDD-theory.md)
+**Referencia completa:** [`sdd/theory/SDD-theory.md`](sdd/theory/SDD-theory.md)
 
 ---
 
@@ -162,7 +162,7 @@ Otros documentos se consultan solo cuando la tarea lo requiere, nunca preventiva
 - **write-spec** — Qué cargar y qué pasos seguir para redactar una spec nueva
 - **review-code** — Qué cargar y cómo revisar código contra una spec
 
-**Referencia:** [`SDD/theory/SDD-theory.md` §8](SDD/theory/SDD-theory.md) (Prompt Protocol actualizado)
+**Referencia:** [`sdd/theory/SDD-theory.md` §8](sdd/theory/SDD-theory.md) (Prompt Protocol actualizado)
 
 ---
 
@@ -180,7 +180,7 @@ Otros documentos se consultan solo cuando la tarea lo requiere, nunca preventiva
 
 Esto **relaja** el principio de "referencia sobre duplicación" solo dentro de la spec, porque el costo de un LLM cargando un archivo completo por pocas líneas es mayor que duplicar esas líneas.
 
-**Referencia:** [`SDD/templates/SPEC-TEMPLATE.md`](SDD/templates/SPEC-TEMPLATE.md)
+**Referencia:** [`sdd/templates/SPEC-TEMPLATE.md`](sdd/templates/SPEC-TEMPLATE.md)
 
 ---
 
@@ -192,7 +192,7 @@ A lo largo de las sesiones de planificación y diseño se generaron los siguient
 
 | Artefacto | Ubicación | Propósito |
 |-----------|-----------|-----------|
-| SDD-theory | [`SDD/theory/SDD-theory.md`](SDD/theory/SDD-theory.md) | Teoría y reglas de SDD (10 secciones) |
+| SDD-theory | [`sdd/theory/SDD-theory.md`](sdd/theory/SDD-theory.md) | Teoría y reglas de SDD (10 secciones) |
 | Banco de memoria | [`README.md`](README.md) | Índice general de toda la documentación |
 | Resumen de propuesta | [`resumen-propuesta.md`](resumen-propuesta.md) | Este documento — síntesis de decisiones y cambios |
 | Estructura propuesta | [`estructura-propuesta.md`](estructura-propuesta.md) | Reorganización de carpetas (pendiente de ejecutar) |
@@ -201,10 +201,10 @@ A lo largo de las sesiones de planificación y diseño se generaron los siguient
 
 | Artefacto | Ubicación |
 |-----------|-----------|
-| SPEC-TEMPLATE | [`SDD/templates/SPEC-TEMPLATE.md`](SDD/templates/SPEC-TEMPLATE.md) |
-| PHASE-TEMPLATE | [`SDD/templates/PHASE-TEMPLATE.md`](SDD/templates/PHASE-TEMPLATE.md) |
-| PROGRESS-TEMPLATE | [`SDD/templates/PROGRESS-TEMPLATE.md`](SDD/templates/PROGRESS-TEMPLATE.md) |
-| IMPLEMENTATION-PLAN-TEMPLATE | [`SDD/templates/IMPLEMENTATION-PLAN-TEMPLATE.md`](SDD/templates/IMPLEMENTATION-PLAN-TEMPLATE.md) |
+| SPEC-TEMPLATE | [`sdd/templates/SPEC-TEMPLATE.md`](sdd/templates/SPEC-TEMPLATE.md) |
+| PHASE-TEMPLATE | [`sdd/templates/PHASE-TEMPLATE.md`](sdd/templates/PHASE-TEMPLATE.md) |
+| PROGRESS-TEMPLATE | [`sdd/templates/PROGRESS-TEMPLATE.md`](sdd/templates/PROGRESS-TEMPLATE.md) |
+| IMPLEMENTATION-PLAN-TEMPLATE | [`sdd/templates/IMPLEMENTATION-PLAN-TEMPLATE.md`](sdd/templates/IMPLEMENTATION-PLAN-TEMPLATE.md) |
 
 ### Configuración de agentes IA
 

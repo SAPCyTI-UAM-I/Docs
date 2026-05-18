@@ -8,7 +8,7 @@ globs:
 ## Context to load
 
 1. The spec that the code implements.
-2. `SDD/technologies/testing.md` for testing conventions.
+2. `technologies/testing.md` for testing conventions.
 3. The actual code files to review.
 
 ## Checklist

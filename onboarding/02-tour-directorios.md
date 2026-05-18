@@ -1,22 +1,20 @@
 # Tour de directorios — SAPCyTI Docs
 
-> **Nota:** Tras el Hito C de reorganización, las carpetas pasarán a nombres en inglés minúsculas (`vision/`, `design/`, `sdd/`, etc.). Las rutas actuales se indican entre paréntesis.
-
-## Árbol objetivo
+## Árbol del repositorio
 
 ```text
 Docs/
-├── README.md, AGENTS.md, CANONICAL.md
+├── README.md, AGENTS.md, CANONICAL.md, external-references.md
 ├── onboarding/          ← Estás aquí
-├── vision/              (hoy: visionDocs/)
-├── requirements/        (hoy: Analisis_Requerimientos/)
-├── design/              (hoy: Design/ + ADD.md, ArchitecturalDrivers.md en raíz)
-├── technologies/        (hoy: SDD/technologies/)
-├── implementation/      (hoy: implementations/)
-└── sdd/                 (hoy: SDD/)
-    ├── theory/
+├── vision/              ← Visión y HUs
+├── requirements/        ← Calidad y restricciones
+├── design/              ← ADD, arquitectura, drivers
+├── technologies/        ← Stack backend, frontend, testing, devops
+├── implementation/      ← Plan, progress, phaseX.md
+└── sdd/
+    ├── theory/          ← Teoría SDD
     ├── domain/          ← DDD: Context Map, schemas, Gherkin
-    ├── specs/
+    ├── specs/           ← Specs de implementación
     └── templates/
 ```
 
@@ -24,19 +22,14 @@ Docs/
 
 | Carpeta | Pregunta |
 |---------|----------|
-| `visionDocs/` | ¿Qué es el sistema y qué necesitan los usuarios? |
-| `Analisis_Requerimientos/` | ¿Qué calidad y restricciones debe cumplir? |
-| `Design/` | ¿Por qué se diseñó así? (ADD) |
-| `SDD/technologies/` | ¿Con qué stack se construye? |
-| `implementations/` | ¿En qué fase estamos y qué tareas quedan? |
-| `SDD/domain/` | ¿Cuáles son los bounded contexts y contratos de datos? |
-| `SDD/specs/` | ¿Qué implementar exactamente en código? |
+| `vision/` | ¿Qué es el sistema y qué necesitan los usuarios? |
+| `requirements/` | ¿Qué calidad y restricciones debe cumplir? |
+| `design/` | ¿Por qué se diseñó así? (ADD) |
+| `technologies/` | ¿Con qué stack se construye? |
+| `implementation/` | ¿En qué fase estamos y qué tareas quedan? |
+| `sdd/domain/` | ¿Cuáles son los bounded contexts y contratos de datos? |
+| `sdd/specs/` | ¿Qué implementar exactamente en código? |
 | `.cursor/` | Reglas y skills para agentes Cursor |
-
-## Deprecado
-
-- `specifications/` → usar `SDD/domain/`
-- `SDD-theory/` → usar `SDD/theory/`
 
 ## Siguiente paso
 

@@ -17,9 +17,9 @@ Confirmar proyecto con el usuario al inicio de sesión si hay duda.
 
 | Cargar | No cargar |
 |--------|-----------|
-| Solo el archivo `SPEC-XXX.md` (autocontenida) | `SDD-theory.md`, `Architecture.md` completo |
+| Solo el archivo `SPEC-XXX.md` (autocontenida) | `sdd/theory/SDD-theory.md`, `Architecture.md` completo |
 | Contrato de spec dependiente si `Depends on` lo exige | `progress.md`, todas las HUs |
-| — | `visionDocs/` completo |
+| — | `vision/` completo |
 
 **Skill:** [`.cursor/skills/implement-spec.md`](.cursor/skills/implement-spec.md)
 
@@ -28,13 +28,13 @@ Confirmar proyecto con el usuario al inicio de sesión si hay duda.
 | Cargar | No cargar |
 |--------|-----------|
 | Tarea en `phaseX.md` | `Architecture.md` completo |
-| Sección relevante de `Design/Architecture.md` | `SDD-theory.md` |
-| HU referenciada (`visionDocs/HU/HU-XX.md`) | Specs no relacionadas |
-| `SDD/technologies/{area}.md` | |
-| `SDD/domain/ContextMap.md` (solo sección del BC) | |
-| `SDD/domain/schemas/{bc}.schema.json` si existe | |
-| `SDD/domain/features/{bc}/` si existe | |
-| `SDD/templates/SPEC-TEMPLATE.md` | |
+| Sección relevante de `design/Architecture.md` | `SDD-theory.md` |
+| HU referenciada (`vision/HU/HU-XX.md`) | Specs no relacionadas |
+| `technologies/{area}.md` | |
+| `sdd/domain/ContextMap.md` (solo sección del BC) | |
+| `sdd/domain/schemas/{bc}.schema.json` si existe | |
+| `sdd/domain/features/{bc}/` si existe | |
+| `sdd/templates/SPEC-TEMPLATE.md` | |
 
 **Skill:** [`.cursor/skills/write-spec.md`](.cursor/skills/write-spec.md)
 
@@ -43,7 +43,7 @@ Confirmar proyecto con el usuario al inicio de sesión si hay duda.
 | Cargar | No cargar |
 |--------|-----------|
 | Spec contra la que se revisa | Arquitectura completa |
-| `SDD/technologies/testing.md` | |
+| `technologies/testing.md` | |
 
 **Skill:** [`.cursor/skills/review-code.md`](.cursor/skills/review-code.md)
 
@@ -52,22 +52,22 @@ Confirmar proyecto con el usuario al inicio de sesión si hay duda.
 | Cargar | No cargar |
 |--------|-----------|
 | `ArchitecturalDrivers.md` | Specs individuales |
-| `Design/IterationPlan.md` | Código fuente |
-| Secciones relevantes de `Design/Architecture.md` | |
+| `design/IterationPlan.md` | Código fuente |
+| Secciones relevantes de `design/Architecture.md` | |
 | `ADD.md` o skill `arquitecture-add` | |
 
 ## Memoria: Git vs Engram
 
 | Tipo | Dónde |
 |------|-------|
-| Decisiones duraderas (D-xxx), convenciones, estado de fase | `implementations/progress.md` (Git) |
+| Decisiones duraderas (D-xxx), convenciones, estado de fase | `implementation/progress.md` (Git) |
 | Specs, dominio DDD, arquitectura | Este repo (Git) |
 | Continuidad de sesión, bugs en curso, "siguiente paso" | Engram MCP |
 | Índice de rutas | [`CANONICAL.md`](CANONICAL.md) |
 
 ## Orden de lectura (inicio de sesión implementación)
 
-1. [`implementations/progress.md`](implementations/progress.md) — fase actual
+1. [`implementation/progress.md`](implementation/progress.md) — fase actual
 2. Spec asignada — único documento obligatorio para codificar
 3. On-demand solo si la spec lo indica
 
@@ -75,6 +75,6 @@ Confirmar proyecto con el usuario al inicio de sesión si hay duda.
 
 - [Banco de memoria](README.md)
 - [Rutas canónicas](CANONICAL.md)
-- [Teoría SDD](SDD/theory/SDD-theory.md)
-- [Índice de specs](SDD/SPEC_INDEX.md)
+- [Teoría SDD](sdd/theory/SDD-theory.md)
+- [Índice de specs](sdd/SPEC_INDEX.md)
 - [Onboarding](onboarding/README.md)

@@ -2,7 +2,7 @@
 
 ## Antes de codificar
 
-- [ ] Leer [`implementations/progress.md`](../implementations/progress.md) — fase actual y próximo paso
+- [ ] Leer [`implementation/progress.md`](../implementation/progress.md) — fase actual y próximo paso
 - [ ] Confirmar spec asignada en `phaseX.md` (estado 🔵 Approved)
 - [ ] Leer la spec **completa** — es autocontenida
 - [ ] Si usas Cursor: revisar [`AGENTS.md`](../AGENTS.md) y skill `implement-spec`
@@ -22,11 +22,11 @@
 
 ## Después del merge
 
-- [ ] Spec → ✅ en `SDD/SPEC_INDEX.md`
+- [ ] Spec → ✅ en `sdd/SPEC_INDEX.md`
 - [ ] Task → `[x]` en `phaseX.md`
 - [ ] Decisiones relevantes → `progress.md` Decision Log
 
 ## Ayuda
 
 - Convenciones código: `.cursor/rules/sapcyti.mdc`
-- Revisión: skill `review-code` + spec + `SDD/technologies/testing.md`
+- Revisión: skill `review-code` + spec + `technologies/testing.md`

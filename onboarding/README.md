@@ -27,7 +27,7 @@ Guía paso a paso para integrantes nuevos del equipo (estudiantes, arquitectos, 
 
 ## Qué NO cargar desde aquí
 
-- `Design/Architecture.md` completo (solo secciones según la spec asignada)
+- `design/Architecture.md` completo (solo secciones según la spec asignada)
 - Todas las HUs de una vez
 
 ## Siguiente paso

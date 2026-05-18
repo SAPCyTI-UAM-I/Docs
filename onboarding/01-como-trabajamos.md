@@ -32,13 +32,13 @@
 
 ## Mantenimiento del banco de memoria
 
-1. **Al cerrar spec:** actualizar `SDD/SPEC_INDEX.md`, checkbox en `phaseX.md`, decisiones en `implementations/progress.md`.
-2. **Al cambiar arquitectura:** `Design/Architecture.md` + specs afectadas (estado 🔄 Amended).
-3. **Al añadir bounded context:** completar `SDD/domain/` (ContextMap, schema, features) antes de la primera SPEC.
+1. **Al cerrar spec:** actualizar `sdd/SPEC_INDEX.md`, checkbox en `phaseX.md`, decisiones en `implementation/progress.md`.
+2. **Al cambiar arquitectura:** `design/Architecture.md` + specs afectadas (estado 🔄 Amended).
+3. **Al añadir bounded context:** completar `sdd/domain/` (ContextMap, schema, features) antes de la primera SPEC.
 4. **Semanal:** ejecutar `scripts/verify-docs.sh`.
 5. **Sesión con agente:** decisiones duraderas → `progress.md` Decision Log; continuidad de chat → Engram (`plan-sdd-arc` o `sapcyti`).
 
 ## Referencias
 
-- Teoría completa: [`SDD/theory/SDD-theory.md`](../SDD/theory/SDD-theory.md)
-- Guía operativa: [`SDD/README.md`](../SDD/README.md)
+- Teoría completa: [`sdd/theory/SDD-theory.md`](../sdd/theory/SDD-theory.md)
+- Guía operativa: [`sdd/README.md`](../sdd/README.md)

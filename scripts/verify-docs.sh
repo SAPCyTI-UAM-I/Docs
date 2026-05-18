@@ -7,53 +7,45 @@ cd "$ROOT"
 
 ERR=0
 
-echo "==> Checking deprecated path references..."
-
-# Allowlist: files that may mention deprecated paths intentionally
-ALLOW=(
-  'CANONICAL.md'
-  'specifications/README.md'
-  'estructura-propuesta.md'
-  'resumen-propuesta.md'
-  'scripts/verify-docs.sh'
+ALLOW_GLOBS=(
+  --glob '!CANONICAL.md'
+  --glob '!estructura-propuesta.md'
+  --glob '!resumen-propuesta.md'
+  --glob '!external-references.md'
+  --glob '!scripts/verify-docs.sh'
+  --glob '!onboarding/02-tour-directorios.md'
 )
 
-build_allow_glob() {
-  local g=()
-  for f in "${ALLOW[@]}"; do
-    g+=(--glob "!$f")
-  done
-  printf '%s\n' "${g[@]}"
-}
-
-mapfile -t ALLOW_GLOBS < <(build_allow_glob)
-
-if rg -l 'SDD_fusion' "${ALLOW_GLOBS[@]}" . 2>/dev/null; then
-  echo "ERROR: Found SDD_fusion references (see above)"
-  ERR=1
-fi
-
-# Pre-rename mode: warn on legacy paths but do not fail until Hito C completes
-LEGACY_PATTERN='visionDocs/|Analisis_Requerimientos/|implementations/|SDD-theory/'
-if [[ "${STRICT_PATHS:-0}" == "1" ]]; then
-  if rg -l "$LEGACY_PATTERN" "${ALLOW_GLOBS[@]}" . 2>/dev/null; then
-    echo "ERROR: Found legacy path references (STRICT_PATHS=1)"
+echo "==> Checking SDD_fusion references..."
+if command -v rg >/dev/null 2>&1; then
+  if rg -l 'SDD_fusion' "${ALLOW_GLOBS[@]}" . 2>/dev/null; then
+    echo "ERROR: Found SDD_fusion references"
     ERR=1
   fi
 else
-  LEGACY_COUNT=$(rg -l "$LEGACY_PATTERN" "${ALLOW_GLOBS[@]}" . 2>/dev/null | wc -l || true)
-  echo "INFO: Legacy path references: $LEGACY_COUNT files (OK pre-rename; set STRICT_PATHS=1 after Hito C)"
+  echo "WARN: rg not installed, skipping SDD_fusion check"
+fi
+
+LEGACY_PATTERN='visionDocs/|Analisis_Requerimientos/|implementations/|SDD-theory/|specifications/|SDD/technologies/'
+if [[ "${STRICT_PATHS:-1}" == "1" ]]; then
+  echo "==> Checking legacy path references (STRICT_PATHS=1)..."
+  if command -v rg >/dev/null 2>&1; then
+    if rg -l "$LEGACY_PATTERN" "${ALLOW_GLOBS[@]}" . 2>/dev/null; then
+      echo "ERROR: Found legacy path references"
+      ERR=1
+    fi
+  fi
 fi
 
 echo "==> Checking progress.md Current Phase blocks..."
-CURRENT_PHASE_COUNT=$(grep -c '^## Current Phase' implementations/progress.md 2>/dev/null || echo 0)
+CURRENT_PHASE_COUNT=$(grep -c '^## Current Phase' implementation/progress.md 2>/dev/null || echo 0)
 if [[ "$CURRENT_PHASE_COUNT" -ne 1 ]]; then
-  echo "ERROR: implementations/progress.md must have exactly one '## Current Phase' (found $CURRENT_PHASE_COUNT)"
+  echo "ERROR: implementation/progress.md must have exactly one '## Current Phase' (found $CURRENT_PHASE_COUNT)"
   ERR=1
 fi
 
 echo "==> Checking SPEC_INDEX summary row..."
-if grep -q '| 2 | 2 | 0 | 0 | 0 |' SDD/SPEC_INDEX.md 2>/dev/null; then
+if grep -q '| 2 | 2 | 0 | 0 | 0 |' sdd/SPEC_INDEX.md 2>/dev/null; then
   echo "ERROR: SPEC_INDEX summary table appears outdated"
   ERR=1
 fi

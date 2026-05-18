@@ -8,13 +8,13 @@ globs:
 ## Context to load
 
 1. The task description from the relevant `phaseX.md`.
-2. The relevant section(s) of `Design/Architecture.md` — only the section referenced by the task, not the whole file.
-3. The relevant HU from `visionDocs/HU/HU-XX.md`.
-4. `SDD/technologies/{area}.md` for the area being specified (backend, frontend, testing).
-5. The template: `SDD/templates/SPEC-TEMPLATE.md`.
-6. `SDD/domain/ContextMap.md` — read ONLY the section for the relevant Bounded Context and its relations.
-7. `SDD/domain/schemas/{bc-name}.schema.json` — if it exists, use it as the data contract for types, fields, and commands.
-8. `SDD/domain/features/{bc-name}/` — if Gherkin features exist, reference the relevant scenarios in the spec's Acceptance Criteria.
+2. The relevant section(s) of `design/Architecture.md` — only the section referenced by the task, not the whole file.
+3. The relevant HU from `vision/HU/HU-XX.md`.
+4. `technologies/{area}.md` for the area being specified (backend, frontend, testing).
+5. The template: `sdd/templates/SPEC-TEMPLATE.md`.
+6. `sdd/domain/ContextMap.md` — read ONLY the section for the relevant Bounded Context and its relations.
+7. `sdd/domain/schemas/{bc-name}.schema.json` — if it exists, use it as the data contract for types, fields, and commands.
+8. `sdd/domain/features/{bc-name}/` — if Gherkin features exist, reference the relevant scenarios in the spec's Acceptance Criteria.
 
 ## Steps
 
@@ -31,6 +31,6 @@ globs:
 
 ## Output
 
-- One spec file: `SDD/specs/iteration-{N}/SPEC-{NNN}_{kebab-case}.md`
-- Update `SDD/SPEC_INDEX.md` with the new entry.
+- One spec file: `sdd/specs/iteration-{N}/SPEC-{NNN}_{kebab-case}.md`
+- Update `sdd/SPEC_INDEX.md` with the new entry.
 - Link the spec from the task in `phaseX.md`.
