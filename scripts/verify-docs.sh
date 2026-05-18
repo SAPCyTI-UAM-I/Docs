@@ -15,13 +15,16 @@ EXCLUDE_FILES=(
   'external-references.md'
   'scripts/verify-docs.sh'
   'onboarding/02-tour-directorios.md'
+  'onboarding/MERGE-GUIDE.md'
   'MERGE-GUIDE.md'
+  'implementation/example/'
+  'sdd/theory/SDD-theory.md'
 )
 
 should_skip() {
   local f="$1"
   for ex in "${EXCLUDE_FILES[@]}"; do
-    [[ "$f" == *"$ex" ]] && return 0
+    [[ "$f" == *"$ex"* ]] && return 0
   done
   return 1
 }
@@ -46,8 +49,8 @@ search_pattern() {
   fi
 
   if ((${#hits[@]} > 0)); then
-        printf '%s\n' "${hits[@]}"
-        return 1
+    printf '%s\n' "${hits[@]}"
+    return 1
   fi
   return 0
 }
@@ -79,6 +82,43 @@ fi
 echo "==> Checking SPEC_INDEX summary row..."
 if grep -q '| 2 | 2 | 0 | 0 | 0 |' sdd/SPEC_INDEX.md 2>/dev/null; then
   echo "ERROR: SPEC_INDEX summary table appears outdated"
+  ERR=1
+fi
+
+echo "==> Checking broken domain links from sdd/ root (use domain/, not ../domain/)..."
+BROKEN_DOMAIN_HITS=()
+while IFS= read -r -d '' f; do
+  should_skip "$f" && continue
+  [[ "$f" != ./sdd/* ]] && continue
+  [[ "$f" == ./sdd/theory/* || "$f" == ./sdd/templates/* || "$f" == ./sdd/domain/* || "$f" == ./sdd/specs/* ]] && continue
+  if grep -qE '\]\(\.\./domain/' "$f" 2>/dev/null; then
+    BROKEN_DOMAIN_HITS+=("$f")
+  fi
+done < <(find ./sdd -maxdepth 1 -type f -name '*.md' -print0 2>/dev/null)
+if ((${#BROKEN_DOMAIN_HITS[@]} > 0)); then
+  echo "ERROR: sdd/*.md must link domain/ not ../domain/ (see above)"
+  printf '%s\n' "${BROKEN_DOMAIN_HITS[@]}"
+  ERR=1
+fi
+
+echo "==> Checking obsolete Active Conventions references..."
+if ! search_pattern 'Active Conventions'; then
+  echo "ERROR: 'Active Conventions' removed from progress.md — use sapcyti.mdc + technologies/ (see above)"
+  ERR=1
+fi
+
+echo "==> Checking Decision Log -> progress.md in specs..."
+DECISION_HITS=()
+while IFS= read -r -d '' f; do
+  should_skip "$f" && continue
+  [[ "$f" != ./sdd/specs/* ]] && continue
+  if grep -qE 'Decision Log:.*progress\.md|progress\.md.*Decision Log' "$f" 2>/dev/null; then
+    DECISION_HITS+=("$f")
+  fi
+done < <(find ./sdd/specs -type f -name '*.md' -print0 2>/dev/null)
+if ((${#DECISION_HITS[@]} > 0)); then
+  echo "ERROR: specs must reference implementation/decisions/, not progress.md Decision Log (see above)"
+  printf '%s\n' "${DECISION_HITS[@]}"
   ERR=1
 fi
 

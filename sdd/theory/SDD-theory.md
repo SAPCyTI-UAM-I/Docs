@@ -165,8 +165,12 @@ Al cerrar: SPEC-001 pasa a ✅ Implemented, T2.1.1 se marca `[x]` en `phase2.md`
 | `implementationPlan.md` | CÓMO se organiza el trabajo (fases, dependencias) |
 | `phaseX.md` | MAPA de tareas — cada task referencia una spec |
 | `SPEC-XXX.md` | EXACTAMENTE QUÉ se implementa (contrato técnico) |
-| `progress.md` | MEMORIA del proyecto (decisiones, blockers, convenciones) |
+| `progress.md` | Dashboard global (estado de fases, fase actual — solo coordinador) |
+| `implementation/decisions/` | Decisiones duraderas D-xxx (un archivo por decisión) |
+| `implementation/sessions/` | Notas de sesión (un archivo por sesión) |
+| `implementation/blockers/` | Impedimentos B-xxx (opcional) |
 | `technologies/*.md` | STACK técnico de referencia (versiones, librerías, reglas) |
+| `.cursor/rules/sapcyti.mdc` | Convenciones de código para agentes |
 
 ### 4.2 Flujo de Trabajo SDD
 
@@ -176,7 +180,7 @@ Al cerrar: SPEC-001 pasa a ✅ Implemented, T2.1.1 se marca `[x]` en `phase2.md`
 4. Implementar contra Spec (estudiante o LLM)
 5. Verificar contra Acceptance Criteria de Spec
 6. Marcar task en `phaseX.md` como ✅; Spec status pasa a ✅ Implemented
-7. Registrar decisiones relevantes en `progress.md`
+7. Registrar decisiones duraderas en `implementation/decisions/D-NNN-slug.md`; sesión en `implementation/sessions/`; coordinador actualiza `progress.md` (dashboard)
 
 ### 4.3 Capas Afectadas por una Spec
 
@@ -218,7 +222,7 @@ El frontend Angular vive en su propio repositorio (`sapcyti-spa`) y **no forma p
 - La spec referencia [`Architecture.md §4`](../../design/Architecture.md) para el modelo de dominio — no lo copia
 - La spec referencia [`technologies/backend.md`](../../technologies/backend.md) para versiones de librerías
 - La spec referencia la HU en [`vision/HU/`](../../vision/HU/) para el contexto de negocio
-- La spec referencia [`progress.md`](../../implementation/progress.md) Decision Log para decisiones previas
+- La spec referencia [`implementation/decisions/`](../../implementation/decisions/README.md) para decisiones previas (D-xxx)
 - La spec referencia [`domain/schemas/`](../domain/schemas/) para contratos de datos y [`domain/features/`](../domain/features/) para escenarios Gherkin
 
 Esto mitiga:
@@ -281,25 +285,44 @@ Ejemplos:
 
 **No contiene:**
 - Descripción técnica detallada (eso va en la spec)
-- Decisiones (eso va en progress.md)
-- Convenciones (eso va en progress.md o technologies/)
+- Decisiones (eso va en `implementation/decisions/`)
+- Convenciones de código (eso va en `technologies/` y `.cursor/rules/sapcyti.mdc`)
 
-### 6.2 `progress.md` — Memoria del Proyecto
+### 6.2 `progress.md` — Dashboard del Proyecto
 
 **Contiene:**
 - General Status (tabla resumen de phases — solo estado, no tasks)
-- Current Phase indicator
-- Decision Log (D-001, D-002, ...)
-- Blockers and Issues
-- Lessons Learned
-- Active Conventions (reglas que todo implementador debe seguir)
-- Session Notes (resumen de sesiones de trabajo)
+- Current Phase indicator y próximo paso
+- Phase History (resumen)
+- Lessons Learned (opcional)
+- Pending Manual Tasks (opcional — tareas fuera del repo)
+- Enlaces a índices de `decisions/`, `sessions/`, `blockers/`
 
 **No contiene:**
 - Checkboxes de tareas (eso va en phaseX.md)
+- Decision Log detallado (eso va en `implementation/decisions/D-xxx-*.md`)
+- Session Notes (eso va en `implementation/sessions/`)
 - Detalles técnicos de implementación (eso va en specs)
 
-### 6.3 `technologies/*.md` — Stack Técnico
+> Plantilla: [`sdd/templates/PROGRESS-TEMPLATE.md`](../templates/PROGRESS-TEMPLATE.md). Reglas de equipo: [`onboarding/05-trabajo-en-equipo.md`](../../onboarding/05-trabajo-en-equipo.md).
+
+### 6.3 `implementation/decisions/` — Decision Log
+
+**Contiene:**
+- Un archivo por decisión: `D-{NNN}-{slug}.md`
+- Índice en [`decisions/README.md`](../../implementation/decisions/README.md)
+
+**No contiene:**
+- Estado global de fases (eso va en `progress.md`)
+- Notas de sesión (eso va en `sessions/`)
+
+### 6.4 `implementation/sessions/` — Notas de Sesión
+
+**Contiene:**
+- Un archivo por sesión: `YYYY-MM-DD-tema.md`
+- Índice en [`sessions/README.md`](../../implementation/sessions/README.md)
+
+### 6.5 `technologies/*.md` — Stack Técnico
 
 **Contiene:**
 - Versiones exactas de librerías y frameworks
@@ -308,7 +331,7 @@ Ejemplos:
 - Referencias a docs oficiales
 
 **No contiene:**
-- Decisiones de proyecto (eso va en progress.md)
+- Decisiones de proyecto (eso va en `implementation/decisions/`)
 - Tareas de implementación (eso va en specs)
 
 ---

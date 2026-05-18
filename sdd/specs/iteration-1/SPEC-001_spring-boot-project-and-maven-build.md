@@ -40,7 +40,7 @@ Sin un proyecto Spring Boot coherente con el stack acordado, no es posible cumpl
 ### In Scope
 - `pom.xml` en la raíz del módulo backend con `spring-boot-starter-parent` 3.4.5 (o BOM equivalente que fije esa versión).
 - Dependencias: `spring-boot-starter-web`, `spring-boot-starter-data-jpa`, `spring-boot-starter-validation`, `spring-boot-starter-actuator`, `flyway-core`, `flyway-database-postgresql`, `postgresql`, `mapstruct`, `logstash-logback-encoder` (versiones alineadas al parent Spring Boot salvo que [`technologies/backend.md`](../../technologies/backend.md) exija pin explícito).
-- Plugins: `spring-boot-maven-plugin`, `maven-compiler-plugin` (release/source/target 21, annotation processor paths para MapStruct), `jacoco-maven-plugin` (≥80% líneas cuando existan clases instrumentadas), `maven-checkstyle-plugin` (Google Java Style; línea 150 a nivel Checker según decisión D-009 en [`progress.md`](../../../implementation/progress.md)).
+- Plugins: `spring-boot-maven-plugin`, `maven-compiler-plugin` (release/source/target 21, annotation processor paths para MapStruct), `jacoco-maven-plugin` (≥80% líneas cuando existan clases instrumentadas), `maven-checkstyle-plugin` (Google Java Style; línea 150 a nivel Checker según decisión [D-009](../../../implementation/decisions/D-009-checkstyle-linelength.md)).
 - Maven Wrapper (`mvnw`, `mvnw.cmd`, `.mvn/wrapper`).
 - Clase `SapcytiApplication` con `@SpringBootApplication` en el paquete raíz acordado (`mx.uam.sapcyti` o subpaquete estándar del repo).
 
@@ -173,7 +173,7 @@ No performance concerns — solo artefacto de build y clase main vacía.
 - **Architecture:** [`Architecture.md §6.1`](../../../design/Architecture.md)
 - **Context Map:** [`ContextMap.md`](../../domain/ContextMap.md) — identidad multi-tenant §2.1
 - **Iteration Plan:** [`IterationPlan.md`](../../../design/IterationPlan.md)
-- **Decision Log:** [`progress.md`](../../../implementation/progress.md) — D-007, D-009
+- **Decision Log:** [`decisions/`](../../../implementation/decisions/README.md) — D-007, D-009
 - **Technology Stack:** [`technologies/backend.md`](../../technologies/backend.md)
 
 ---

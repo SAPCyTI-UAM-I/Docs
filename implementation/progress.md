@@ -14,7 +14,7 @@
 | 2 — Domain model | ✅ Completed | 10/10 tasks | 2026-05-17 |
 | 3 — REST API | ✅ Completed | 12/12 tasks | 2026-05-17 |
 | 4A — SPA scaffold & tooling | ✅ Completed | SPEC-008A | 2026-05-12 |
-| 4 — SPA core (shell, i18n) | 🔲 Not started | 0/16 tasks — SPEC-008B Draft | — |
+| 4 — SPA core (shell, i18n) | 🔲 Not started | 0/16 tasks — SPEC-008B Draft (pendiente) | — |
 | 5 — Integration & Docker | 🔲 Not started | 0/17 tasks | — |
 | 6 — Security & auth | 🔲 Not started | Planificado — [`phase6.md`](phase6.md) | — |
 | 7 — Entity management | 🔲 Not started | Planificado — [`phase7.md`](phase7.md) | — |
@@ -25,13 +25,15 @@
 
 > **Vista macro:** [`implementationPlan.md`](implementationPlan.md). Tareas detalladas: `phaseX.md`.
 
+> **Phase 0 vs desarrollo activo:** Phase 0 figura 🔵 solo por **tareas manuales** pendientes (GitHub branch protection, secrets, verificación final). El código y las fases 1–4A ya avanzaron; **no bloquean** el trabajo en curso. Detalle: § Pending Manual Tasks (Phase 0).
+
 ---
 
 ## Current Phase
 
-**Phase:** 4A — SPA Scaffold & Tooling ✅ COMPLETED  
-**Next phase:** 4 — SPA Core Architecture (SPEC-008B)  
-**Next step:** Aprobar e implementar [`SPEC-008B`](../sdd/specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md) — [`phase4.md`](phase4.md)
+**Development focus:** Phase 4 — SPA Core Architecture (SPEC-008B)  
+**Last completed:** Phase 4A — SPA Scaffold & Tooling (SPEC-008A) ✅  
+**Next step:** Completar y aprobar [`SPEC-008B`](../sdd/specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md) (🔲 Draft) — luego implementar vía [`phase4.md`](phase4.md)
 
 ---
 
@@ -44,7 +46,9 @@
 
 ---
 
-### Pending Manual Tasks (Phase 0)
+## Pending Manual Tasks (Phase 0)
+
+> Infraestructura Git/GitHub fuera del repo Docs. No confundir con la fase de desarrollo activa (§ Current Phase).
 
 | Task | Action Required |
 |------|-----------------|

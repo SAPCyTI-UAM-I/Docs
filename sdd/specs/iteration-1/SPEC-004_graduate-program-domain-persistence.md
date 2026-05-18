@@ -257,7 +257,7 @@ Persistencia vía JPA con parámetros enlazados — sin SQL concatenado. RBAC y 
 - **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json)
 - **Domain Features:** [`graduate_program_management.feature`](../../domain/features/program-configuration/graduate_program_management.feature)
 - **Iteration Plan:** [`IterationPlan.md`](../../../design/IterationPlan.md)
-- **Decision Log:** [`progress.md`](../../../implementation/progress.md)
+- **Decision Log:** [`decisions/`](../../../implementation/decisions/README.md)
 - **Technology Stack:** [`technologies/backend.md`](../../technologies/backend.md), [`technologies/testing.md`](../../technologies/testing.md)
 - **Related Specs:** [SPEC-003](SPEC-003_hexagonal-packages-tenant-filter-cors.md), [SPEC-005](SPEC-005_configuration-parameter-persistence-isolation.md)
 

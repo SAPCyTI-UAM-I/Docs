@@ -20,39 +20,20 @@ Metodología operativa: dominio DDD, specs de implementación, plantillas e índ
 ## Estructura de este directorio
 
 ```text
-SDD/
+sdd/                                  ← (carpeta en Docs/)
 ├── README.md                         ← Este archivo
 ├── SPEC_INDEX.md                     ← Índice maestro de todas las specs
 ├── theory/
-│   └── SDD-theory.md                ← Fundamentos teóricos y pipeline SDD
-├── templates/                        ← Plantillas (índice: templates/README.md)
-│   ├── README.md                     ← Índice maestro de todas las plantillas
-│   ├── SPEC-TEMPLATE.md
-│   ├── PHASE-TEMPLATE.md
-│   ├── PROGRESS-TEMPLATE.md
-│   ├── IMPLEMENTATION-PLAN-TEMPLATE.md
-│   └── DOMAIN-BC-TEMPLATE.md
-├── technologies/                     ← Stack técnico de referencia
-│   ├── backend.md
-│   ├── frontend.md
-│   ├── testing.md
-│   └── devops.md
-├── domain/                           ← Artefactos de dominio DDD (machine-readable)
-│   ├── ContextMap.md                 ← Context Map — Bounded Contexts y relaciones
-│   ├── Summary.md                    ← Resumen de la sesión de especificación DDD
-│   ├── schemas/                      ← Contratos de datos JSON Schema por BC
-│   │   └── enrollment.schema.json
-│   └── features/                     ← Especificaciones Gherkin ejecutables por BC
-│       └── enrollment/
-│           ├── student_selection.feature
-│           ├── advisor_approval.feature
-│           └── enrollment_finalization.feature
-└── specs/                            ← Specs de implementación por iteración ADD
-    ├── iteration-1/
-    ├── iteration-2/
-    ├── iteration-3/
-    ├── iteration-4/
-    └── iteration-5/
+│   └── SDD-theory.md                 ← Fundamentos teóricos y pipeline SDD
+├── templates/                        ← Plantillas SDD (índice: templates/README.md)
+├── domain/                           ← Artefactos DDD (Context Map, schemas, Gherkin)
+│   ├── ContextMap.md
+│   ├── schemas/
+│   └── features/
+└── specs/
+    └── iteration-1/                  ← Specs actuales (iteration-2+ cuando existan)
+
+Stack técnico (fuera de sdd/): ../technologies/{backend,frontend,testing,devops}.md
 ```
 
 ## Cómo usar SDD
@@ -63,7 +44,7 @@ SDD/
 2. **Descomponer en tareas** → `phaseX.md` con referencias a specs
 3. **Redactar Spec** → `SPEC-XXX.md` usando template (en `specs/`)
 4. **Implementar** → Código + Tests + PR (contra la spec)
-5. **Cerrar** → Spec ✅, task ✅, decision log actualizado
+5. **Cerrar** → Spec ✅, task ✅ en `phaseX.md`, decisión en `implementation/decisions/` si aplica, sesión en `implementation/sessions/`, coordinador actualiza `progress.md`
 
 ### Crear una nueva Spec de implementación
 

@@ -18,7 +18,7 @@
 
 | Spec | Phase | Estado | Acción |
 |------|-------|--------|--------|
-| [SPEC-008B](specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md) | 4 | 🔲 Draft | Aprobar → implementar ([`implementation/progress.md`](../implementation/progress.md)) |
+| [SPEC-008B](specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md) | 4 | 🔲 Draft | Completar spec → aprobar → implementar ([`progress.md`](../implementation/progress.md)) |
 
 ---
 
@@ -30,15 +30,6 @@
 
 | Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
 |---------|-------|-------|----|---------|------------|--------|
-| [SPEC-008A](specs/iteration-1/SPEC-008A_angular-project-scaffold-tooling.md) | Angular Project Scaffold & Tooling | 4A | — | CON-7, CON-6 | — | ✅ Implemented |
-| [SPEC-008B](specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md) | SPA Core Providers, Shell & i18n | 4 | — | CON-7, CON-6, QA-4, QA-6 | SPEC-008A | 🔲 Draft |
-
-<!-- Example:
-| [SPEC-001](specs/iteration-1/SPEC-001_graduate-program-domain.md) | GraduateProgram Domain Model | 2 | Configuration | QA-3, QA-4 | — | 🔲 Draft |
-| [SPEC-002](specs/iteration-1/SPEC-002_configuration-parameter-persistence.md) | ConfigurationParameter VO & Persistence | 2 | Configuration | QA-3, QA-4 | SPEC-001 | 🔲 Draft |
--->
-
-> **Note:** Phases 0 and 1 are ✅ Completed — no retroactive specs needed.
 | [SPEC-001](specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md) | Spring Boot y build Maven | 1 | Plataforma | CON-1, CON-6 | — | ✅ Implemented |
 | [SPEC-002](specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md) | Configuración, perfiles y logging | 1 | Plataforma | QA-3, QA-4, CON-6 | SPEC-001 | ✅ Implemented |
 | [SPEC-003](specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md) | Paquetes hexagonales, tenant y CORS | 1 | Plataforma + layout BC | QA-4, CON-6, QA-3 | SPEC-001, SPEC-002 | ✅ Implemented |
@@ -46,8 +37,10 @@
 | [SPEC-005](specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md) | ConfigurationParameter — persistencia y aislamiento | 2 | BC-04 Program Configuration | QA-3, QA-4 | SPEC-004 | ✅ Implemented |
 | [SPEC-006](specs/iteration-1/SPEC-006_graduate-program-application-rest-api.md) | GraduateProgram — application layer and REST API | 3 | BC-04 Program Configuration | QA-3, QA-4, CON-5 | SPEC-004, SPEC-005 | ✅ Implemented |
 | [SPEC-007](specs/iteration-1/SPEC-007_configuration-parameter-application-rest-global-errors.md) | ConfigurationParameter — application layer, nested API, global errors | 3 | BC-04 Program Configuration | QA-3, QA-4, CON-5 | SPEC-005, SPEC-006 | ✅ Implemented |
+| [SPEC-008A](specs/iteration-1/SPEC-008A_angular-project-scaffold-tooling.md) | Angular Project Scaffold & Tooling | 4A | — | CON-7, CON-6 | — | ✅ Implemented |
+| [SPEC-008B](specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md) | SPA Core Providers, Shell & i18n | 4 | — | CON-7, CON-6, QA-4, QA-6 | SPEC-008A | 🔲 Draft |
 
-> **Note:** Phase 0 (PostgreSQL dev via Docker) no tiene spec formal. Phase 1 queda cubierta por SPEC-001–003; [`phase1.md`](../implementation/phase1.md) enlaza las tareas a esas specs.
+> **Note:** Phase 0 (PostgreSQL dev via Docker) no tiene spec formal. Phases 0–1 están ✅ en código; Phase 1 queda cubierta por SPEC-001–003 — [`phase1.md`](../implementation/phase1.md).
 > **Dependencies:** Each spec declares its own dependencies in its header (`Depends on:`, `Blocks:`, `External Dependencies:`). Open the spec to see the full detail.
 
 ---
@@ -93,7 +86,7 @@
 
 ## Iteration 4.1 — Bounded Context Refinement
 
-> **Estado:** Parcialmente cubierto por artefactos en [`sdd/domain/`](../domain/) — specs de refinamiento TBD.
+> **Estado:** Parcialmente cubierto por artefactos en [`domain/`](domain/) — specs de refinamiento TBD.
 > **Goal:** Sub-domain classification, DDD strategic patterns, domain event contracts.
 > **Drivers:** QA-3, QA-4, QA-5, CON-6
 > **Ref:** [`IterationPlan.md`](../design/IterationPlan.md) — Iteration 4.1

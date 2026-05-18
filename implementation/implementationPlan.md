@@ -27,7 +27,7 @@ All specs are derived from the machine-readable artifacts in [`sdd/domain/`](../
 | **2** — Domain model | ✅ Completed | SPEC-004–005 |
 | **3** — REST API | ✅ Completed | SPEC-006–007 |
 | **4A** — SPA Scaffold & Tooling | ✅ Completed | SPEC-008A |
-| **4** — SPA Core | 🔲 Not started | SPEC-008B Draft |
+| **4** — SPA Core | 🔲 Not started | SPEC-008B Draft (pendiente) |
 | **5–9** | 🔲 Not started | Defined below |
 
 ---
@@ -176,7 +176,7 @@ graph LR
 |------|----------|---------|------|
 | 1 | [`sdd/theory/SDD-theory.md`](../sdd/theory/SDD-theory.md) | Understand how we work (SDD methodology) | 15 min |
 | 2 | This file (`implementationPlan.md`) | Phase overview, stack, transition criteria | 10 min |
-| 3 | [`progress.md`](progress.md) → Active Conventions | Mandatory code rules | 10 min |
+| 3 | [`.cursor/rules/sapcyti.mdc`](../.cursor/rules/sapcyti.mdc) + [`technologies/`](../technologies/) | Convenciones de código obligatorias | 10 min |
 | 4 | [`sdd/domain/ContextMap.md`](../sdd/domain/ContextMap.md) | Bounded Contexts, relationships, dependency graph | 15 min |
 | 5 | [`technologies/{area}.md`](../technologies/) | Stack for the area you'll work on | 10 min |
 | 6 | [`sdd/domain/schemas/{bc}.schema.json`](../sdd/domain/schemas/) | Data contract for the BC you'll implement | 10 min |

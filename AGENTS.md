@@ -11,6 +11,28 @@
 
 Confirmar proyecto con el usuario al inicio de sesión si hay duda.
 
+## Fuente de verdad por tipo de dato
+
+| Dato | Archivo canónico |
+|------|-----------------|
+| Estado global del proyecto | `implementation/progress.md` (solo coordinador edita § status) |
+| Tareas y checkboxes | `implementation/phaseX.md` |
+| Contrato técnico | `sdd/specs/iteration-{N}/SPEC-XXX.md` |
+| Decisión durable D-xxx | `implementation/decisions/D-NNN-slug.md` |
+| Nota de sesión | `implementation/sessions/YYYY-MM-DD-tema.md` |
+| Impedimento B-xxx | `implementation/blockers/B-NNN-slug.md` |
+| Convenciones de código | `.cursor/rules/sapcyti.mdc` + `technologies/{area}.md` |
+| Índice de specs | `sdd/SPEC_INDEX.md` |
+| Rutas de artefactos | `CANONICAL.md` |
+
+## Estados de spec e implementación
+
+| Estado | ¿Codificar? |
+|--------|-------------|
+| 🔲 Draft | **No** — requiere revisión y paso a 🔵 Approved |
+| 🔵 Approved | Sí |
+| ✅ Implemented | Solo mantenimiento acordado |
+
 ## Qué cargar por tipo de tarea
 
 ### Implementar una spec

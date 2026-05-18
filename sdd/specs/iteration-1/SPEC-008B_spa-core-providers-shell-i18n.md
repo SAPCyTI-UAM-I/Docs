@@ -525,7 +525,7 @@ Same pattern for `auth.routes.ts`, `enrollment.routes.ts`, `academic-catalog.rou
 - [ ] Stubs marked with `// TODO: Phase 6 — implement real logic`
 - [ ] Component naming: `{name}.component.ts`; Service: `{name}.service.ts`
 
-> **Referencia:** [`progress.md` → Active Conventions](../../implementation/progress.md)
+> **Convenciones:** [`.cursor/rules/sapcyti.mdc`](../../../.cursor/rules/sapcyti.mdc) · [`technologies/frontend.md`](../../../technologies/frontend.md)
 
 ---
 
@@ -545,4 +545,5 @@ Same pattern for `auth.routes.ts`, `enrollment.routes.ts`, `academic-catalog.rou
 
 | Date | Reviewer | Action | Notes |
 |------|----------|--------|-------|
-| — | — | — | — |
+| 2026-05-18 | Equipo SAPCyTI | 🔲→🔵 Approved | Aprobación revertida — spec aún en redacción |
+| 2026-05-18 | Equipo SAPCyTI | 🔵→🔲 Draft | Pendiente de completar y re-aprobar |

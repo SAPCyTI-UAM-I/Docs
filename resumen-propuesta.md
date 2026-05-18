@@ -18,7 +18,7 @@ El flujo completo tiene 3 etapas. Las dos primeras son prerequisitos (ya están 
 
 **Etapa 1 — Diseño (ya hecho).** Mediante ADD se generaron `Architecture.md` (decisiones, modelo de dominio, estructura de paquetes) e `IterationPlan.md` (orden de iteraciones y drivers asignados).
 
-**Etapa 2 — Planificación (ya hecho).** A partir de las iteraciones del `IterationPlan.md`, se creó `implementationPlan.md` con 6 fases (Phase 0–5) y sus dependencias. Cada fase tiene su archivo `phaseX.md` con tareas concretas.
+**Etapa 2 — Planificación (ya hecho).** A partir de las iteraciones del `IterationPlan.md`, se creó `implementationPlan.md` con fases Phase 0–9 (incl. sub-fases como 4A) y sus dependencias. Cada fase tiene su archivo `phaseX.md` con tareas concretas.
 
 **Etapa 3 — Ejecución (SDD).** Aquí entra SDD con su pipeline de 4 pasos:
 
@@ -28,7 +28,7 @@ El flujo completo tiene 3 etapas. Las dos primeras son prerequisitos (ya están 
 
 3. **Implementación** — El implementador (estudiante o LLM) toma la spec y produce código + tests + PR. El reviewer valida contra la spec, no contra criterio subjetivo.
 
-4. **Cierre** — Al mergear: spec → ✅ Implemented, task → `[x]` en `phaseX.md`, decisiones → `progress.md`.
+4. **Cierre** — Al mergear: spec → ✅ Implemented, task → `[x]` en `phaseX.md`, decisiones duraderas → `implementation/decisions/D-NNN-slug.md`, sesión → `implementation/sessions/`, coordinador actualiza `progress.md` (dashboard).
 
 ### Ejemplo: de la arquitectura al código
 
@@ -51,7 +51,9 @@ Para T2.1.1 se genera **SPEC-001** con: bounded context (Configuration), drivers
 | `implementationPlan.md` | CÓMO se organiza el trabajo (fases, dependencias) |
 | `phaseX.md` | MAPA de tareas — cada task referencia una spec |
 | `SPEC-XXX.md` | EXACTAMENTE QUÉ se implementa (contrato técnico) |
-| `progress.md` | MEMORIA del proyecto (decisiones, blockers) |
+| `progress.md` | Dashboard global (estado de fases; solo coordinador) |
+| `implementation/decisions/` | Decisiones D-xxx (un archivo por decisión) |
+| `implementation/sessions/` | Notas de sesión (un archivo por sesión) |
 
 ### Cambios realizados al documento teórico
 
@@ -195,7 +197,7 @@ A lo largo de las sesiones de planificación y diseño se generaron los siguient
 | SDD-theory | [`sdd/theory/SDD-theory.md`](sdd/theory/SDD-theory.md) | Teoría y reglas de SDD (10 secciones) |
 | Banco de memoria | [`README.md`](README.md) | Índice general de toda la documentación |
 | Resumen de propuesta | [`resumen-propuesta.md`](resumen-propuesta.md) | Este documento — síntesis de decisiones y cambios |
-| Estructura propuesta | [`estructura-propuesta.md`](estructura-propuesta.md) | Reorganización de carpetas (pendiente de ejecutar) |
+| Estructura propuesta | [`estructura-propuesta.md`](estructura-propuesta.md) | Changelog de reorganización (ejecutado 2026-05-17) |
 
 ### Plantillas SDD
 
@@ -215,7 +217,7 @@ Reglas y skills cargados automáticamente por el IDE (ver §4 para detalle de sk
 | Rules: sapcyti | `.cursor/rules/sapcyti.mdc` | Convenciones del proyecto |
 | Rules: engram | `.cursor/rules/engram.mdc` | Protocolo de memoria persistente entre agentes |
 | Rules: task execution | `.cursor/rules/task_execution.mdc` | Protocolo de ejecución atómica de tareas |
-| Skills | `.cursor/skills/` | 3 flujos: implement-spec, write-spec, review-code (detalle en §4) |
+| Skills | `.cursor/skills/` | implement-spec, write-spec, review-code, implementation-architect, arquitecture-add |
 
 ### Memoria persistente (Engram)
 
@@ -235,6 +237,6 @@ Se configuró **Engram** como sistema de memoria persistente entre sesiones y ag
 
 ## Próximos pasos
 
-1. **Aprobar e implementar SPEC-008B** (Phase 4 — SPA Core).
+1. **Completar, aprobar e implementar SPEC-008B** (Phase 4 — SPA Core).
 2. **Redactar specs iteración 2–5** según `implementation/phase6.md` … `phase9.md`.
 3. **Ejecutar `scripts/verify-docs.sh`** semanalmente y tras cada cierre de spec.

@@ -268,7 +268,7 @@ Solo código fuente y docs; rollback eliminando paquetes y filtro.
 - **Context Map:** [`ContextMap.md`](../../domain/ContextMap.md) — §1 (BC), §2.1–2.2
 - **Technology Stack:** [`technologies/backend.md`](../../technologies/backend.md)
 - **Implementation Phase:** [`phase1.md`](../../../implementation/phase1.md)
-- **Decision Log:** [`progress.md`](../../../implementation/progress.md) — D-008 (TenantFilter en `shared/tenant`)
+- **Decision Log:** [`decisions/`](../../../implementation/decisions/README.md) — D-008 (TenantFilter en `shared/tenant`)
 - **Related Specs:** [SPEC-002](SPEC-002_application-configuration-profiles-logging.md), [SPEC-004](SPEC-004_graduate-program-domain-persistence.md)
 
 ---

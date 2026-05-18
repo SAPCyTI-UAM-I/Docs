@@ -408,7 +408,7 @@ No performance concerns. This is project setup — no runtime code.
 - [ ] Environment files use `apiBaseUrl` variable (no hardcoded URLs)
 - [ ] No SCSS — plain CSS only
 
-> **Referencia completa de convenciones:** [`progress.md` → Active Conventions](../../implementation/progress.md)
+> **Convenciones:** [`.cursor/rules/sapcyti.mdc`](../../../.cursor/rules/sapcyti.mdc) · [`technologies/frontend.md`](../../../technologies/frontend.md)
 
 ---
 
