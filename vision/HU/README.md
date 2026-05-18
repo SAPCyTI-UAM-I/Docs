@@ -28,5 +28,5 @@
 
 ## Siguiente paso
 
-- Drivers trazables: [`../../ArchitecturalDrivers.md`](../../ArchitecturalDrivers.md)
-- Spec: [`../../SDD/specs/`](../../SDD/specs/)
+- Drivers trazables: [`../../design/ArchitecturalDrivers.md`](../../design/ArchitecturalDrivers.md)
+- Spec: [`../../sdd/specs/`](../../sdd/specs/)

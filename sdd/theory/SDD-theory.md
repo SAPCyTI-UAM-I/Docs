@@ -101,7 +101,7 @@ Cada fase se descompone en un archivo `phaseX.md` que funciona como **mapa de ta
 ```markdown
 ## A2.1 — Domain Model Implementation 🔲
 
-> Specs: [SPEC-001](../../SDD/specs/iteration-1/SPEC-001_xxx.md)
+> Specs: [SPEC-001](../../sdd/specs/iteration-1/SPEC-001_xxx.md)
 
 - [ ] **T2.1.1** Create GraduateProgram Aggregate Root → [SPEC-001](...)
 - [ ] **T2.1.2** Create ConfigurationParameter Value Object → [SPEC-001](...)
@@ -109,7 +109,7 @@ Cada fase se descompone en un archivo `phaseX.md` que funciona como **mapa de ta
 
 ## A2.2 — Persistence Layer 🔲
 
-> Specs: [SPEC-002](../../SDD/specs/iteration-1/SPEC-002_xxx.md)
+> Specs: [SPEC-002](../../sdd/specs/iteration-1/SPEC-002_xxx.md)
 
 - [ ] **T2.2.1** Create repository port interface → [SPEC-002](...)
 - [ ] **T2.2.2** Implement JPA repository adapter → [SPEC-002](...)
@@ -127,8 +127,8 @@ Cada fase se descompone en un archivo `phaseX.md` que funciona como **mapa de ta
 
 Al redactar la spec, se toma como entrada:
 1. La tarea en `phaseX.md` (el QUÉ)
-2. La sección relevante de [`Architecture.md`](../../Design/Architecture.md) (el DÓNDE y POR QUÉ)
-3. Las convenciones en [`technologies/`](../technologies/) (el CÓMO)
+2. La sección relevante de [`Architecture.md`](../../design/Architecture.md) (el DÓNDE y POR QUÉ)
+3. Las convenciones en [`technologies/`](../../technologies/) (el CÓMO)
 4. Los artefactos de dominio relevantes en [`domain/`](../domain/) (schemas, features, Context Map)
 
 La spec se redacta usando la plantilla [`SPEC-TEMPLATE.md`](../templates/SPEC-TEMPLATE.md) y se registra en dos lugares:
@@ -170,7 +170,7 @@ Al cerrar: SPEC-001 pasa a ✅ Implemented, T2.1.1 se marca `[x]` en `phase2.md`
 ### 4.2 Flujo de Trabajo SDD
 
 1. Identificar trabajo pendiente (`phaseX.md` — task sin check)
-2. Redactar Spec (en `SDD/specs/iteration-X/SPEC-XXX.md`)
+2. Redactar Spec (en `sdd/specs/iteration-X/SPEC-XXX.md`)
 3. Revisión de Spec (peer review)
 4. Implementar contra Spec (estudiante o LLM)
 5. Verificar contra Acceptance Criteria de Spec
@@ -214,10 +214,10 @@ El frontend Angular vive en su propio repositorio (`sapcyti-spa`) y **no forma p
 
 > **Regla:** Nunca duplicar información que ya existe en otro documento. Siempre referenciar.
 
-- La spec referencia [`Architecture.md §4`](../../Design/Architecture.md) para el modelo de dominio — no lo copia
-- La spec referencia [`technologies/backend.md`](../technologies/backend.md) para versiones de librerías
-- La spec referencia la HU en [`visionDocs/HU/`](../../visionDocs/HU/) para el contexto de negocio
-- La spec referencia [`progress.md`](../../implementations/progress.md) Decision Log para decisiones previas
+- La spec referencia [`Architecture.md §4`](../../design/Architecture.md) para el modelo de dominio — no lo copia
+- La spec referencia [`technologies/backend.md`](../../technologies/backend.md) para versiones de librerías
+- La spec referencia la HU en [`vision/HU/`](../../vision/HU/) para el contexto de negocio
+- La spec referencia [`progress.md`](../../implementation/progress.md) Decision Log para decisiones previas
 - La spec referencia [`domain/schemas/`](../domain/schemas/) para contratos de datos y [`domain/features/`](../domain/features/) para escenarios Gherkin
 
 Esto mitiga:
@@ -274,7 +274,7 @@ Ejemplos:
 
 **Contiene:**
 - Lista de tareas con `- [ ]` / `- [x]` checkboxes
-- Cada tarea referencia la spec que la implementa: `→ [SPEC-001](../SDD/specs/iteration-1/SPEC-001_xxx.md)`
+- Cada tarea referencia la spec que la implementa: `→ [SPEC-001](../sdd/specs/iteration-1/SPEC-001_xxx.md)`
 - Agrupación lógica por feature (A2.1, A2.2, etc.)
 - Deliverables del phase con referencia a specs
 
@@ -320,7 +320,7 @@ Cada tipo de dependencia se declara en **un solo lugar** — sin duplicación.
 
 | Nivel | Qué describe | Fuente de verdad | No se repite en |
 |-------|-------------|------------------|-----------------|
-| **Fases (macro)** | "Phase 2 antes de Phase 3" | [`implementationPlan.md §3`](../implementations/implementationPlan.md) | specs, SPEC_INDEX |
+| **Fases (macro)** | "Phase 2 antes de Phase 3" | [`implementationPlan.md §3`](../implementation/implementationPlan.md) | specs, SPEC_INDEX |
 | **Specs (micro)** | "SPEC-003 depende de SPEC-001" | Header de cada spec: `Depends on:` / `Blocks:` | SPEC_INDEX, implementationPlan |
 | **Externas** | "CSV format must be validated con César Hernández" | Header de cada spec: `External Dependencies:` | ningún otro lugar |
 | **Descubrimiento** | "¿Qué specs existen y en qué estado están?" | [`SPEC_INDEX.md`](../SPEC_INDEX.md) — tabla de lookup | ningún otro lugar |
@@ -367,14 +367,14 @@ El objetivo es **minimizar los tokens consumidos** en cada sesión. Las convenci
 
 ### Escribir una spec
 1. La tarea en `phaseX.md` (el QUÉ).
-2. La sección relevante de [`Architecture.md`](../../Design/Architecture.md) (NO el archivo completo).
+2. La sección relevante de [`Architecture.md`](../../design/Architecture.md) (NO el archivo completo).
 3. La HU referenciada.
 4. [`technologies/{área}.md`](../technologies/) del área que se especifica.
 5. Los artefactos de dominio relevantes en [`domain/`](../domain/) (schemas, features, Context Map).
 
 ### Revisar código
 1. La spec contra la que se revisa.
-2. [`technologies/testing.md`](../technologies/testing.md) para convenciones de testing.
+2. [`technologies/testing.md`](../../technologies/testing.md) para convenciones de testing.
 
 ### NO cargar en ningún caso
 - `SDD-theory.md` — es documentación de proceso, no de implementación.
@@ -399,7 +399,7 @@ El objetivo es **minimizar los tokens consumidos** en cada sesión. Las convenci
 Referencia completa: [`README.md`](../README.md) | Rutas canónicas: [`CANONICAL.md`](../../CANONICAL.md)
 
 ```text
-Docs/SDD/
+Docs/sdd/
 ├── README.md                           ← Guía operativa SDD
 ├── SPEC_INDEX.md                       ← Índice maestro de specs
 ├── theory/

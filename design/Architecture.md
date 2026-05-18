@@ -42,7 +42,7 @@ flowchart LR
 
 ### 3.- Architectural drivers
 
-The architectural drivers were taken from [ArchitecturalDrivers.md](../ArchitecturalDrivers.md). For the MVP, user stories comprising the enrollment flow and entity management are prioritized; Iteration 1 emphasizes constraints and quality attributes with the greatest structural impact (parameterization and multi-graduate program support).
+The architectural drivers were taken from [ArchitecturalDrivers.md](ArchitecturalDrivers.md). For the MVP, user stories comprising the enrollment flow and entity management are prioritized; Iteration 1 emphasizes constraints and quality attributes with the greatest structural impact (parameterization and multi-graduate program support).
 
 #### User stories (MVP)
 

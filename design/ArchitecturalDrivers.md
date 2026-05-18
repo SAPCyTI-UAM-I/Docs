@@ -72,7 +72,7 @@ Los requerimientos funcionales primarios se seleccionaron a partir de las 35 his
 
 ## 3. Atributos de Calidad
 
-Se seleccionaron los atributos de calidad que, además de ser los más relevantes para el negocio del posgrado, presentan una **dificultad alta de implementación** y, por tanto, condicionan decisiones arquitectónicas tempranas. La selección se realizó a partir del análisis documentado en `Analisis_Requerimientos/Atributos_y_Restricciones.md`.
+Se seleccionaron los atributos de calidad que, además de ser los más relevantes para el negocio del posgrado, presentan una **dificultad alta de implementación** y, por tanto, condicionan decisiones arquitectónicas tempranas. La selección se realizó a partir del análisis documentado en `requirements/Atributos_y_Restricciones.md`.
 
 | ID | Atributo de Calidad | Escenario | Relevancia para el negocio | Dificultad |
 | -- | ------------------- | --------- | -------------------------- | ---------- |
@@ -87,7 +87,7 @@ Se seleccionaron los atributos de calidad que, además de ser los más relevante
 
 ## 4. Restricciones
 
-Las restricciones son decisiones que ya han sido tomadas y que limitan el espacio de diseño. Se extraen del documento `Analisis_Requerimientos/Atributos_y_Restricciones.md` y del documento de Visión.
+Las restricciones son decisiones que ya han sido tomadas y que limitan el espacio de diseño. Se extraen del documento `requirements/Atributos_y_Restricciones.md` y del documento de Visión.
 
 | ID | Restricción |
 | -- | ----------- |

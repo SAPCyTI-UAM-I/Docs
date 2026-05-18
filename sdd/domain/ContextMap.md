@@ -2,7 +2,7 @@
 
 > **Propósito**: Este documento define los Bounded Contexts del sistema SAPCyTI, sus relaciones estratégicas (DDD), los elementos compartidos (Shared Kernel), y los puntos de integración con sistemas externos. Está diseñado para ser consumido sin ambigüedad por agentes de IA y equipos de desarrollo.
 >
-> **Fuentes**: [ArchitecturalDrivers.md](../../ArchitecturalDrivers.md), [Architecture.md](../../Design/Architecture.md), [Atributos_y_Restricciones.md](../../Analisis_Requerimientos/Atributos_y_Restricciones.md), [Concerns.md](../../Analisis_Requerimientos/Concerns.md)
+> **Fuentes**: [ArchitecturalDrivers.md](../../design/ArchitecturalDrivers.md), [Architecture.md](../../design/Architecture.md), [Atributos_y_Restricciones.md](../../requirements/Atributos_y_Restricciones.md), [Concerns.md](../../requirements/Concerns.md)
 
 ---
 

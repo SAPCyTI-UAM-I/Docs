@@ -7,7 +7,7 @@
 **Goal:** Dockerize both projects, create the full Docker Compose stack (Nginx + API + DB), and perform end-to-end smoke testing of the Program Configuration API through the SPA.
 
 > **Environment:** Full Docker Compose stack on `localhost`.
-> **Ref:** [`technologies/devops.md`](../SDD/technologies/devops.md) — Docker and deployment strategy
+> **Ref:** [`technologies/devops.md`](../technologies/devops.md) — Docker and deployment strategy
 
 ### User Stories (HU)
 

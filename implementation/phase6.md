@@ -7,15 +7,15 @@
 **Goal:** Implement JWT-based authentication, Spring Security configuration, RBAC enforcement, and the login use case. This phase also instantiates the Audit infrastructure (BC-05) for security events.
 
 > **Environment:** Backend against PostgreSQL; security tested via MockMvc + JWT.
-> **Domain Schema:** [`identity-access.schema.json`](../SDD/domain/schemas/identity-access.schema.json), [`audit.schema.json`](../SDD/domain/schemas/audit.schema.json)
-> **Domain Features:** [`features/identity-access/authentication.feature`](../SDD/domain/features/identity-access/authentication.feature), [`features/audit/audit_event_capture.feature`](../SDD/domain/features/audit/audit_event_capture.feature)
+> **Domain Schema:** [`identity-access.schema.json`](../sdd/domain/schemas/identity-access.schema.json), [`audit.schema.json`](../sdd/domain/schemas/audit.schema.json)
+> **Domain Features:** [`features/identity-access/authentication.feature`](../sdd/domain/features/identity-access/authentication.feature), [`features/audit/audit_event_capture.feature`](../sdd/domain/features/audit/audit_event_capture.feature)
 
 ### User Stories (HU)
 
 | HU | Title | Role in Phase |
 |----|-------|---------------|
-| [HU-01](../visionDocs/HU/HU-01.md) | Ingreso al sistema SAPCyTI | Primary — login flow (email/password → JWT → main screen with role-based options) |
-| [HU-03](../visionDocs/HU/HU-03.md) | Cerrar sesión | Secondary — logout (revoke refresh token, clear session) |
+| [HU-01](../vision/HU/HU-01.md) | Ingreso al sistema SAPCyTI | Primary — login flow (email/password → JWT → main screen with role-based options) |
+| [HU-03](../vision/HU/HU-03.md) | Cerrar sesión | Secondary — logout (revoke refresh token, clear session) |
 
 ---
 

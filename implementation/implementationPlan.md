@@ -2,19 +2,19 @@
 
 ## 1. Introduction
 
-This document is the **central index** for the SAPCyTI implementation plan. Per-phase task detail and checkboxes live in separate `phaseX.md` files. Each task in those files references a **Spec** from [`SDD/specs/`](../SDD/specs/).
+This document is the **central index** for the SAPCyTI implementation plan. Per-phase task detail and checkboxes live in separate `phaseX.md` files. Each task in those files references a **Spec** from [`sdd/specs/`](../sdd/specs/).
 
 The [`progress.md`](progress.md) file is the **project memory**: decisions, blockers, conventions, and session notes — no task tracking.
 
 ### Domain Artifacts
 
-All specs are derived from the machine-readable artifacts in [`SDD/domain/`](../SDD/domain/):
+All specs are derived from the machine-readable artifacts in [`sdd/domain/`](../sdd/domain/):
 
 | Artifact Type | Location | Purpose |
 |---------------|----------|---------|
-| Context Map | [`domain/ContextMap.md`](../SDD/domain/ContextMap.md) | Bounded Contexts, relationships, dependency graph |
-| JSON Schemas | [`domain/schemas/`](../SDD/domain/schemas/) | Data contracts — field names, types, constraints, commands |
-| Gherkin Features | [`domain/features/`](../SDD/domain/features/) | Acceptance criteria, edge cases, RBAC scenarios |
+| Context Map | [`domain/ContextMap.md`](../sdd/domain/ContextMap.md) | Bounded Contexts, relationships, dependency graph |
+| JSON Schemas | [`domain/schemas/`](../sdd/domain/schemas/) | Data contracts — field names, types, constraints, commands |
+| Gherkin Features | [`domain/features/`](../sdd/domain/features/) | Acceptance criteria, edge cases, RBAC scenarios |
 
 ### Current Status
 
@@ -38,17 +38,17 @@ All specs are derived from the machine-readable artifacts in [`SDD/domain/`](../
 |-------|------|--------------|---------------|-------|------------------|------------|
 | **0** | Project Setup & Configuration | Repositories, quality tools, CI/CD, local env | Pre-requisite | — | — | 0 (no specs) |
 | **1** | Backend Project Initialization | Spring Boot skeleton, hexagonal packages, multi-tenant filter | Iteration 1 | All (scaffolding) | — | 0 (no specs) |
-| **2** | Program Configuration — Domain & Persistence | GraduateProgram AR, ConfigurationParameter VO, JPA, Flyway | Iteration 1 | BC-04 | [`program-configuration.schema.json`](../SDD/domain/schemas/program-configuration.schema.json) · [`features/program-configuration/`](../SDD/domain/features/program-configuration/) | TBD |
+| **2** | Program Configuration — Domain & Persistence | GraduateProgram AR, ConfigurationParameter VO, JPA, Flyway | Iteration 1 | BC-04 | [`program-configuration.schema.json`](../sdd/domain/schemas/program-configuration.schema.json) · [`features/program-configuration/`](../sdd/domain/features/program-configuration/) | TBD |
 | **3** | Program Configuration — Application & API | Use cases, REST controllers, Configuration Adapter | Iteration 1 | BC-04 | Same as Phase 2 | TBD |
 | **4A** | SPA Project Scaffold & Tooling | Angular CLI project, dependency installation, ESLint/Prettier/Vitest tooling, folder structure | Iteration 1 | — | — | 1 (SPEC-008A) |
 | **4** | SPA Core Architecture & Shell | Core providers (auth stubs, tenant, i18n), Shell layout, shared components, lazy loading routes | Iteration 1 | — | — | 1 (SPEC-008B) |
 | **5** | Integration, Docker & E2E Verification | Dockerize backend + SPA, Docker Compose, end-to-end smoke test | Iteration 1–2 | — | — | TBD |
-| **6** | Security Infrastructure & Authentication | JWT auth, Spring Security, RBAC, login/logout flow (HU-01, HU-03) | Iteration 3 | BC-06 | [`identity-access.schema.json`](../SDD/domain/schemas/identity-access.schema.json) · [`features/identity-access/`](../SDD/domain/features/identity-access/) | TBD |
-| **7** | Entity Management & Credential Flows | Student/Professor CRUD (HU-15, HU-21), password recovery/change (HU-02, HU-28), i18n | Iteration 4 | BC-02, BC-06 | [`academic-management.schema.json`](../SDD/domain/schemas/academic-management.schema.json) · [`features/academic-management/`](../SDD/domain/features/academic-management/) · [`features/identity-access/`](../SDD/domain/features/identity-access/) | TBD |
-| **8** | Academic Offering & CSV Import | Term lifecycle, CSV upload ACL (HU-06), enrollment period control | Iteration 5 | BC-03 | [`academic-offering.schema.json`](../SDD/domain/schemas/academic-offering.schema.json) · [`features/academic-offering/`](../SDD/domain/features/academic-offering/) | TBD |
-| **9** | Enrollment Workflow | Course selection (HU-07), advisor approval (HU-08), finalization/PDF/export (HU-09), admin state mgmt (HU-10) | Iteration 5 | BC-01 | [`enrollment.schema.json`](../SDD/domain/schemas/enrollment.schema.json) · [`features/enrollment/`](../SDD/domain/features/enrollment/) | TBD |
+| **6** | Security Infrastructure & Authentication | JWT auth, Spring Security, RBAC, login/logout flow (HU-01, HU-03) | Iteration 3 | BC-06 | [`identity-access.schema.json`](../sdd/domain/schemas/identity-access.schema.json) · [`features/identity-access/`](../sdd/domain/features/identity-access/) | TBD |
+| **7** | Entity Management & Credential Flows | Student/Professor CRUD (HU-15, HU-21), password recovery/change (HU-02, HU-28), i18n | Iteration 4 | BC-02, BC-06 | [`academic-management.schema.json`](../sdd/domain/schemas/academic-management.schema.json) · [`features/academic-management/`](../sdd/domain/features/academic-management/) · [`features/identity-access/`](../sdd/domain/features/identity-access/) | TBD |
+| **8** | Academic Offering & CSV Import | Term lifecycle, CSV upload ACL (HU-06), enrollment period control | Iteration 5 | BC-03 | [`academic-offering.schema.json`](../sdd/domain/schemas/academic-offering.schema.json) · [`features/academic-offering/`](../sdd/domain/features/academic-offering/) | TBD |
+| **9** | Enrollment Workflow | Course selection (HU-07), advisor approval (HU-08), finalization/PDF/export (HU-09), admin state mgmt (HU-10) | Iteration 5 | BC-01 | [`enrollment.schema.json`](../sdd/domain/schemas/enrollment.schema.json) · [`features/enrollment/`](../sdd/domain/features/enrollment/) | TBD |
 
-> **Note:** Audit (BC-05) is a cross-cutting concern implemented incrementally within Phases 6–9 via `AuditOutputPort`. See [`audit.schema.json`](../SDD/domain/schemas/audit.schema.json) and [`features/audit/`](../SDD/domain/features/audit/).
+> **Note:** Audit (BC-05) is a cross-cutting concern implemented incrementally within Phases 6–9 via `AuditOutputPort`. See [`audit.schema.json`](../sdd/domain/schemas/audit.schema.json) and [`features/audit/`](../sdd/domain/features/audit/).
 
 ---
 
@@ -82,7 +82,7 @@ graph LR
 | **8** | 7 | Requires Academic Management entities (ProfessorQueryPort for CSV import) |
 | **9** | 8 | Requires Academic Offering (TermStatus, UEAGroups, AcademicOfferQueryPort) |
 
-> **BC Dependency Graph** (from [`ContextMap.md §3.3`](../SDD/domain/ContextMap.md)):
+> **BC Dependency Graph** (from [`ContextMap.md §3.3`](../sdd/domain/ContextMap.md)):
 > `BC-04 → BC-06 → BC-02 → BC-03 → BC-01` (plus BC-05 Audit incrementally)
 
 ---
@@ -96,9 +96,9 @@ graph LR
 | **Coverage met** | ≥80% code coverage (JaCoCo for backend, istanbul for SPA) |
 | **No regressions** | Functionality from earlier phases still works |
 | **Specs implemented** | All linked specs in `phaseX.md` are ✅ Implemented |
-| **Hexagonal conventions** | New code follows hexagonal package layout from [`Architecture.md §6.1`](../Design/Architecture.md) |
-| **Schema compliance** | Domain model fields match JSON Schema definitions in [`SDD/domain/schemas/`](../SDD/domain/schemas/) |
-| **Feature coverage** | Acceptance criteria from Gherkin features in [`SDD/domain/features/`](../SDD/domain/features/) are covered by tests |
+| **Hexagonal conventions** | New code follows hexagonal package layout from [`Architecture.md §6.1`](../design/Architecture.md) |
+| **Schema compliance** | Domain model fields match JSON Schema definitions in [`sdd/domain/schemas/`](../sdd/domain/schemas/) |
+| **Feature coverage** | Acceptance criteria from Gherkin features in [`sdd/domain/features/`](../sdd/domain/features/) are covered by tests |
 | **Documentation updated** | README, API docs, and architecture diagrams are current |
 
 ---
@@ -123,12 +123,12 @@ graph LR
 
 ## 6. Selected Technology Stack
 
-> Full details in [`SDD/technologies/`](../SDD/technologies/).
+> Full details in [`technologies/`](../technologies/).
 
-**Backend:** See [`technologies/backend.md`](../SDD/technologies/backend.md) — Spring Boot 3.4.5 (Java 21) + Spring Data JPA + PostgreSQL 16 + Flyway + MapStruct
-**Frontend:** See [`technologies/frontend.md`](../SDD/technologies/frontend.md) — Angular + TypeScript + Tailwind CSS
-**Testing:** See [`technologies/testing.md`](../SDD/technologies/testing.md) — JUnit 5 + Mockito + JaCoCo ≥80%
-**DevOps:** See [`technologies/devops.md`](../SDD/technologies/devops.md) — Docker + Docker Compose + GitHub Actions
+**Backend:** See [`technologies/backend.md`](../technologies/backend.md) — Spring Boot 3.4.5 (Java 21) + Spring Data JPA + PostgreSQL 16 + Flyway + MapStruct
+**Frontend:** See [`technologies/frontend.md`](../technologies/frontend.md) — Angular + TypeScript + Tailwind CSS
+**Testing:** See [`technologies/testing.md`](../technologies/testing.md) — JUnit 5 + Mockito + JaCoCo ≥80%
+**DevOps:** See [`technologies/devops.md`](../technologies/devops.md) — Docker + Docker Compose + GitHub Actions
 
 ---
 
@@ -174,16 +174,16 @@ graph LR
 
 | Step | Document | Purpose | Time |
 |------|----------|---------|------|
-| 1 | [`SDD/theory/SDD-theory.md`](../SDD/theory/SDD-theory.md) | Understand how we work (SDD methodology) | 15 min |
+| 1 | [`sdd/theory/SDD-theory.md`](../sdd/theory/SDD-theory.md) | Understand how we work (SDD methodology) | 15 min |
 | 2 | This file (`implementationPlan.md`) | Phase overview, stack, transition criteria | 10 min |
 | 3 | [`progress.md`](progress.md) → Active Conventions | Mandatory code rules | 10 min |
-| 4 | [`SDD/domain/ContextMap.md`](../SDD/domain/ContextMap.md) | Bounded Contexts, relationships, dependency graph | 15 min |
-| 5 | [`SDD/technologies/{area}.md`](../SDD/technologies/) | Stack for the area you'll work on | 10 min |
-| 6 | [`SDD/domain/schemas/{bc}.schema.json`](../SDD/domain/schemas/) | Data contract for the BC you'll implement | 10 min |
-| 7 | [`SDD/domain/features/{bc}/`](../SDD/domain/features/) | Gherkin scenarios to understand expected behavior | 10 min |
-| 8 | [`SPEC_INDEX.md`](../SDD/SPEC_INDEX.md) | Locate the assigned spec | 5 min |
+| 4 | [`sdd/domain/ContextMap.md`](../sdd/domain/ContextMap.md) | Bounded Contexts, relationships, dependency graph | 15 min |
+| 5 | [`technologies/{area}.md`](../technologies/) | Stack for the area you'll work on | 10 min |
+| 6 | [`sdd/domain/schemas/{bc}.schema.json`](../sdd/domain/schemas/) | Data contract for the BC you'll implement | 10 min |
+| 7 | [`sdd/domain/features/{bc}/`](../sdd/domain/features/) | Gherkin scenarios to understand expected behavior | 10 min |
+| 8 | [`SPEC_INDEX.md`](../sdd/SPEC_INDEX.md) | Locate the assigned spec | 5 min |
 | 9 | The specific `SPEC-XXX.md` | Technical contract to implement | 15 min |
-| 10 | [`Architecture.md`](../Design/Architecture.md) — only referenced sections | Architectural context | 10 min |
+| 10 | [`Architecture.md`](../design/Architecture.md) — only referenced sections | Architectural context | 10 min |
 
 **Total onboarding:** ~110 min until productive. Domain artifacts (steps 4, 6, 7) are new additions that provide essential context for understanding what to build before reading the spec.
 
@@ -193,8 +193,8 @@ graph LR
 
 ### Workflow
 
-1. **Domain artifacts exist** — JSON Schema + Gherkin features for the BC must be in `SDD/domain/` before writing a spec
-2. Before implementing any task in `phaseX.md`, a **Spec** must exist in [`SDD/specs/`](../SDD/specs/)
+1. **Domain artifacts exist** — JSON Schema + Gherkin features for the BC must be in `sdd/domain/` before writing a spec
+2. Before implementing any task in `phaseX.md`, a **Spec** must exist in [`sdd/specs/`](../sdd/specs/)
 3. Spec is generated using [`write-spec`](../.cursor/skills/write-spec.md) skill — reads domain artifacts + Architecture.md + HU
 4. Spec is reviewed and moved to 🔵 Approved status
 5. Implementation follows the Spec — deviations require Spec amendment
@@ -205,13 +205,13 @@ graph LR
 
 | Source | Location | Used For |
 |--------|----------|----------|
-| Architecture | `Design/Architecture.md` | Hexagonal structure, domain model, component responsibilities |
-| Context Map | `SDD/domain/ContextMap.md` | BC relationships, upstream/downstream dependencies |
-| JSON Schema | `SDD/domain/schemas/{bc}.schema.json` | Field names, types, constraints, commands, read models |
-| Gherkin Features | `SDD/domain/features/{bc}/` | Acceptance criteria, edge cases, RBAC scenarios |
-| User Stories | `visionDocs/HU/HU-XX.md` | Business context and actor flows |
-| Technology Stack | `SDD/technologies/{area}.md` | Library versions, architecture rules, conventions |
-| Template | `SDD/templates/SPEC-TEMPLATE.md` | Spec structure and required sections |
+| Architecture | `design/Architecture.md` | Hexagonal structure, domain model, component responsibilities |
+| Context Map | `sdd/domain/ContextMap.md` | BC relationships, upstream/downstream dependencies |
+| JSON Schema | `sdd/domain/schemas/{bc}.schema.json` | Field names, types, constraints, commands, read models |
+| Gherkin Features | `sdd/domain/features/{bc}/` | Acceptance criteria, edge cases, RBAC scenarios |
+| User Stories | `vision/HU/HU-XX.md` | Business context and actor flows |
+| Technology Stack | `technologies/{area}.md` | Library versions, architecture rules, conventions |
+| Template | `sdd/templates/SPEC-TEMPLATE.md` | Spec structure and required sections |
 
 ### Spec Coverage by Phase
 
@@ -230,8 +230,8 @@ graph LR
 | 9 | BC-01 Enrollment | BC-01, BC-05 | 12 | 4 | 🔲 Not started |
 
 ### Reference Documents
-- Spec templates: [`SDD/templates/`](../SDD/templates/)
-- Spec index: [`SDD/SPEC_INDEX.md`](../SDD/SPEC_INDEX.md)
-- SDD theory: [`SDD/theory/SDD-theory.md`](../SDD/theory/SDD-theory.md)
-- Domain artifacts: [`SDD/domain/`](../SDD/domain/)
+- Spec templates: [`sdd/templates/`](../sdd/templates/)
+- Spec index: [`sdd/SPEC_INDEX.md`](../sdd/SPEC_INDEX.md)
+- SDD theory: [`sdd/theory/SDD-theory.md`](../sdd/theory/SDD-theory.md)
+- Domain artifacts: [`sdd/domain/`](../sdd/domain/)
 - Technical debt: [`progress.md` → Technical Debt Registry](progress.md)

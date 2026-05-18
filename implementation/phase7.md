@@ -7,17 +7,17 @@
 **Goal:** Implement Student and Professor CRUD with cross-module user creation (Academic Management → Identity), password recovery and change flows, and email integration.
 
 > **Environment:** Backend against PostgreSQL; email via MailHog or Mailtrap for dev.
-> **Domain Schema:** [`academic-management.schema.json`](../SDD/domain/schemas/academic-management.schema.json), [`identity-access.schema.json`](../SDD/domain/schemas/identity-access.schema.json)
-> **Domain Features:** [`features/academic-management/`](../SDD/domain/features/academic-management/), [`features/identity-access/password_recovery.feature`](../SDD/domain/features/identity-access/password_recovery.feature), [`features/identity-access/password_change.feature`](../SDD/domain/features/identity-access/password_change.feature)
+> **Domain Schema:** [`academic-management.schema.json`](../sdd/domain/schemas/academic-management.schema.json), [`identity-access.schema.json`](../sdd/domain/schemas/identity-access.schema.json)
+> **Domain Features:** [`features/academic-management/`](../sdd/domain/features/academic-management/), [`features/identity-access/password_recovery.feature`](../sdd/domain/features/identity-access/password_recovery.feature), [`features/identity-access/password_change.feature`](../sdd/domain/features/identity-access/password_change.feature)
 
 ### User Stories (HU)
 
 | HU | Title | Role in Phase |
 |----|-------|---------------|
-| [HU-15](../visionDocs/HU/HU-15.md) | Registro de nuevos alumnos en el sistema | Primary — Student aggregate, registration use case, one-time password |
-| [HU-21](../visionDocs/HU/HU-21.md) | Registro de nuevos profesores | Primary — Professor aggregate, registration use case, one-time password |
-| [HU-02](../visionDocs/HU/HU-02.md) | Recuperación de contraseña | Primary — Forgot/reset password flow, email with reset link |
-| [HU-28](../visionDocs/HU/HU-28.md) | Actualización de contraseña de usuario | Primary — Self-change and coordinator-change password |
+| [HU-15](../vision/HU/HU-15.md) | Registro de nuevos alumnos en el sistema | Primary — Student aggregate, registration use case, one-time password |
+| [HU-21](../vision/HU/HU-21.md) | Registro de nuevos profesores | Primary — Professor aggregate, registration use case, one-time password |
+| [HU-02](../vision/HU/HU-02.md) | Recuperación de contraseña | Primary — Forgot/reset password flow, email with reset link |
+| [HU-28](../vision/HU/HU-28.md) | Actualización de contraseña de usuario | Primary — Self-change and coordinator-change password |
 
 ---
 

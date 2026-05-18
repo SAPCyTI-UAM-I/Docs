@@ -7,7 +7,7 @@
 **Goal:** Create the Angular project with all dependencies installed, tooling configured, and folder structure ready. The developer executes CLI commands manually and configures tooling files. At the end of this phase, `ng serve` starts without errors and `npm run lint` passes.
 
 > **Environment:** `ng serve` on `localhost:4200` — no backend required.
-> **Ref:** [`technologies/frontend.md`](../SDD/technologies/frontend.md) — Angular stack, dependencies, and tooling rules
+> **Ref:** [`technologies/frontend.md`](../technologies/frontend.md) — Angular stack, dependencies, and tooling rules
 
 ### User Stories (HU)
 
@@ -17,7 +17,7 @@
 
 ## A4A.1 — Angular Project Creation (Manual) ✅
 
-> Specs: [SPEC-008A](../SDD/specs/iteration-1/SPEC-008A_angular-project-scaffold-tooling.md)
+> Specs: [SPEC-008A](../sdd/specs/iteration-1/SPEC-008A_angular-project-scaffold-tooling.md)
 
 - [X] **T4A.1.1** Execute `ng new sapcyti-spa` with Angular CLI — TypeScript strict mode, routing enabled, CSS (no SCSS) → SPEC-008A
   > Angular 21.2.10, strict mode ✅, standalone components ✅, routing ✅, CSS ✅, pnpm as package manager
@@ -40,7 +40,7 @@
 
 > Specs: SPEC-008A
 
-- [X] **T4A.3.1** Configure ESLint + `@angular-eslint` — `ng add @angular-eslint/schematics` + rules per [`frontend.md`](../SDD/technologies/frontend.md) → SPEC-008A
+- [X] **T4A.3.1** Configure ESLint + `@angular-eslint` — `ng add @angular-eslint/schematics` + rules per [`frontend.md`](../technologies/frontend.md) → SPEC-008A
   > ✅ `eslint.config.js` generado (flat config — Angular 21 no usa `.eslintrc.json`) | `@angular-eslint/recommended` ✅ | `ng lint` pasa sin errores ✅
 - [ ] **T4A.3.2** Configure Prettier — `npm install -D prettier prettier-plugin-tailwindcss` + create `.prettierrc` and `.prettierignore` → SPEC-008A
   > ⚠️ Partial: `prettier` installed ✅ | `.prettierrc` incompleto (faltan `semi`, `trailingComma`, `tabWidth`, `bracketSpacing`, `arrowParens`, `plugins`) | `prettier-plugin-tailwindcss` ❌ no instalado | `.prettierignore` ❌ falta | scripts `lint`/`format` en `package.json` ❌ faltan

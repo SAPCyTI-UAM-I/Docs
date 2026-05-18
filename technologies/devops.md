@@ -1,7 +1,7 @@
 # DevOps & Deployment — SAPCyTI
 
 > **Fuente de verdad** para CI/CD, Docker, y estrategia de despliegue.
-> Referenciado desde specs y [`progress.md`](../../implementations/progress.md).
+> Referenciado desde specs y [`progress.md`](../../implementation/progress.md).
 
 ---
 

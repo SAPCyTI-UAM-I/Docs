@@ -1,7 +1,7 @@
 # Phase {N} — {Nombre del Phase}
 
 > **ADD Iteration:** {N}
-> **Drivers:** {lista de drivers — referencia a [ArchitecturalDrivers.md](../../ArchitecturalDrivers.md)}
+> **Drivers:** {lista de drivers — referencia a [ArchitecturalDrivers.md](../../design/ArchitecturalDrivers.md)}
 > **Status:** 🔲 Not started | 🔵 In progress | ✅ Completed
 
 **Goal:** {Objetivo del phase en una oración}
@@ -14,16 +14,16 @@
 
 > Specs: [SPEC-{NNN}]({ruta}) | [SPEC-{NNN}]({ruta})
 
-- [ ] **T{N}.1.1** {Descripción breve de la tarea} → [SPEC-{NNN}](../../SDD/specs/iteration-{X}/SPEC-{NNN}_{nombre}.md)
-- [ ] **T{N}.1.2** {Descripción breve} → [SPEC-{NNN}](../../SDD/specs/iteration-{X}/SPEC-{NNN}_{nombre}.md)
-- [ ] **T{N}.1.3** {Descripción breve} → [SPEC-{NNN}](../../SDD/specs/iteration-{X}/SPEC-{NNN}_{nombre}.md)
+- [ ] **T{N}.1.1** {Descripción breve de la tarea} → [SPEC-{NNN}](../../sdd/specs/iteration-{X}/SPEC-{NNN}_{nombre}.md)
+- [ ] **T{N}.1.2** {Descripción breve} → [SPEC-{NNN}](../../sdd/specs/iteration-{X}/SPEC-{NNN}_{nombre}.md)
+- [ ] **T{N}.1.3** {Descripción breve} → [SPEC-{NNN}](../../sdd/specs/iteration-{X}/SPEC-{NNN}_{nombre}.md)
 
 ## A{N}.2 — {Nombre del Feature Group} {status emoji}
 
 > Specs: [SPEC-{NNN}]({ruta})
 
-- [ ] **T{N}.2.1** {Descripción breve} → [SPEC-{NNN}](../../SDD/specs/iteration-{X}/SPEC-{NNN}_{nombre}.md)
-- [ ] **T{N}.2.2** {Descripción breve} → [SPEC-{NNN}](../../SDD/specs/iteration-{X}/SPEC-{NNN}_{nombre}.md)
+- [ ] **T{N}.2.1** {Descripción breve} → [SPEC-{NNN}](../../sdd/specs/iteration-{X}/SPEC-{NNN}_{nombre}.md)
+- [ ] **T{N}.2.2** {Descripción breve} → [SPEC-{NNN}](../../sdd/specs/iteration-{X}/SPEC-{NNN}_{nombre}.md)
 
 ---
 
@@ -38,7 +38,7 @@
 
 ## Transition Criteria
 
-> Criterios específicos para dar por terminado este phase. Complementan los criterios genéricos de [`implementationPlan.md §4`](../../implementations/implementationPlan.md).
+> Criterios específicos para dar por terminado este phase. Complementan los criterios genéricos de [`implementationPlan.md §4`](../../implementation/implementationPlan.md).
 
 - [ ] {Criterio concreto — e.g., "GraduateProgram CRUD returns 200/201/404 via Postman"}
 - [ ] {Criterio concreto — e.g., "Flyway migrations run clean on empty DB"}
@@ -61,9 +61,9 @@
 
 ## Notes and Decisions
 
-> Las decisiones se registran en [`progress.md`](../../implementations/progress.md) Decision Log.
+> Las decisiones se registran en [`progress.md`](../../implementation/progress.md) Decision Log.
 > Aquí solo se referencian las relevantes a este phase.
 
 | # | Decision ID | Summary |
 |---|-------------|---------|
-| — | [D-{NNN}](../../implementations/progress.md) | {resumen breve} |
+| — | [D-{NNN}](../../implementation/progress.md) | {resumen breve} |

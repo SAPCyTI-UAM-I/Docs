@@ -94,5 +94,5 @@ SDD/
 | Context Map | `domain/ContextMap.md` | Bounded Contexts y relaciones DDD |
 | Schemas | `domain/schemas/` | Contratos de datos machine-readable |
 | Features | `domain/features/` | Especificaciones Gherkin ejecutables |
-| Arquitectura | `../Design/Architecture.md` | Fuente de verdad arquitectónica |
-| Plan de iteraciones | `../Design/IterationPlan.md` | Orden de drivers ADD |
+| Arquitectura | `../design/Architecture.md` | Fuente de verdad arquitectónica |
+| Plan de iteraciones | `../design/IterationPlan.md` | Orden de drivers ADD |

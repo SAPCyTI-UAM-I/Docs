@@ -16,13 +16,13 @@ Decisiones ADD: arquitectura detallada, plan de iteraciones y drivers que justif
 |---------|-----------|-------------|
 | [Architecture.md](Architecture.md) | Decisiones, dominio, paquetes (~2400 líneas) | Por sección |
 | [IterationPlan.md](IterationPlan.md) | Iteraciones ADD y drivers | Planificación |
-| [`../ArchitecturalDrivers.md`](../ArchitecturalDrivers.md) | HU/QA/CON drivers | Trazabilidad |
-| [`../ADD.md`](../ADD.md) | Proceso ADD para agentes | Trabajo ADD |
+| [ArchitecturalDrivers.md](ArchitecturalDrivers.md) | HU/QA/CON drivers | Trazabilidad |
+| [ADD.md](ADD.md) | Proceso ADD para agentes | Trabajo ADD |
 
 ## Rutas canónicas
 
-- Arquitectura: `Design/Architecture.md`
-- Drivers: `ArchitecturalDrivers.md` (moverá a `design/` en Hito C)
+- Arquitectura: `design/Architecture.md`
+- Drivers: `design/ArchitecturalDrivers.md`
 
 ## Qué NO cargar
 
@@ -30,5 +30,5 @@ Decisiones ADD: arquitectura detallada, plan de iteraciones y drivers que justif
 
 ## Siguiente paso
 
-- Dominio DDD: [`../SDD/domain/ContextMap.md`](../SDD/domain/ContextMap.md)
-- Specs: [`../SDD/SPEC_INDEX.md`](../SDD/SPEC_INDEX.md)
+- Dominio DDD: [`../sdd/domain/ContextMap.md`](../sdd/domain/ContextMap.md)
+- Specs: [`../sdd/SPEC_INDEX.md`](../sdd/SPEC_INDEX.md)

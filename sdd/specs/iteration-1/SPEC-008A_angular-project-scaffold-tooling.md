@@ -105,8 +105,8 @@ sapcyti-spa/
 │       └── models/                         ← CREATE (empty dir)
 ```
 
-> **Referencia arquitectónica:** [`Architecture.md §6.2`](../../Design/Architecture.md) — SPA component diagram
-> [`technologies/frontend.md §Folder Structure`](../technologies/frontend.md) — Folder structure conventions
+> **Referencia arquitectónica:** [`Architecture.md §6.2`](../../design/Architecture.md) — SPA component diagram
+> [`technologies/frontend.md §Folder Structure`](../../../technologies/frontend.md) — Folder structure conventions
 
 ### Architectural Context
 
@@ -380,7 +380,7 @@ No performance concerns. This is project setup — no runtime code.
 | Test runner verification | `npm run test` executes | Vitest | Runs successfully (0 tests is acceptable) |
 | Visual verification | Tailwind utility class applies | Manual | Class `bg-blue-500` renders blue background |
 
-> **Referencia:** [`technologies/testing.md`](../technologies/testing.md) — Vitest replaces Jasmine/Karma
+> **Referencia:** [`technologies/testing.md`](../../../technologies/testing.md) — Vitest replaces Jasmine/Karma
 > **Coverage mínimo:** Not applicable in Phase 4A — no logic to cover
 
 ---
@@ -395,22 +395,22 @@ No performance concerns. This is project setup — no runtime code.
 - [ ] ESLint uses `@angular-eslint/recommended` ruleset
 - [ ] Prettier uses `prettier-plugin-tailwindcss` for class sorting
 - [ ] `.editorconfig` uses 2-space indentation for TS/HTML/CSS
-- [ ] Folder structure matches [`technologies/frontend.md §Folder Structure`](../technologies/frontend.md)
+- [ ] Folder structure matches [`technologies/frontend.md §Folder Structure`](../../../technologies/frontend.md)
 - [ ] Environment files use `apiBaseUrl` variable (no hardcoded URLs)
 - [ ] No SCSS — plain CSS only
 
-> **Referencia completa de convenciones:** [`progress.md` → Active Conventions](../../implementations/progress.md)
+> **Referencia completa de convenciones:** [`progress.md` → Active Conventions](../../implementation/progress.md)
 
 ---
 
 ## 11. References
 
-- **Architecture:** [`Architecture.md §5`](../../Design/Architecture.md) — Container diagram (SPA container)
-- **Architecture:** [`Architecture.md §6.2`](../../Design/Architecture.md) — SPA component diagram
-- **Technology Stack:** [`technologies/frontend.md`](../technologies/frontend.md) — Angular stack, dependencies, conventions
-- **Technology Stack:** [`technologies/testing.md`](../technologies/testing.md) — Vitest as test runner
-- **Implementation Plan:** [`implementationPlan.md`](../../implementations/implementationPlan.md) — Phase 4A definition
-- **Phase Tasks:** [`phase4a.md`](../../implementations/phase4a.md) — Task map for this spec
+- **Architecture:** [`Architecture.md §5`](../../design/Architecture.md) — Container diagram (SPA container)
+- **Architecture:** [`Architecture.md §6.2`](../../design/Architecture.md) — SPA component diagram
+- **Technology Stack:** [`technologies/frontend.md`](../../../technologies/frontend.md) — Angular stack, dependencies, conventions
+- **Technology Stack:** [`technologies/testing.md`](../../../technologies/testing.md) — Vitest as test runner
+- **Implementation Plan:** [`implementationPlan.md`](../../implementation/implementationPlan.md) — Phase 4A definition
+- **Phase Tasks:** [`phase4a.md`](../../implementation/phase4a.md) — Task map for this spec
 - **Blocked Spec:** [SPEC-008B](SPEC-008B_spa-core-providers-shell-i18n.md) — SPA Core Providers, Shell & i18n
 
 ---

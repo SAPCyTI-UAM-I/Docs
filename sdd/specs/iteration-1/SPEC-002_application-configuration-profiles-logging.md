@@ -5,7 +5,7 @@
 > **Date:** 2026-05-12
 > **Phase:** 1 | **ADD Iteration:** 1
 > **Bounded Context:** Plataforma / observabilidad transversal
-> **Drivers:** [QA-3](../../../ArchitecturalDrivers.md), [QA-4](../../../ArchitecturalDrivers.md), [CON-6](../../../ArchitecturalDrivers.md) — parametrización por entorno; trazabilidad multi-programa; config externa sin rebuild
+> **Drivers:** [QA-3](../../../design/ArchitecturalDrivers.md), [QA-4](../../../design/ArchitecturalDrivers.md), [CON-6](../../../design/ArchitecturalDrivers.md) — parametrización por entorno; trazabilidad multi-programa; config externa sin rebuild
 > **Domain Schema:** _No aplica._
 > **Domain Features:** _No aplica._
 > **Depends on:** [SPEC-001](SPEC-001_spring-boot-project-and-maven-build.md)
@@ -39,7 +39,7 @@ Los atributos de calidad QA-3 y QA-4 requieren **configuración externa** y **di
 - Secrets management externo (Vault); solo variables de entorno.
 
 ### Assumptions
-- PostgreSQL de Phase 0 alcanzable con las URLs de dev documentadas en [`implementations/phase0.md`](../../../implementations/phase0.md) si existe.
+- PostgreSQL de Phase 0 alcanzable con las URLs de dev documentadas en [`implementation/phase0.md`](../../../implementation/phase0.md) si existe.
 - Flyway ejecutará migraciones cuando existan scripts en `db/migration` (Phase 2+); la configuración debe dejar Flyway activo.
 
 ---
@@ -66,7 +66,7 @@ src/main/resources/
 
 ### Architectural Context
 
-> [`Architecture.md`](../../../Design/Architecture.md) — contenedor Backend API y observabilidad:
+> [`Architecture.md`](../../../design/Architecture.md) — contenedor Backend API y observabilidad:
 
 ```
 | **PostgreSQL Database** | Store domain data, configuration parameters per graduate program, multi-tenant data, 
@@ -180,7 +180,7 @@ Logging JSON tiene overhead menor frente a I/O red; aceptable para QA operativa.
 
 ## 11. References
 
-- **Architecture:** [`Architecture.md §5–6`](../../../Design/Architecture.md)
+- **Architecture:** [`Architecture.md §5–6`](../../../design/Architecture.md)
 - **Context Map:** [`ContextMap.md`](../../domain/ContextMap.md) §2.2 Multi-tenant Context
 - **Technology Stack:** [`technologies/backend.md`](../../technologies/backend.md)
 - **Related Specs:** [SPEC-001](SPEC-001_spring-boot-project-and-maven-build.md), [SPEC-003](SPEC-003_hexagonal-packages-tenant-filter-cors.md)

@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-This document is the **central index** for the implementation plan. Per-phase task detail and checkboxes live in separate `phaseX.md` files. Each task in those files references a **Spec** from [`SDD/specs/`](../SDD/specs/).
+This document is the **central index** for the implementation plan. Per-phase task detail and checkboxes live in separate `phaseX.md` files. Each task in those files references a **Spec** from [`sdd/specs/`](../sdd/specs/).
 
 The [`progress.md`](progress.md) file is the **project memory**: decisions, blockers, conventions, and session notes — no task tracking.
 
@@ -39,7 +39,7 @@ graph LR
 | **Coverage met** | ≥80% code coverage |
 | **No regressions** | Functionality from earlier phases still works |
 | **Specs implemented** | All linked specs in `phaseX.md` are ✅ Implemented |
-| **Hexagonal conventions** | New code follows hexagonal package layout from [`Architecture.md §6.1`](../Design/Architecture.md) |
+| **Hexagonal conventions** | New code follows hexagonal package layout from [`Architecture.md §6.1`](../design/Architecture.md) |
 | **Documentation updated** | README, API docs, and architecture diagrams are current |
 
 ---
@@ -54,12 +54,12 @@ graph LR
 
 ## 6. Selected Technology Stack
 
-> Full details in [`SDD/technologies/`](../SDD/technologies/).
+> Full details in [`technologies/`](../technologies/).
 
-**Frontend:** See [`technologies/frontend.md`](../SDD/technologies/frontend.md)
-**Backend:** See [`technologies/backend.md`](../SDD/technologies/backend.md)
-**Testing:** See [`technologies/testing.md`](../SDD/technologies/testing.md)
-**DevOps:** See [`technologies/devops.md`](../SDD/technologies/devops.md)
+**Frontend:** See [`technologies/frontend.md`](../technologies/frontend.md)
+**Backend:** See [`technologies/backend.md`](../technologies/backend.md)
+**Testing:** See [`technologies/testing.md`](../technologies/testing.md)
+**DevOps:** See [`technologies/devops.md`](../technologies/devops.md)
 
 ---
 
@@ -87,13 +87,13 @@ graph LR
 
 | Step | Document | Purpose | Time |
 |------|----------|---------|------|
-| 1 | [`SDD/theory/SDD-theory.md`](../theory/SDD-theory.md) | Entender cómo trabajamos | 15 min |
+| 1 | [`sdd/theory/SDD-theory.md`](../theory/SDD-theory.md) | Entender cómo trabajamos | 15 min |
 | 2 | This file (`implementationPlan.md`) | Visión general de fases y stack | 10 min |
 | 3 | [`progress.md`](progress.md) → Active Conventions | Reglas obligatorias de código | 10 min |
-| 4 | [`technologies/{area}.md`](../SDD/technologies/) | Stack del área que vas a trabajar | 10 min |
-| 5 | [`SPEC_INDEX.md`](../SDD/SPEC_INDEX.md) | Ubicar la spec asignada | 5 min |
+| 4 | [`technologies/{area}.md`](../technologies/) | Stack del área que vas a trabajar | 10 min |
+| 5 | [`SPEC_INDEX.md`](../sdd/SPEC_INDEX.md) | Ubicar la spec asignada | 5 min |
 | 6 | La spec específica `SPEC-XXX.md` | Contrato técnico a implementar | 15 min |
-| 7 | [`Architecture.md`](../Design/Architecture.md) — solo las secciones referenciadas | Contexto arquitectónico | 10 min |
+| 7 | [`Architecture.md`](../design/Architecture.md) — solo las secciones referenciadas | Contexto arquitectónico | 10 min |
 
 **Total onboarding:** ~75 min hasta ser productivo.
 
@@ -102,7 +102,7 @@ graph LR
 ## 10. Spec-Driven Development Integration
 
 ### Workflow
-1. Before implementing any task in `phaseX.md`, a Spec must exist in [`SDD/specs/`](../SDD/specs/)
+1. Before implementing any task in `phaseX.md`, a Spec must exist in [`sdd/specs/`](../sdd/specs/)
 2. Spec is reviewed and moved to 🔵 Approved status
 3. Implementation follows the Spec — deviations require Spec amendment
 4. PR references the Spec ID: `feat({module}): SPEC-{NNN} {description}`
@@ -115,7 +115,7 @@ graph LR
 | {N} | {count} | {count} | {status} |
 
 ### Reference Documents
-- Spec templates: [`SDD/templates/`](../SDD/templates/)
-- Spec index: [`SDD/SPEC_INDEX.md`](../SDD/SPEC_INDEX.md)
-- SDD theory: [`SDD/theory/SDD-theory.md`](../theory/SDD-theory.md)
+- Spec templates: [`sdd/templates/`](../sdd/templates/)
+- Spec index: [`sdd/SPEC_INDEX.md`](../sdd/SPEC_INDEX.md)
+- SDD theory: [`sdd/theory/SDD-theory.md`](../theory/SDD-theory.md)
 - Technical debt: [`progress.md` → Technical Debt Registry](progress.md)

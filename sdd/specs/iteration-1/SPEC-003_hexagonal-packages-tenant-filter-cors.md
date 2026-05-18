@@ -5,7 +5,7 @@
 > **Date:** 2026-05-12
 > **Phase:** 1 | **ADD Iteration:** 1
 > **Bounded Context:** Plataforma compartida + layout de los 6 BC (sin lógica de dominio aún)
-> **Drivers:** [QA-4](../../../ArchitecturalDrivers.md), [CON-6](../../../ArchitecturalDrivers.md), [QA-3](../../../ArchitecturalDrivers.md) — multi-programa; estructura modular predecible; base para parametrización por programa ([`ContextMap.md`](../../domain/ContextMap.md) BC-04)
+> **Drivers:** [QA-4](../../../design/ArchitecturalDrivers.md), [CON-6](../../../design/ArchitecturalDrivers.md), [QA-3](../../../design/ArchitecturalDrivers.md) — multi-programa; estructura modular predecible; base para parametrización por programa ([`ContextMap.md`](../../domain/ContextMap.md) BC-04)
 > **Domain Schema:** _No aplica_ — la identidad `graduateProgramId` como ancla multi-tenant está en [`ContextMap.md`](../../domain/ContextMap.md) §2.1; el schema [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json) se usará en Phase 2 ([SPEC-004](SPEC-004_graduate-program-domain-persistence.md)).
 > **Domain Features:** _No aplica_ en Phase 1.
 > **Depends on:** [SPEC-001](SPEC-001_spring-boot-project-and-maven-build.md), [SPEC-002](SPEC-002_application-configuration-profiles-logging.md)
@@ -17,7 +17,7 @@
 
 ## 1. Business Justification
 
-QA-4 exige que hasta **9 programas de posgrado** convivan sin cambios estructurales; el **tenant runtime** debe establecerse antes de cualquier caso de uso. Según [`ContextMap.md`](../../domain/ContextMap.md) §2.1, `graduateProgramId` es la identidad compartida emitida por BC-04 y consumida por los demás BC. Esta spec crea el **árbol de paquetes hexagonal** para los seis BC más `shared`, implementa `TenantContext` + `TenantFilter` (`X-Graduate-Id` → ThreadLocal + MDC + `X-Request-Id`), CORS desde env, y documenta la regla de dependencias en `src/README.md`, alineado a [`Architecture.md` §6.1](../../../Design/Architecture.md).
+QA-4 exige que hasta **9 programas de posgrado** convivan sin cambios estructurales; el **tenant runtime** debe establecerse antes de cualquier caso de uso. Según [`ContextMap.md`](../../domain/ContextMap.md) §2.1, `graduateProgramId` es la identidad compartida emitida por BC-04 y consumida por los demás BC. Esta spec crea el **árbol de paquetes hexagonal** para los seis BC más `shared`, implementa `TenantContext` + `TenantFilter` (`X-Graduate-Id` → ThreadLocal + MDC + `X-Request-Id`), CORS desde env, y documenta la regla de dependencias en `src/README.md`, alineado a [`Architecture.md` §6.1](../../../design/Architecture.md).
 
 **Acceptance Criteria (Business):**
 - [ ] AC-1: Cada petición HTTP autenticada o pre-auth puede portar `X-Graduate-Id`; el valor queda disponible en `TenantContext` y en MDC como `graduate_program_id` para logs ([SPEC-002](SPEC-002_application-configuration-profiles-logging.md)).
@@ -43,7 +43,7 @@ QA-4 exige que hasta **9 programas de posgrado** convivan sin cambios estructura
 - Endpoints REST de negocio.
 
 ### Assumptions
-- Base package Java: `mx.uam.sapcyti` con subpaquetes por BC como en [`Architecture.md` §6.1](../../../Design/Architecture.md).
+- Base package Java: `mx.uam.sapcyti` con subpaquetes por BC como en [`Architecture.md` §6.1](../../../design/Architecture.md).
 - El filtro se registra como `@Bean` FilterRegistrationBean o componente con orden compatible con futura cadena de seguridad (orden documentado en código).
 
 ---
@@ -91,11 +91,11 @@ mx.uam.sapcyti/
         └── WebConfig.java
 ```
 
-> **Referencia arquitectónica:** [`Architecture.md` §6.1 — Module package structure](../../../Design/Architecture.md)
+> **Referencia arquitectónica:** [`Architecture.md` §6.1 — Module package structure](../../../design/Architecture.md)
 
 ### Architectural Context
 
-> Extracto de [`Architecture.md` §6.1 — Module package structure](../../../Design/Architecture.md):
+> Extracto de [`Architecture.md` §6.1 — Module package structure](../../../design/Architecture.md):
 
 ```
 Each bounded context module follows an identical hexagonal package layout.
@@ -195,7 +195,7 @@ X-Request-Id: <UUID>      # Correlación; opcional en request, siempre presente 
 
 ### 4.5 Frontend Contract (si aplica)
 
-La SPA enviará `X-Graduate-Id` desde el contexto de programa seleccionado ([`Architecture.md` §6.2](../../../Design/Architecture.md) — Tenant Context en Core). Phase 1 solo prepara el servidor.
+La SPA enviará `X-Graduate-Id` desde el contexto de programa seleccionado ([`Architecture.md` §6.2](../../../design/Architecture.md) — Tenant Context en Core). Phase 1 solo prepara el servidor.
 
 ---
 
@@ -240,7 +240,7 @@ Solo código fuente y docs; rollback eliminando paquetes y filtro.
 | Unit / Slice | `TenantFilterTest` | Header presente → MDC + context; finally limpia; `X-Request-Id` generado o preservado | Spring Test `MockMvc` o mocks servlet |
 | Unit | `WebConfigTest` *(opcional)* | CORS permite origen por defecto | Spring |
 
-> **Transition criteria** (Phase 1): `mvn test` pasa tests de TenantFilter y TenantContext ([`phase1.md`](../../../implementations/phase1.md)).
+> **Transition criteria** (Phase 1): `mvn test` pasa tests de TenantFilter y TenantContext ([`phase1.md`](../../../implementation/phase1.md)).
 
 ---
 
@@ -255,11 +255,11 @@ Solo código fuente y docs; rollback eliminando paquetes y filtro.
 
 ## 11. References
 
-- **Architecture:** [`Architecture.md §6.1`](../../../Design/Architecture.md)
+- **Architecture:** [`Architecture.md §6.1`](../../../design/Architecture.md)
 - **Context Map:** [`ContextMap.md`](../../domain/ContextMap.md) — §1 (BC), §2.1–2.2
 - **Technology Stack:** [`technologies/backend.md`](../../technologies/backend.md)
-- **Implementation Phase:** [`phase1.md`](../../../implementations/phase1.md)
-- **Decision Log:** [`progress.md`](../../../implementations/progress.md) — D-008 (TenantFilter en `shared/tenant`)
+- **Implementation Phase:** [`phase1.md`](../../../implementation/phase1.md)
+- **Decision Log:** [`progress.md`](../../../implementation/progress.md) — D-008 (TenantFilter en `shared/tenant`)
 - **Related Specs:** [SPEC-002](SPEC-002_application-configuration-profiles-logging.md), [SPEC-004](SPEC-004_graduate-program-domain-persistence.md)
 
 ---

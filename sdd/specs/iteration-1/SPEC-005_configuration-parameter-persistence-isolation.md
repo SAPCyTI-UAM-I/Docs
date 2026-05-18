@@ -5,7 +5,7 @@
 > **Date:** 2026-05-12
 > **Phase:** 2 | **ADD Iteration:** 1
 > **Bounded Context:** Program Configuration (BC-04)
-> **Drivers:** [QA-3](../../../ArchitecturalDrivers.md), [QA-4](../../../ArchitecturalDrivers.md) — parametrización sin cambiar código; aislamiento multi-programa
+> **Drivers:** [QA-3](../../../design/ArchitecturalDrivers.md), [QA-4](../../../design/ArchitecturalDrivers.md) — parametrización sin cambiar código; aislamiento multi-programa
 > **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json)
 > **Domain Features:** [`domain/features/program-configuration/`](../../domain/features/program-configuration/) — especialmente `configuration_parameter_management.feature`
 > **Depends on:** [SPEC-004](SPEC-004_graduate-program-domain-persistence.md) — debe existir tabla `graduate_programs` y entidad `GraduateProgram`
@@ -17,7 +17,7 @@
 
 ## 1. Business Justification
 
-Los parámetros de configuración externalizan reglas de negocio (fechas, cupos, límites) por programa sin despliegue de código ([QA-3](../../../ArchitecturalDrivers.md)). El aislamiento estricto entre programas ([QA-4](../../../ArchitecturalDrivers.md)) exige que toda lectura/escritura de parámetros esté acotada por `graduateProgramId`. Esta spec define el VO persistido como **entidad JPA** hijo de `GraduateProgram` (decisión R-2.1 en [phase2.md](../../../implementations/phase2.md)): tabla propia, FK y unicidad `(graduate_program_id, key)`.
+Los parámetros de configuración externalizan reglas de negocio (fechas, cupos, límites) por programa sin despliegue de código ([QA-3](../../../design/ArchitecturalDrivers.md)). El aislamiento estricto entre programas ([QA-4](../../../design/ArchitecturalDrivers.md)) exige que toda lectura/escritura de parámetros esté acotada por `graduateProgramId`. Esta spec define el VO persistido como **entidad JPA** hijo de `GraduateProgram` (decisión R-2.1 en [phase2.md](../../../implementation/phase2.md)): tabla propia, FK y unicidad `(graduate_program_id, key)`.
 
 **Acceptance Criteria (Business):**
 - [ ] AC-1: CRUD de parámetros por `graduateProgramId` sin filtrar datos de otro programa.
@@ -76,7 +76,7 @@ mx.uam.sapcyti.configuration/
 
 ### Architectural Context
 
-De [`Architecture.md` §4 — Description of domain model elements](../../../Design/Architecture.md):
+De [`Architecture.md` §4 — Description of domain model elements](../../../design/Architecture.md):
 
 ```
 | **ConfigurationParameter** | Value Object | Immutable key-value pair that externalizes a business rule of the graduate 
@@ -224,7 +224,7 @@ No aplica.
 
 > **Referencia:** [`technologies/testing.md`](../../technologies/testing.md)
 
-Casos alineados a deliverables [phase2.md](../../../implementations/phase2.md): *Parameter isolation test: 2 programs with different MAX_COURSES_PER_TERM values*.
+Casos alineados a deliverables [phase2.md](../../../implementation/phase2.md): *Parameter isolation test: 2 programs with different MAX_COURSES_PER_TERM values*.
 
 ---
 
@@ -241,7 +241,7 @@ Casos alineados a deliverables [phase2.md](../../../implementations/phase2.md): 
 
 ## 11. References
 
-- **Architecture:** [`Architecture.md`](../../../Design/Architecture.md) — QA-3, QA-4, BC-04
+- **Architecture:** [`Architecture.md`](../../../design/Architecture.md) — QA-3, QA-4, BC-04
 - **Context Map:** [`ContextMap.md`](../../domain/ContextMap.md) — Shared Kernel `graduateProgramId`
 - **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json)
 - **Domain Features:** [`configuration_parameter_management.feature`](../../domain/features/program-configuration/configuration_parameter_management.feature)

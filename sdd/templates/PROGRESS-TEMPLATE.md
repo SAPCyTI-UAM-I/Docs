@@ -34,7 +34,7 @@
 ## Active Conventions
 
 > Rules that every implementor (human or LLM) MUST follow.
-> For full technology details see [`SDD/technologies/`](../SDD/technologies/).
+> For full technology details see [`technologies/`](../technologies/).
 
 ### Backend
 - **Base package:** `mx.uam.sapcyti`
@@ -131,9 +131,9 @@
 ## Quick Reference
 
 - **General plan:** [`implementationPlan.md`](implementationPlan.md)
-- **Architecture:** [`Architecture.md`](../Design/Architecture.md)
-- **Iteration plan:** [`IterationPlan.md`](../Design/IterationPlan.md)
+- **Architecture:** [`Architecture.md`](../design/Architecture.md)
+- **Iteration plan:** [`IterationPlan.md`](../design/IterationPlan.md)
 - **Phase guides:** [`phase0.md`](phase0.md) … [`phase5.md`](phase5.md)
-- **Spec index:** [`SPEC_INDEX.md`](../SDD/SPEC_INDEX.md)
-- **Technologies:** [`SDD/technologies/`](../SDD/technologies/)
-- **SDD theory:** [`SDD/theory/SDD-theory.md`](../theory/SDD-theory.md)
+- **Spec index:** [`SPEC_INDEX.md`](../sdd/SPEC_INDEX.md)
+- **Technologies:** [`technologies/`](../technologies/)
+- **SDD theory:** [`sdd/theory/SDD-theory.md`](../theory/SDD-theory.md)

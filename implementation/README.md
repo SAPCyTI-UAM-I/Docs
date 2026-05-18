@@ -22,7 +22,7 @@ Estado operativo del proyecto: plan de fases, memoria de decisiones y mapas de t
 ## Rutas canónicas
 
 - Estado fino: `progress.md` (prevalece sobre `implementationPlan.md` en conflictos)
-- Specs: [`../SDD/specs/`](../SDD/specs/)
+- Specs: [`../sdd/specs/`](../sdd/specs/)
 
 ## Qué NO cargar al implementar
 

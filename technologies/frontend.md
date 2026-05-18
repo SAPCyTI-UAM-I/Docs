@@ -1,7 +1,7 @@
 # Frontend Technology Stack — SAPCyTI
 
 > **Source of truth** for frontend (SPA) versions, libraries, and rules.
-> Referenced from specs and [`progress.md`](../../implementations/progress.md).
+> Referenced from specs and [`progress.md`](../../implementation/progress.md).
 
 ---
 
@@ -49,7 +49,7 @@
 
 ## Architecture Rules
 
-> Ref: [`Architecture.md §6.2`](../../Design/Architecture.md) — SPA component diagram
+> Ref: [`Architecture.md §6.2`](../../design/Architecture.md) — SPA component diagram
 
 ### Folder Structure (Standalone Components)
 

@@ -21,7 +21,7 @@ Convenciones de stack y herramientas por área (backend, frontend, testing, devo
 
 ## Rutas canónicas
 
-- Hoy: `SDD/technologies/` (moverá a `technologies/` en raíz tras Hito C)
+- Canónico: `technologies/` en la raíz del repo Docs
 
 ## Qué NO cargar
 

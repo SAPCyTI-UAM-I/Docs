@@ -5,7 +5,7 @@
 > **Date:** {YYYY-MM-DD}
 > **Phase:** {N} | **ADD Iteration:** {N}
 > **Bounded Context:** {nombre del módulo}
-> **Drivers:** {HU-XX, QA-X, CON-X — referencia a [ArchitecturalDrivers.md](../../ArchitecturalDrivers.md)}
+> **Drivers:** {HU-XX, QA-X, CON-X — referencia a [ArchitecturalDrivers.md](../../design/ArchitecturalDrivers.md)}
 > **Domain Schema:** [`{bc-name}.schema.json`](../domain/schemas/{bc-name}.schema.json) — data contract for types, fields, and commands
 > **Domain Features:** [`domain/features/{bc-name}/`](../domain/features/{bc-name}/) — Gherkin scenarios mapped to Acceptance Criteria
 > **Depends on:** [SPEC-{NNN}]({ruta relativa}) — must be ✅ before implementation
@@ -18,7 +18,7 @@
 ## 1. Business Justification
 
 {Por qué existe esta spec. Qué problema de negocio resuelve. Referencia directa
-a la HU o QA driver — usar link: [HU-XX](../../visionDocs/HU/HU-XX.md).
+a la HU o QA driver — usar link: [HU-XX](../../vision/HU/HU-XX.md).
 Máximo 3-4 oraciones.}
 
 **Acceptance Criteria (Business):**
@@ -67,7 +67,7 @@ mx.uam.sapcyti.{modulo}/
         └── {Clase}JpaAdapter.java          ← {ACTION}
 ```
 
-> **Referencia arquitectónica:** [`Architecture.md §6.1`](../../Design/Architecture.md) — Module package structure
+> **Referencia arquitectónica:** [`Architecture.md §6.1`](../../design/Architecture.md) — Module package structure
 
 ### Architectural Context
 
@@ -81,7 +81,7 @@ invariantes, o decisiones que aplican a esta spec. Incluir la sección de origen
 ### Cross-Module Dependencies
 
 - {Qué ports de otros módulos consume — referencia a la spec que los define}
-- {Qué domain events emite — referencia a [`Architecture.md §4.1`](../../Design/Architecture.md) Logical Domain Events}
+- {Qué domain events emite — referencia a [`Architecture.md §4.1`](../../design/Architecture.md) Logical Domain Events}
 
 ---
 
@@ -118,7 +118,7 @@ public interface {Nombre}Port {
 ### 4.3 Infrastructure
 
 {MapStruct mappers (DTO ↔ Domain), Flyway migrations, repository adapters, etc.
-Referencia a convenciones en [technologies/backend.md](../technologies/backend.md)}
+Referencia a convenciones en [technologies/backend.md](../../technologies/backend.md)}
 
 ### 4.4 API Contract (si aplica)
 
@@ -134,7 +134,7 @@ Response 4XX: { "error": "...", "message": "..." }
 
 ### 4.5 Frontend Contract (si aplica)
 
-{Angular component, service, routing — referencia a [technologies/frontend.md](../technologies/frontend.md)}
+{Angular component, service, routing — referencia a [technologies/frontend.md](../../technologies/frontend.md)}
 
 ---
 
@@ -196,8 +196,8 @@ Response 4XX: { "error": "...", "message": "..." }
 | Adapter | `{Clase}AdapterTest` | {qué valida} | `@DataJpaTest` |
 | Controller | `{Clase}ControllerIT` | {qué valida} | `@WebMvcTest` + MockMvc |
 
-> **Referencia:** Estrategia completa en [`technologies/testing.md`](../technologies/testing.md)
-> **Coverage mínimo:** 80% (ver [`implementationPlan.md §4`](../../implementations/implementationPlan.md))
+> **Referencia:** Estrategia completa en [`technologies/testing.md`](../../technologies/testing.md)
+> **Coverage mínimo:** 80% (ver [`implementationPlan.md §4`](../../implementation/implementationPlan.md))
 
 ---
 
@@ -213,21 +213,21 @@ Response 4XX: { "error": "...", "message": "..." }
 - [ ] Tests follow naming: `{Class}Test` (unit), `{Class}IT` (integration)
 - [ ] Tenant scoping applied where required (QA-4)
 
-> **Referencia completa de convenciones:** [`progress.md` → Active Conventions](../../implementations/progress.md)
+> **Referencia completa de convenciones:** [`progress.md` → Active Conventions](../../implementation/progress.md)
 
 ---
 
 ## 11. References
 
-- **Architecture:** [`Architecture.md §{N}`](../../Design/Architecture.md) — {sección relevante}
+- **Architecture:** [`Architecture.md §{N}`](../../design/Architecture.md) — {sección relevante}
 - **Context Map:** [`ContextMap.md`](../domain/ContextMap.md) — {BC section and relevant relationships}
 - **Domain Schema:** [`{bc-name}.schema.json`](../domain/schemas/{bc-name}.schema.json) — data contract
 - **Domain Features:** [`domain/features/{bc-name}/`](../domain/features/{bc-name}/) — Gherkin scenarios
-- **Iteration Plan:** [`IterationPlan.md`](../../Design/IterationPlan.md) — Iteration {N}
-- **Decision Log:** [`progress.md`](../../implementations/progress.md) — D-{NNN}
-- **Technology Stack:** [`technologies/{area}.md`](../technologies/{area}.md)
+- **Iteration Plan:** [`IterationPlan.md`](../../design/IterationPlan.md) — Iteration {N}
+- **Decision Log:** [`progress.md`](../../implementation/progress.md) — D-{NNN}
+- **Technology Stack:** [`technologies/{area}.md`](../../technologies/{area}.md)
 - **Related Specs:** [SPEC-{NNN}]({ruta relativa}) — {relación}
-- **User Story:** [`HU-{NN}`](../../visionDocs/HU/HU-{NN}.md)
+- **User Story:** [`HU-{NN}`](../../vision/HU/HU-{NN}.md)
 
 ---
 
@@ -236,5 +236,5 @@ Response 4XX: { "error": "...", "message": "..." }
 | Date | Reviewer | Action | Notes |
 |------|----------|--------|-------|
 | {YYYY-MM-DD} | {nombre} | 🔲→🔵 Approved | {comentarios o "No issues"} |
-| {YYYY-MM-DD} | {nombre} | 🔵→🔄 Amended | {razón del cambio — registrar también en [progress.md](../../implementations/progress.md)} |
+| {YYYY-MM-DD} | {nombre} | 🔵→🔄 Amended | {razón del cambio — registrar también en [progress.md](../../implementation/progress.md)} |
 | {YYYY-MM-DD} | {nombre} | 🔄→🔵 Re-approved | {confirmación} |

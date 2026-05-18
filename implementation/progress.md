@@ -106,7 +106,7 @@
 ### Session — 2026-05-12 (Phase 1 — Docs checklist + specs + local run)
 
 - Cerrado el checklist completo en [`phase1.md`](phase1.md) (A1.1–A1.3, entregables, criterios de transición); fase marcada **✅ Completed**.
-- [`SPEC_INDEX.md`](../SDD/SPEC_INDEX.md): **SPEC-001**, **SPEC-002**, **SPEC-003** → **✅ Implemented**; SPEC-004/005 siguen en borrador (Phase 2).
+- [`SPEC_INDEX.md`](../sdd/SPEC_INDEX.md): **SPEC-001**, **SPEC-002**, **SPEC-003** → **✅ Implemented**; SPEC-004/005 siguen en borrador (Phase 2).
 - Cabeceras de SPEC-001–003 alineadas con estado **Implemented**.
 - Implementación y arranque local verificados en repo **`sapcyti-api`**: `mvn verify`, `spring-boot:run` con perfil `dev` y PostgreSQL vía Docker; decisión **D-010** (puerto host **5433**).
 - **README** de `sapcyti-api`: sección explícita *Run locally* (PowerShell, variables, health check).
@@ -196,6 +196,6 @@ The following iterations will be planned after Iteration 1 is complete:
 ## Quick Reference
 
 - **General plan:** [`implementationPlan.md`](implementationPlan.md)
-- **Architecture spec:** [`Architecture.md`](../Design/Architecture.md) (all iterations)
-- **Iteration plan:** [`IterationPlan.md`](../Design/IterationPlan.md)
+- **Architecture spec:** [`Architecture.md`](../design/Architecture.md) (all iterations)
+- **Iteration plan:** [`IterationPlan.md`](../design/IterationPlan.md)
 - **Phase guides:** [`phase0.md`](phase0.md) … [`phase5.md`](phase5.md)

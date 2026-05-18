@@ -7,18 +7,18 @@
 **Goal:** Implement the complete multi-actor enrollment workflow: student course selection, advisor approval/rejection, coordinator finalization, on-demand PDF generation, and TXT/XLSX export to School Systems. Also complete the remaining audit events for all domain mutations.
 
 > **Environment:** Backend against PostgreSQL; integration tests with full workflow.
-> **Domain Schema:** [`enrollment.schema.json`](../SDD/domain/schemas/enrollment.schema.json), [`audit.schema.json`](../SDD/domain/schemas/audit.schema.json)
-> **Domain Features:** [`features/enrollment/`](../SDD/domain/features/enrollment/) — `student_selection.feature`, `advisor_approval.feature`, `enrollment_finalization.feature`
+> **Domain Schema:** [`enrollment.schema.json`](../sdd/domain/schemas/enrollment.schema.json), [`audit.schema.json`](../sdd/domain/schemas/audit.schema.json)
+> **Domain Features:** [`features/enrollment/`](../sdd/domain/features/enrollment/) — `student_selection.feature`, `advisor_approval.feature`, `enrollment_finalization.feature`
 > **Cross-module:** BC-03 (AcademicOfferQueryPort), BC-02 (StudentQueryPort), BC-04 (ConfigurationParameter)
 
 ### User Stories (HU)
 
 | HU | Title | Role in Phase |
 |----|-------|---------------|
-| [HU-07](../visionDocs/HU/HU-07.md) | Selección de UEA por el alumno | Primary — Course selection, schedule display, quota validation |
-| [HU-08](../visionDocs/HU/HU-08.md) | Revisión, modificación y aprobación de la carga académica por el asesor | Primary — Advisor review, approve/reject workflow, quota decrement |
-| [HU-09](../visionDocs/HU/HU-09.md) | Generación y descarga del formato PDF de inscripción | Primary — Enrollment finalization, PDF generation, TXT/XLSX export |
-| [HU-10](../visionDocs/HU/HU-10.md) | Gestión administrativa y modificación de estados de inscripción | Secondary — Administrative enrollment state changes by Coordinator |
+| [HU-07](../vision/HU/HU-07.md) | Selección de UEA por el alumno | Primary — Course selection, schedule display, quota validation |
+| [HU-08](../vision/HU/HU-08.md) | Revisión, modificación y aprobación de la carga académica por el asesor | Primary — Advisor review, approve/reject workflow, quota decrement |
+| [HU-09](../vision/HU/HU-09.md) | Generación y descarga del formato PDF de inscripción | Primary — Enrollment finalization, PDF generation, TXT/XLSX export |
+| [HU-10](../vision/HU/HU-10.md) | Gestión administrativa y modificación de estados de inscripción | Secondary — Administrative enrollment state changes by Coordinator |
 
 ---
 

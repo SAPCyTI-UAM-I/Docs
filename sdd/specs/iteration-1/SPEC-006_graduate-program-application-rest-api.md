@@ -5,13 +5,13 @@
 > **Date:** 2026-05-13
 > **Phase:** 3 | **ADD Iteration:** 1
 > **Bounded Context:** Program Configuration (BC-04)
-> **Drivers:** [QA-3](../../../ArchitecturalDrivers.md), [QA-4](../../../ArchitecturalDrivers.md), [CON-5](../../../ArchitecturalDrivers.md) — parameterization and multi-program support; flexible rules by program (per-program configuration context)
+> **Drivers:** [QA-3](../../../design/ArchitecturalDrivers.md), [QA-4](../../../design/ArchitecturalDrivers.md), [CON-5](../../../design/ArchitecturalDrivers.md) — parameterization and multi-program support; flexible rules by program (per-program configuration context)
 > **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json) — `CreateGraduateProgramCommand`, `UpdateGraduateProgramCommand`, `GraduateProgramResponse`, `GraduateProgramListResponse`
 > **Domain Features:** [`graduate_program_management.feature`](../../domain/features/program-configuration/graduate_program_management.feature)
 > **Depends on:** [SPEC-004](SPEC-004_graduate-program-domain-persistence.md), [SPEC-005](SPEC-005_configuration-parameter-persistence-isolation.md) — domain model, repositories, and parameter relationship (listing with `parameterCount`)
 > **Blocks:** [SPEC-007](SPEC-007_configuration-parameter-application-rest-global-errors.md) — nested routes under `/api/programs/{id}/parameters`
 > **External Dependencies:**
->   - [ ] Optional Spring Security method security in dev (Phase 3 before full security — see risk R-3.1 in [`phase3.md`](../../../implementations/phase3.md)); `@PreAuthorize` annotations are introduced in this spec
+>   - [ ] Optional Spring Security method security in dev (Phase 3 before full security — see risk R-3.1 in [`phase3.md`](../../../implementation/phase3.md)); `@PreAuthorize` annotations are introduced in this spec
 
 ---
 
@@ -36,12 +36,12 @@ The use cases and REST API implement registration, retrieval, and update of grad
 - Duplicate-name validation via `GraduateProgramRepositoryPort.existsByName` (create) and exclusion of the current id on update.
 - Input/output DTOs: `CreateGraduateProgramRequest`, `UpdateGraduateProgramRequest`, `GraduateProgramResponse`, `GraduateProgramListItemResponse` (or an equivalent name mapped to schema `GraduateProgramListResponse`) with Bean Validation (`@Valid`).
 - `GraduateProgramMapper` (MapStruct): request/response ↔ domain entities / projections.
-- `GraduateProgramController` — `POST/GET /api/programs`, `GET/PUT /api/programs/{id}` with `@PreAuthorize("hasRole('COORDINATOR')")` per [`phase3.md`](../../../implementations/phase3.md).
+- `GraduateProgramController` — `POST/GET /api/programs`, `GET/PUT /api/programs/{id}` with `@PreAuthorize("hasRole('COORDINATOR')")` per [`phase3.md`](../../../implementation/phase3.md).
 - Minimal persistence contract extension for listing: `countByGraduateProgramId(Long)` on `ConfigurationParameterRepositoryPort` + adapter implementation (avoids loading collections solely to count).
 
 ### Out of Scope
 - Emitting BC-05 audit events (*Successful registration* mentions audit — implementation in the Audit / security iteration).
-- Explicit `SYSTEM_ADMIN` support in `@PreAuthorize` (Gherkin mentions administrator; [`phase3.md`](../../../implementations/phase3.md) specifies `COORDINATOR` — document as a future improvement during review).
+- Explicit `SYSTEM_ADMIN` support in `@PreAuthorize` (Gherkin mentions administrator; [`phase3.md`](../../../implementation/phase3.md) specifies `COORDINATOR` — document as a future improvement during review).
 - Pagination for `GET /api/programs` (volume bounded by QA-4 to ≤9 programs).
 - Mandatory `X-Graduate-Id` header on these endpoints (global program catalog; tenant header applies to per-program operational flows in other BCs).
 
@@ -86,11 +86,11 @@ mx.uam.sapcyti.configuration/
         └── GraduateProgramMapper.java
 ```
 
-> **Architecture reference:** [`Architecture.md` §6.1](../../../Design/Architecture.md) — hexagonal structure per module
+> **Architecture reference:** [`Architecture.md` §6.1](../../../design/Architecture.md) — hexagonal structure per module
 
 ### Architectural Context
 
-From [`Architecture.md` §4 — Domain model](../../../Design/Architecture.md):
+From [`Architecture.md` §4 — Domain model](../../../design/Architecture.md):
 
 ```
 GraduateProgram "1" *-- "*" ConfigurationParameter
@@ -206,7 +206,7 @@ Not applicable (backend only).
 | SEC-1 | Unauthorized access to program management | CWE-862 | `@PreAuthorize("hasRole('COORDINATOR')")` on controller | `@WebMvcTest` with `@WithMockUser` and distinct roles |
 | SEC-2 | Elevation via IDOR on routes | CWE-639 | Operations are global program catalog in MVP; future `SYSTEM_ADMIN` vs per-program scope under review | 403 tests |
 
-**Access Control:** `COORDINATOR` role per [`phase3.md`](../../../implementations/phase3.md). If method security is not configured, document expected behavior until Phase 6.
+**Access Control:** `COORDINATOR` role per [`phase3.md`](../../../implementation/phase3.md). If method security is not configured, document expected behavior until Phase 6.
 
 ---
 
@@ -248,7 +248,7 @@ Not applicable (backend only).
 | Controller | `GraduateProgramControllerTest` | Happy paths, 400/404/409/403, JSON | `@WebMvcTest` + MockMvc + `@MockBean` input ports |
 
 > **Reference:** [`technologies/testing.md`](../../technologies/testing.md)  
-> **Coverage:** ≥80% on new code ([`implementationPlan.md`](../../../implementations/implementationPlan.md)).
+> **Coverage:** ≥80% on new code ([`implementationPlan.md`](../../../implementation/implementationPlan.md)).
 
 Map `graduate_program_management.feature` scenarios to test cases (`@DisplayName` or class-level documentation).
 
@@ -268,11 +268,11 @@ Map `graduate_program_management.feature` scenarios to test cases (`@DisplayName
 
 ## 11. References
 
-- **Architecture:** [`Architecture.md` §4, §6.1](../../../Design/Architecture.md)
+- **Architecture:** [`Architecture.md` §4, §6.1](../../../design/Architecture.md)
 - **Context Map:** [`ContextMap.md` §1.2 BC-04](../../domain/ContextMap.md)
 - **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json)
 - **Domain Features:** [`graduate_program_management.feature`](../../domain/features/program-configuration/graduate_program_management.feature)
-- **Phase plan:** [`phase3.md`](../../../implementations/phase3.md)
+- **Phase plan:** [`phase3.md`](../../../implementation/phase3.md)
 - **Technologies:** [`technologies/backend.md`](../../technologies/backend.md), [`technologies/testing.md`](../../technologies/testing.md)
 - **Related Specs:** [SPEC-004](SPEC-004_graduate-program-domain-persistence.md), [SPEC-005](SPEC-005_configuration-parameter-persistence-isolation.md), [SPEC-007](SPEC-007_configuration-parameter-application-rest-global-errors.md)
 

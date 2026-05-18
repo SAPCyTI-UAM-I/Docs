@@ -18,16 +18,16 @@
 
 ## A1.1 — Spring Boot Project Creation ✅
 
-> Specs: [SPEC-001 — Spring Boot y build Maven](../SDD/specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md)
+> Specs: [SPEC-001 — Spring Boot y build Maven](../sdd/specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md)
 
-- [x] **T1.1.1** Create `pom.xml` — Java 21, Spring Boot 3.4.5, Maven wrapper; all dependencies from [`technologies/backend.md`](../SDD/technologies/backend.md): `spring-boot-starter-web`, `data-jpa`, `validation`, `actuator`, `flyway-core`, `flyway-database-postgresql`, `postgresql`, `mapstruct`, `logstash-logback-encoder` → SPEC-001
+- [x] **T1.1.1** Create `pom.xml` — Java 21, Spring Boot 3.4.5, Maven wrapper; all dependencies from [`technologies/backend.md`](../technologies/backend.md): `spring-boot-starter-web`, `data-jpa`, `validation`, `actuator`, `flyway-core`, `flyway-database-postgresql`, `postgresql`, `mapstruct`, `logstash-logback-encoder` → SPEC-001
 - [x] **T1.1.2** Add build plugins: `spring-boot-maven-plugin`, `maven-compiler-plugin` (Java 21 + MapStruct processor), `jacoco-maven-plugin` (≥80%), `maven-checkstyle-plugin` (Google Java Style) → SPEC-001
 - [x] **T1.1.3** Create `SapcytiApplication.java` — `@SpringBootApplication` entry point → SPEC-001
 - [x] **T1.1.4** Verify `mvn clean compile` succeeds with all dependencies resolved → SPEC-001
 
 ## A1.2 — Configuration & Profiles ✅
 
-> Specs: [SPEC-002 — Configuración, perfiles y logging](../SDD/specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md)
+> Specs: [SPEC-002 — Configuración, perfiles y logging](../sdd/specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md)
 
 - [x] **T1.2.1** Create `application.yml` — DataSource via env vars (`DB_URL`, `DB_USER`, `DB_PASS`), JPA ddl-auto=validate, Flyway enabled, Actuator endpoints (`/health`, `/info`, `/prometheus`) → SPEC-002
 - [x] **T1.2.2** Create profile files: `application-dev.yml`, `application-preprod.yml`, `application-prod.yml` — switching behavior via `SPRING_PROFILES_ACTIVE` → SPEC-002
@@ -35,8 +35,8 @@
 
 ## A1.3 — Hexagonal Package Structure ✅
 
-> Specs: [SPEC-003 — Paquetes hexagonales, tenant y CORS](../SDD/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md)
-> Ref: [`Architecture.md §6.1`](../Design/Architecture.md) — Module package structure
+> Specs: [SPEC-003 — Paquetes hexagonales, tenant y CORS](../sdd/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md)
+> Ref: [`Architecture.md §6.1`](../design/Architecture.md) — Module package structure
 
 **Paquete base Java:** `mx.uam.sapcyti` (subpaquetes por BC como en SPEC-003 y Architecture §6.1).
 
@@ -51,10 +51,10 @@
 
 ## Deliverables
 
-- [x] **E1.1** Compilable Maven project — `mvn clean compile` succeeds with all dependencies — [SPEC-001](../SDD/specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md)
-- [x] **E1.2** Configuration profiles — `application.yml` + profiles functional with env var resolution — [SPEC-002](../SDD/specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md)
-- [x] **E1.3** Hexagonal package structure — directories per §6.1 with `package-info.java` — [SPEC-003](../SDD/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md)
-- [x] **E1.4** Functional tenant filter — unit tests validate `X-Graduate-Id` propagation to `TenantContext` and MDC — [SPEC-003](../SDD/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md)
+- [x] **E1.1** Compilable Maven project — `mvn clean compile` succeeds with all dependencies — [SPEC-001](../sdd/specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md)
+- [x] **E1.2** Configuration profiles — `application.yml` + profiles functional with env var resolution — [SPEC-002](../sdd/specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md)
+- [x] **E1.3** Hexagonal package structure — directories per §6.1 with `package-info.java` — [SPEC-003](../sdd/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md)
+- [x] **E1.4** Functional tenant filter — unit tests validate `X-Graduate-Id` propagation to `TenantContext` and MDC — [SPEC-003](../sdd/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md)
 
 ---
 
@@ -64,7 +64,7 @@
 - [x] `mvn test` passes all TenantFilter and TenantContext tests
 - [x] Package tree matches `Architecture.md §6.1` exactly (6 BC modules + shared)
 - [x] Configuration profiles switch via `SPRING_PROFILES_ACTIVE` env var
-- [x] Las specs [SPEC-001](../SDD/specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md), [SPEC-002](../SDD/specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md) y [SPEC-003](../SDD/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md) están ✅ Implemented
+- [x] Las specs [SPEC-001](../sdd/specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md), [SPEC-002](../sdd/specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md) y [SPEC-003](../sdd/specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md) están ✅ Implemented
 - [x] No regressions from Phase 0
 
 ---

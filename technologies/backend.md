@@ -1,7 +1,7 @@
 # Backend Technology Stack — SAPCyTI
 
 > **Fuente de verdad** para versiones, librerías y reglas del backend.
-> Referenciado desde specs y [`progress.md`](../../implementations/progress.md).
+> Referenciado desde specs y [`progress.md`](../../implementation/progress.md).
 
 ---
 
@@ -65,7 +65,7 @@
 
 ### Package Structure
 
-Every bounded context module follows this layout (ref: [`Architecture.md §6.1`](../../Design/Architecture.md)):
+Every bounded context module follows this layout (ref: [`Architecture.md §6.1`](../../design/Architecture.md)):
 
 ```text
 {module}/

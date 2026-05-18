@@ -7,8 +7,8 @@
 **Goal:** Implement the core providers (services, interceptors, guards as minimum functional shells), the Shell/Layout, the i18n infrastructure, and base shared components. At the end of this phase, the SPA has a navigable structure with Shell, language switching, and authentication shells ready to be completed in Phase 6.
 
 > **Environment:** `ng serve` against backend API on `localhost:8080`.
-> **Ref:** [`Architecture.md §6.2`](../Design/Architecture.md) — SPA component diagram
-> **Ref:** [`technologies/frontend.md`](../SDD/technologies/frontend.md) — Angular stack and conventions
+> **Ref:** [`Architecture.md §6.2`](../design/Architecture.md) — SPA component diagram
+> **Ref:** [`technologies/frontend.md`](../technologies/frontend.md) — Angular stack and conventions
 
 ### User Stories (HU)
 
@@ -24,7 +24,7 @@
 
 ## A4.1 — Application Bootstrap & Provider Registration 🔲
 
-> Specs: [SPEC-008B](../SDD/specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md)
+> Specs: [SPEC-008B](../sdd/specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md)
 
 - [ ] **T4.1.1** Configure `app.config.ts` — register `provideHttpClient(withInterceptors([...]))`, `provideRouter(routes)`, `provideTranslateService()`, PrimeNG providers → SPEC-008B
 - [ ] **T4.1.2** Configure `app.routes.ts` — base routes with lazy loading placeholder for features (`auth/`, `dashboard/`, `enrollment/`, `academic-catalog/`) → SPEC-008B

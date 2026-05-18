@@ -5,19 +5,19 @@
 > **Date:** 2026-05-13
 > **Phase:** 3 | **ADD Iteration:** 1
 > **Bounded Context:** Program Configuration (BC-04)
-> **Drivers:** [QA-3](../../../ArchitecturalDrivers.md), [QA-4](../../../ArchitecturalDrivers.md), [CON-5](../../../ArchitecturalDrivers.md) — per-program parameterization; multi-tenant isolation; operational flexibility without rigid rules in code
+> **Drivers:** [QA-3](../../../design/ArchitecturalDrivers.md), [QA-4](../../../design/ArchitecturalDrivers.md), [CON-5](../../../design/ArchitecturalDrivers.md) — per-program parameterization; multi-tenant isolation; operational flexibility without rigid rules in code
 > **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json) — `SetConfigurationParameterCommand`, `DeleteConfigurationParameterCommand`, `ConfigurationParameter`
 > **Domain Features:** [`configuration_parameter_management.feature`](../../domain/features/program-configuration/configuration_parameter_management.feature)
 > **Depends on:** [SPEC-005](SPEC-005_configuration-parameter-persistence-isolation.md), [SPEC-006](SPEC-006_graduate-program-application-rest-api.md) — parameter persistence and program existence via API/repository; routes under `/api/programs`
 > **Blocks:** Read/query ports for parameters consumed by Enrollment / Academic Offering / Academic Management (later phases)
 > **External Dependencies:**
->   - [ ] Same security convention as SPEC-006 (`@PreAuthorize`); full Spring Security configuration deferred per [`phase3.md`](../../../implementations/phase3.md)
+>   - [ ] Same security convention as SPEC-006 (`@PreAuthorize`); full Spring Security configuration deferred per [`phase3.md`](../../../implementation/phase3.md)
 
 ---
 
 ## 1. Business Justification
 
-This spec exposes HTTP management of configuration parameters scoped by `graduateProgramId`, satisfying QA-3 (change rules without deployment) and QA-4 (per-program isolation). `GlobalExceptionHandler` defines the backend **JSON error contract** for this iteration and subsequent phases, mitigating risk R-3.2 in [`phase3.md`](../../../implementations/phase3.md).
+This spec exposes HTTP management of configuration parameters scoped by `graduateProgramId`, satisfying QA-3 (change rules without deployment) and QA-4 (per-program isolation). `GlobalExceptionHandler` defines the backend **JSON error contract** for this iteration and subsequent phases, mitigating risk R-3.2 in [`phase3.md`](../../../implementation/phase3.md).
 
 **Acceptance Criteria (Business):**
 - [ ] AC-1: Create or update a parameter (`set`) over HTTP under an existing program; response consistent with *Set a new configuration parameter* and *Update the value of an existing parameter*.
@@ -246,11 +246,11 @@ No performance concerns: low cardinality per program and ≤9 programs.
 
 ## 11. References
 
-- **Architecture:** [`Architecture.md`](../../../Design/Architecture.md) — QA-3, QA-4, Configuration Adapter
+- **Architecture:** [`Architecture.md`](../../../design/Architecture.md) — QA-3, QA-4, Configuration Adapter
 - **Context Map:** [`ContextMap.md`](../../domain/ContextMap.md) — BC-04, relationships R2, R8, R10
 - **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json)
 - **Domain Features:** [`configuration_parameter_management.feature`](../../domain/features/program-configuration/configuration_parameter_management.feature)
-- **Phase plan:** [`phase3.md`](../../../implementations/phase3.md)
+- **Phase plan:** [`phase3.md`](../../../implementation/phase3.md)
 - **Technologies:** [`technologies/backend.md`](../../technologies/backend.md), [`technologies/testing.md`](../../technologies/testing.md)
 - **Related Specs:** [SPEC-005](SPEC-005_configuration-parameter-persistence-isolation.md), [SPEC-006](SPEC-006_graduate-program-application-rest-api.md)
 

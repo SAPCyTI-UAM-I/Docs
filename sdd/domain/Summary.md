@@ -70,7 +70,7 @@ Se crearon **20 registros en Engram** organizados por categoría:
 
 **Justificación**: El Context Map es el artefacto central de DDD estratégico. Define las fronteras de cada módulo, sus relaciones de dependencia y los contratos de comunicación. Sin este documento, un agente de IA no puede saber qué módulo es responsable de qué, ni cómo los módulos se comunican entre sí.
 
-**Archivo generado**: [`SDD/domain/ContextMap.md`](ContextMap.md)
+**Archivo generado**: [`sdd/domain/ContextMap.md`](ContextMap.md)
 
 #### 2.2.1 Bounded Contexts identificados
 
@@ -133,7 +133,7 @@ flowchart TB
 
 **Justificación**: El JSON Schema actúa como el **contrato de datos** entre la especificación (.feature) y la implementación (Java). Define los tipos exactos, campos requeridos, enums de estado, y la estructura de los commands. Sin este contrato, los escenarios Gherkin usarían tipos ambiguos y el código generado podría no coincidir con el modelo de dominio.
 
-**Archivo generado**: [`SDD/domain/schemas/enrollment.schema.json`](schemas/enrollment.schema.json)
+**Archivo generado**: [`sdd/domain/schemas/enrollment.schema.json`](schemas/enrollment.schema.json)
 
 | Definición | Tipo DDD | Propósito |
 |:-----------|:---------|:----------|
@@ -156,12 +156,12 @@ flowchart TB
 2. Puede ser ejecutado como test automatizado
 3. Puede ser consumido por un agente de IA para generar implementación alineada
 
-**Directorio**: `SDD/domain/features/enrollment/`
+**Directorio**: `sdd/domain/features/enrollment/`
 
 #### Estructura de carpetas por Bounded Context (DDD)
 
 ```
-SDD/domain/
+sdd/domain/
 ├── ContextMap.md
 ├── Summary.md                          ← Este documento
 ├── schemas/
@@ -378,12 +378,12 @@ Antes de generar especificaciones para el siguiente Bounded Context, verificar:
 
 | Documento | Ruta | Propósito |
 |:----------|:-----|:----------|
-| Architectural Drivers | [`ArchitecturalDrivers.md`](../../ArchitecturalDrivers.md) | Drivers QA, HU, CON |
-| Architecture | [`Design/Architecture.md`](../../Design/Architecture.md) | Modelo de dominio, componentes, decisiones |
-| Context Map | [`SDD/domain/ContextMap.md`](ContextMap.md) | Bounded Contexts y relaciones DDD |
-| Enrollment Schema | [`SDD/domain/schemas/enrollment.schema.json`](schemas/enrollment.schema.json) | Contrato de datos BC-01 |
-| Vision | [`Docs/visionDocs/Vision.md`](../visionDocs/Vision.md) | Alcance y características del sistema |
-| Atributos y Restricciones | [`Docs/Analisis_Requerimientos/Atributos_y_Restricciones.md`](../Analisis_Requerimientos/Atributos_y_Restricciones.md) | Restricciones técnicas UAM |
-| HU-07 | [`Docs/visionDocs/HU/HU-07.md`](../visionDocs/HU/HU-07.md) | Selección de UEAs |
-| HU-08 | [`Docs/visionDocs/HU/HU-08.md`](../visionDocs/HU/HU-08.md) | Aprobación por asesor |
-| HU-09 | [`Docs/visionDocs/HU/HU-09.md`](../visionDocs/HU/HU-09.md) | Formato de inscripción |
+| Architectural Drivers | [`ArchitecturalDrivers.md`](../../design/ArchitecturalDrivers.md) | Drivers QA, HU, CON |
+| Architecture | [`design/Architecture.md`](../../design/Architecture.md) | Modelo de dominio, componentes, decisiones |
+| Context Map | [`sdd/domain/ContextMap.md`](ContextMap.md) | Bounded Contexts y relaciones DDD |
+| Enrollment Schema | [`sdd/domain/schemas/enrollment.schema.json`](schemas/enrollment.schema.json) | Contrato de datos BC-01 |
+| Vision | [`Docs/vision/Vision.md`](../vision/Vision.md) | Alcance y características del sistema |
+| Atributos y Restricciones | [`Docs/requirements/Atributos_y_Restricciones.md`](../requirements/Atributos_y_Restricciones.md) | Restricciones técnicas UAM |
+| HU-07 | [`Docs/vision/HU/HU-07.md`](../vision/HU/HU-07.md) | Selección de UEAs |
+| HU-08 | [`Docs/vision/HU/HU-08.md`](../vision/HU/HU-08.md) | Aprobación por asesor |
+| HU-09 | [`Docs/vision/HU/HU-09.md`](../vision/HU/HU-09.md) | Formato de inscripción |

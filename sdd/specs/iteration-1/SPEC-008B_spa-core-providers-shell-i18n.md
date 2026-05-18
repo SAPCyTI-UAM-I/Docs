@@ -117,7 +117,7 @@ src/app/
     └── shell.component.css                      ← CREATE
 ```
 
-> **Ref:** [`Architecture.md §6.2`](../../Design/Architecture.md) — SPA component diagram
+> **Ref:** [`Architecture.md §6.2`](../../design/Architecture.md) — SPA component diagram
 
 ### Architectural Context
 
@@ -497,7 +497,7 @@ Same pattern for `auth.routes.ts`, `enrollment.routes.ts`, `academic-catalog.rou
 | Manual | Shell visual test | Shell renders, menu navigates, language switches | Developer in browser |
 
 > **Coverage mínimo:** Tests cover all implemented logic (TenantService, TenantInterceptor, LanguageSwitcher). Stubs have minimal tests confirming stub behavior.
-> **Referencia:** [`technologies/testing.md`](../technologies/testing.md)
+> **Referencia:** [`technologies/testing.md`](../../../technologies/testing.md)
 
 ---
 
@@ -516,17 +516,17 @@ Same pattern for `auth.routes.ts`, `enrollment.routes.ts`, `academic-catalog.rou
 - [ ] Stubs marked with `// TODO: Phase 6 — implement real logic`
 - [ ] Component naming: `{name}.component.ts`; Service: `{name}.service.ts`
 
-> **Referencia:** [`progress.md` → Active Conventions](../../implementations/progress.md)
+> **Referencia:** [`progress.md` → Active Conventions](../../implementation/progress.md)
 
 ---
 
 ## 11. References
 
-- **Architecture:** [`Architecture.md §6.2`](../../Design/Architecture.md) — SPA component diagram and responsibilities
-- **Architecture:** [`Architecture.md §5`](../../Design/Architecture.md) — Container diagram
-- **Technology Stack:** [`technologies/frontend.md`](../technologies/frontend.md) — Angular conventions, folder structure, dependency rules
-- **Implementation Plan:** [`implementationPlan.md`](../../implementations/implementationPlan.md) — Phase 4 definition
-- **Phase Tasks:** [`phase4.md`](../../implementations/phase4.md) — Task map for this spec
+- **Architecture:** [`Architecture.md §6.2`](../../design/Architecture.md) — SPA component diagram and responsibilities
+- **Architecture:** [`Architecture.md §5`](../../design/Architecture.md) — Container diagram
+- **Technology Stack:** [`technologies/frontend.md`](../../../technologies/frontend.md) — Angular conventions, folder structure, dependency rules
+- **Implementation Plan:** [`implementationPlan.md`](../../implementation/implementationPlan.md) — Phase 4 definition
+- **Phase Tasks:** [`phase4.md`](../../implementation/phase4.md) — Task map for this spec
 - **Depends On:** [SPEC-008A](SPEC-008A_angular-project-scaffold-tooling.md) — Angular project scaffold
 - **Blocked By This:** SPEC-009 (Phase 5 — Docker & Integration)
 

@@ -7,14 +7,14 @@
 **Goal:** Implement the Term lifecycle state machine, Academic Offer creation from CSV import, and enrollment period management.
 
 > **Environment:** Backend against PostgreSQL; CSV test files in `src/test/resources/`.
-> **Domain Schema:** [`academic-offering.schema.json`](../SDD/domain/schemas/academic-offering.schema.json)
-> **Domain Features:** [`features/academic-offering/csv_upload_and_term_management.feature`](../SDD/domain/features/academic-offering/csv_upload_and_term_management.feature)
+> **Domain Schema:** [`academic-offering.schema.json`](../sdd/domain/schemas/academic-offering.schema.json)
+> **Domain Features:** [`features/academic-offering/csv_upload_and_term_management.feature`](../sdd/domain/features/academic-offering/csv_upload_and_term_management.feature)
 
 ### User Stories (HU)
 
 | HU | Title | Role in Phase |
 |----|-------|---------------|
-| [HU-06](../visionDocs/HU/HU-06.md) | Inicio del proceso de inscripción trimestral y carga de horarios | Primary — CSV upload, term creation, enrollment period opening |
+| [HU-06](../vision/HU/HU-06.md) | Inicio del proceso de inscripción trimestral y carga de horarios | Primary — CSV upload, term creation, enrollment period opening |
 
 ---
 

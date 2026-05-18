@@ -32,8 +32,8 @@ Artefactos machine-readable del dominio: Context Map, contratos de datos (JSON S
 
 ## Rutas canónicas
 
-- Fuente de verdad: esta carpeta (`SDD/domain/`)
-- Deprecado: [`../../specifications/`](../../specifications/) — no editar
+- Fuente de verdad: esta carpeta (`sdd/domain/`)
+- Carpeta `specifications/` eliminada — usar solo esta ruta
 
 ## Qué NO cargar
 

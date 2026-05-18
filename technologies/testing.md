@@ -1,7 +1,7 @@
 # Testing Strategy & Tools — SAPCyTI
 
 > **Fuente de verdad** para la estrategia de testing del proyecto.
-> Referenciado desde specs y [`progress.md`](../../implementations/progress.md).
+> Referenciado desde specs y [`progress.md`](../../implementation/progress.md).
 
 ---
 

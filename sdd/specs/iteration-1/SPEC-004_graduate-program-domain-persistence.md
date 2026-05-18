@@ -5,7 +5,7 @@
 > **Date:** 2026-05-12
 > **Phase:** 2 | **ADD Iteration:** 1
 > **Bounded Context:** Program Configuration (BC-04)
-> **Drivers:** [QA-3](../../../ArchitecturalDrivers.md), [QA-4](../../../ArchitecturalDrivers.md) — parametrización multi-programa; soporte hasta 9 posgrados divisionales
+> **Drivers:** [QA-3](../../../design/ArchitecturalDrivers.md), [QA-4](../../../design/ArchitecturalDrivers.md) — parametrización multi-programa; soporte hasta 9 posgrados divisionales
 > **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json) — contrato para tipos, campos y comandos
 > **Domain Features:** [`domain/features/program-configuration/`](../../domain/features/program-configuration/) — escenarios Gherkin enlazados a criterios de aceptación
 > **Depends on:** [SPEC-003](SPEC-003_hexagonal-packages-tenant-filter-cors.md) — árbol de paquetes `configuration` y convenciones hexagonales
@@ -19,7 +19,7 @@
 
 El aggregate root `GraduateProgram` es el ancla multi-tenant del sistema: todo dato de negocio scope-able se discrimina por `graduateProgramId` ([ContextMap §2.1](../../domain/ContextMap.md)). Sin persistencia estable del programa, no hay QA-4 (multi-programa) ni base para QA-3 (parámetros por programa). Esta spec materializa el modelo y el repositorio del BC-04 según el schema, sin exponer aún API REST (fases posteriores).
 
-**Referencia de drivers:** QA-3 y QA-4 en [ArchitecturalDrivers.md](../../../ArchitecturalDrivers.md).
+**Referencia de drivers:** QA-3 y QA-4 en [ArchitecturalDrivers.md](../../../design/ArchitecturalDrivers.md).
 
 **Acceptance Criteria (Business):**
 - [ ] AC-1: Un programa de posgrado puede crearse y recuperarse desde PostgreSQL con `id` generado por la BD.
@@ -75,11 +75,11 @@ mx.uam.sapcyti.configuration/
         └── GraduateProgramJpaAdapter.java     ← CREATE
 ```
 
-> **Referencia arquitectónica:** [`Architecture.md §6.1`](../../../Design/Architecture.md) — estructura de módulos hexagonal
+> **Referencia arquitectónica:** [`Architecture.md §6.1`](../../../design/Architecture.md) — estructura de módulos hexagonal
 
 ### Architectural Context
 
-> Fragmento de [`Architecture.md` §4 — Domain model](../../../Design/Architecture.md) (diagrama y tabla de elementos):
+> Fragmento de [`Architecture.md` §4 — Domain model](../../../design/Architecture.md) (diagrama y tabla de elementos):
 
 ```
 GraduateProgram "1" *-- "*" ConfigurationParameter
@@ -168,7 +168,7 @@ public interface GraduateProgramRepositoryPort {
 ### 4.3 Infrastructure
 
 - **`GraduateProgramJpaAdapter`:** `@Repository`, `@Transactional` en métodos de escritura; implementa `GraduateProgramRepositoryPort`.
-- **Consultas:** sin filtro tenant adicional en esta entidad — el propio `id` del programa **es** el discriminante multi-tenant para tablas hijas ([QA-4 en Architecture.md AD — multi-tenant by discriminator](../../../Design/Architecture.md)).
+- **Consultas:** sin filtro tenant adicional en esta entidad — el propio `id` del programa **es** el discriminante multi-tenant para tablas hijas ([QA-4 en Architecture.md AD — multi-tenant by discriminator](../../../design/Architecture.md)).
 - **Flyway:** script SQL compatible PostgreSQL; nombres de tabla/columnas en snake_case.
 
 ### 4.4 API Contract (si aplica)
@@ -226,7 +226,7 @@ Persistencia vía JPA con parámetros enlazados — sin SQL concatenado. RBAC y 
 | Adapter | `GraduateProgramJpaAdapterTest` o `GraduateProgramPersistenceIT` | save + findById + findAll; **segundo insert con mismo `name` debe fallar** (constraint) | `@DataJpaTest` |
 
 > **Referencia:** [`technologies/testing.md`](../../technologies/testing.md)
-> **Coverage mínimo:** ≥80% en código nuevo ([`implementations/implementationPlan.md`](../../../implementations/implementationPlan.md) si aplica)
+> **Coverage mínimo:** ≥80% en código nuevo ([`implementation/implementationPlan.md`](../../../implementation/implementationPlan.md) si aplica)
 
 ---
 
@@ -243,12 +243,12 @@ Persistencia vía JPA con parámetros enlazados — sin SQL concatenado. RBAC y 
 
 ## 11. References
 
-- **Architecture:** [`Architecture.md` §4 — Domain model](../../../Design/Architecture.md)
+- **Architecture:** [`Architecture.md` §4 — Domain model](../../../design/Architecture.md)
 - **Context Map:** [`ContextMap.md` §1.2 BC-04](../../domain/ContextMap.md)
 - **Domain Schema:** [`program-configuration.schema.json`](../../domain/schemas/program-configuration.schema.json)
 - **Domain Features:** [`graduate_program_management.feature`](../../domain/features/program-configuration/graduate_program_management.feature)
-- **Iteration Plan:** [`IterationPlan.md`](../../../Design/IterationPlan.md)
-- **Decision Log:** [`progress.md`](../../../implementations/progress.md)
+- **Iteration Plan:** [`IterationPlan.md`](../../../design/IterationPlan.md)
+- **Decision Log:** [`progress.md`](../../../implementation/progress.md)
 - **Technology Stack:** [`technologies/backend.md`](../../technologies/backend.md), [`technologies/testing.md`](../../technologies/testing.md)
 - **Related Specs:** [SPEC-003](SPEC-003_hexagonal-packages-tenant-filter-cors.md), [SPEC-005](SPEC-005_configuration-parameter-persistence-isolation.md)
 

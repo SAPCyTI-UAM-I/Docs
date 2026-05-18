@@ -5,7 +5,7 @@
 > **Date:** 2026-05-12
 > **Phase:** 1 | **ADD Iteration:** 1
 > **Bounded Context:** Plataforma / bootstrap (sin BC de dominio)
-> **Drivers:** [CON-1](../../../ArchitecturalDrivers.md), [CON-6](../../../ArchitecturalDrivers.md) — Java + OSS; monolito modular predecible para prácticas cortas
+> **Drivers:** [CON-1](../../../design/ArchitecturalDrivers.md), [CON-6](../../../design/ArchitecturalDrivers.md) — Java + OSS; monolito modular predecible para prácticas cortas
 > **Domain Schema:** _No aplica_ — esta spec solo establece el artefacto compilable y dependencias base ([`technologies/backend.md`](../../technologies/backend.md)).
 > **Domain Features:** _No aplica_ — Phase 1 es scaffolding; [`ContextMap.md`](../../domain/ContextMap.md) §2.1 define `graduateProgramId` como ancla multi-tenant para fases posteriores.
 > **Depends on:** —
@@ -31,7 +31,7 @@ Sin un proyecto Spring Boot coherente con el stack acordado, no es posible cumpl
 ### In Scope
 - `pom.xml` en la raíz del módulo backend con `spring-boot-starter-parent` 3.4.5 (o BOM equivalente que fije esa versión).
 - Dependencias: `spring-boot-starter-web`, `spring-boot-starter-data-jpa`, `spring-boot-starter-validation`, `spring-boot-starter-actuator`, `flyway-core`, `flyway-database-postgresql`, `postgresql`, `mapstruct`, `logstash-logback-encoder` (versiones alineadas al parent Spring Boot salvo que [`technologies/backend.md`](../../technologies/backend.md) exija pin explícito).
-- Plugins: `spring-boot-maven-plugin`, `maven-compiler-plugin` (release/source/target 21, annotation processor paths para MapStruct), `jacoco-maven-plugin` (≥80% líneas cuando existan clases instrumentadas), `maven-checkstyle-plugin` (Google Java Style; línea 150 a nivel Checker según decisión D-009 en [`progress.md`](../../../implementations/progress.md)).
+- Plugins: `spring-boot-maven-plugin`, `maven-compiler-plugin` (release/source/target 21, annotation processor paths para MapStruct), `jacoco-maven-plugin` (≥80% líneas cuando existan clases instrumentadas), `maven-checkstyle-plugin` (Google Java Style; línea 150 a nivel Checker según decisión D-009 en [`progress.md`](../../../implementation/progress.md)).
 - Maven Wrapper (`mvnw`, `mvnw.cmd`, `.mvn/wrapper`).
 - Clase `SapcytiApplication` con `@SpringBootApplication` en el paquete raíz acordado (`mx.uam.sapcyti` o subpaquete estándar del repo).
 
@@ -62,11 +62,11 @@ mx.uam.sapcyti/
 └── SapcytiApplication.java                    ← CREATE
 ```
 
-> **Referencia arquitectónica:** [`Architecture.md §6.1`](../../../Design/Architecture.md) — el backend es monolito modular hexagonal; esta spec solo crea el contenedor Maven y el bootstrap.
+> **Referencia arquitectónica:** [`Architecture.md §6.1`](../../../design/Architecture.md) — el backend es monolito modular hexagonal; esta spec solo crea el contenedor Maven y el bootstrap.
 
 ### Architectural Context
 
-> Fragmento de [`Architecture.md` §6.1 — SAPCyTI Backend API](../../../Design/Architecture.md):
+> Fragmento de [`Architecture.md` §6.1 — SAPCyTI Backend API](../../../design/Architecture.md):
 
 ```
 The Backend API is structured as a modular monolith, following Hexagonal Architecture (Ports & Adapters) 
@@ -161,10 +161,10 @@ No performance concerns — solo artefacto de build y clase main vacía.
 
 ## 11. References
 
-- **Architecture:** [`Architecture.md §6.1`](../../../Design/Architecture.md)
+- **Architecture:** [`Architecture.md §6.1`](../../../design/Architecture.md)
 - **Context Map:** [`ContextMap.md`](../../domain/ContextMap.md) — identidad multi-tenant §2.1
-- **Iteration Plan:** [`IterationPlan.md`](../../../Design/IterationPlan.md)
-- **Decision Log:** [`progress.md`](../../../implementations/progress.md) — D-007, D-009
+- **Iteration Plan:** [`IterationPlan.md`](../../../design/IterationPlan.md)
+- **Decision Log:** [`progress.md`](../../../implementation/progress.md) — D-007, D-009
 - **Technology Stack:** [`technologies/backend.md`](../../technologies/backend.md)
 
 ---

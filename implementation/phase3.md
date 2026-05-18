@@ -7,8 +7,8 @@
 **Goal:** Implement use cases, REST controllers, and MapStruct mappers for the Program Configuration bounded context, exposing a complete CRUD API for GraduateProgram and ConfigurationParameter.
 
 > **Environment:** Backend against PostgreSQL from `docker-compose.dev.yml`.
-> **Domain Schema:** [`program-configuration.schema.json`](../SDD/domain/schemas/program-configuration.schema.json) — Commands: `CreateGraduateProgramCommand`, `SetConfigurationParameterCommand`
-> **Domain Features:** [`features/program-configuration/`](../SDD/domain/features/program-configuration/) — `graduate_program_management.feature`, `configuration_parameter_management.feature`
+> **Domain Schema:** [`program-configuration.schema.json`](../sdd/domain/schemas/program-configuration.schema.json) — Commands: `CreateGraduateProgramCommand`, `SetConfigurationParameterCommand`
+> **Domain Features:** [`features/program-configuration/`](../sdd/domain/features/program-configuration/) — `graduate_program_management.feature`, `configuration_parameter_management.feature`
 
 ### User Stories (HU)
 
@@ -18,7 +18,7 @@
 
 ## A3.1 — GraduateProgram Use Cases & API ✅
 
-> Specs: [SPEC-006 — GraduateProgram application layer and REST API](../SDD/specs/iteration-1/SPEC-006_graduate-program-application-rest-api.md)
+> Specs: [SPEC-006 — GraduateProgram application layer and REST API](../sdd/specs/iteration-1/SPEC-006_graduate-program-application-rest-api.md)
 
 - [x] **T3.1.1** Create input ports: `CreateGraduateProgramInputPort`, `GetGraduateProgramInputPort`, `UpdateGraduateProgramInputPort` → SPEC-006
 - [x] **T3.1.2** Create use case implementations: `CreateGraduateProgramUseCase`, `GetGraduateProgramUseCase`, `UpdateGraduateProgramUseCase` — with duplicate name validation → SPEC-006
@@ -28,7 +28,7 @@
 
 ## A3.2 — ConfigurationParameter Use Cases & API ✅
 
-> Specs: [SPEC-007 — ConfigurationParameter application layer, nested API, and global errors](../SDD/specs/iteration-1/SPEC-007_configuration-parameter-application-rest-global-errors.md)
+> Specs: [SPEC-007 — ConfigurationParameter application layer, nested API, and global errors](../sdd/specs/iteration-1/SPEC-007_configuration-parameter-application-rest-global-errors.md)
 
 - [x] **T3.2.1** Create input ports: `SetConfigurationParameterInputPort`, `GetConfigurationParametersInputPort`, `DeleteConfigurationParameterInputPort` → SPEC-007
 - [x] **T3.2.2** Create use case implementations — with UPPER_SNAKE_CASE key validation, program existence check → SPEC-007
