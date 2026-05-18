@@ -25,9 +25,13 @@
 
 ## Current Phase
 
+> **Regla:** Mantener un solo bloque `## Current Phase` en este archivo. No duplicar.
+
 **Phase:** {N} — {nombre} {status}
 **Next phase:** {N} — {nombre}
 **Next step:** {descripción breve con link al phaseX.md y spec relevante}
+
+> Notas efímeras de sesión → Engram (`mem_session_summary`). Decisiones duraderas → Decision Log abajo.
 
 ---
 

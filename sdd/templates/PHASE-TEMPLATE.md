@@ -8,6 +8,20 @@
 
 > **Environment:** {Cómo se ejecuta — e.g., "Backend contra PostgreSQL de docker-compose.dev.yml"}
 
+## Domain Artifacts (obligatorio si el phase toca un BC)
+
+| Artifact | Path | Status |
+|----------|------|--------|
+| Context Map | [`sdd/domain/ContextMap.md`](../../sdd/domain/ContextMap.md) | {✅ / pendiente} |
+| Schema | [`sdd/domain/schemas/{bc}.schema.json`](../../sdd/domain/schemas/) | {✅ / N/A} |
+| Features | [`sdd/domain/features/{bc}/`](../../sdd/domain/features/) | {✅ / N/A} |
+
+## Specs en este phase
+
+| Spec | Status | Listo para implementar |
+|------|--------|------------------------|
+| [SPEC-{NNN}]({ruta}) | 🔲 Draft / 🔵 Approved / ✅ | {sí / no — requiere aprobación} |
+
 ---
 
 ## A{N}.1 — {Nombre del Feature Group} {status emoji}
