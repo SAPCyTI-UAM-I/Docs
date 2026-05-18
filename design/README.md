@@ -15,6 +15,7 @@ Decisiones ADD: arquitectura detallada, plan de iteraciones y drivers que justif
 | Archivo | Contenido | Obligatorio |
 |---------|-----------|-------------|
 | [Architecture.md](Architecture.md) | Decisiones, dominio, paquetes (~2400 líneas) | Por sección |
+| [Architecture-INDEX.md](Architecture-INDEX.md) | Mapa de secciones → cuándo leer cada una | Al escribir specs |
 | [IterationPlan.md](IterationPlan.md) | Iteraciones ADD y drivers | Planificación |
 | [ArchitecturalDrivers.md](ArchitecturalDrivers.md) | HU/QA/CON drivers | Trazabilidad |
 | [ADD.md](ADD.md) | Proceso ADD para agentes | Trabajo ADD |
