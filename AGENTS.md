@@ -1,106 +1,106 @@
-# Guía para agentes — SAPCyTI Docs
+# Agent guide — SAPCyTI Docs
 
-> Protocolo de carga de contexto para LLM (Cursor y similares). Complementa [`.cursor/rules/sapcyti.mdc`](.cursor/rules/sapcyti.mdc) y skills en [`.cursor/skills/`](.cursor/skills/).
+> Context loading protocol for LLM (Cursor and similar). Complements [`.cursor/rules/sapcyti.mdc`](.cursor/rules/sapcyti.mdc) and skills in [`.cursor/skills/`](.cursor/skills/).
 
-## Proyectos Engram
+## Engram projects
 
-| Proyecto | Cuándo usar |
+| Project | When to use |
 |----------|-------------|
-| `sapcyti` | Implementación de código (`sapcyti-api`, `sapcyti-spa`) |
-| `plan-sdd-arc` | Especificaciones, arquitectura, este repo Docs |
+| `sapcyti` | Code implementation (`sapcyti-api`, `sapcyti-spa`) |
+| `plan-sdd-arc` | Specifications, architecture, this Docs repo |
 
-Confirmar proyecto con el usuario al inicio de sesión si hay duda.
+Confirm project with the user at session start if there is doubt.
 
-## Fuente de verdad por tipo de dato
+## Source of truth by data type
 
-| Dato | Archivo canónico |
+| Data | Canonical file |
 |------|-----------------|
-| Estado global del proyecto | `implementation/progress.md` (solo coordinador edita § status) |
-| Tareas y checkboxes | `implementation/phaseX.md` |
-| Contrato técnico | `sdd/specs/iteration-{N}/SPEC-XXX.md` |
-| Decisión durable D-xxx | `implementation/decisions/D-NNN-slug.md` |
-| Nota de sesión | `implementation/sessions/YYYY-MM-DD-tema.md` |
-| Impedimento B-xxx | `implementation/blockers/B-NNN-slug.md` |
-| Convenciones de código | `.cursor/rules/sapcyti.mdc` + `technologies/{area}.md` |
-| Índice de specs | `sdd/SPEC_INDEX.md` |
-| Rutas de artefactos | `CANONICAL.md` |
+| Global project status | `implementation/progress.md` (only coordinator edits § status) |
+| Tasks and checkboxes | `implementation/phaseX.md` |
+| Technical contract | `sdd/specs/iteration-{N}/SPEC-XXX.md` |
+| Durable decision D-xxx | `implementation/decisions/D-NNN-slug.md` |
+| Session note | `implementation/sessions/YYYY-MM-DD-tema.md` |
+| Blocker B-xxx | `implementation/blockers/B-NNN-slug.md` |
+| Code conventions | `.cursor/rules/sapcyti.mdc` + `technologies/{area}.md` |
+| Spec index | `sdd/SPEC_INDEX.md` |
+| Artifact paths | `CANONICAL.md` |
 
-## Estados de spec e implementación
+## Spec and implementation states
 
-| Estado | ¿Codificar? |
+| State | Code? |
 |--------|-------------|
-| 🔲 Draft | **No** — requiere revisión y paso a 🔵 Approved |
-| 🔵 Approved | Sí |
-| ✅ Implemented | Solo mantenimiento acordado |
+| 🔲 Draft | **No** — requires review and move to 🔵 Approved |
+| 🔵 Approved | Yes |
+| ✅ Implemented | Agreed maintenance only |
 
-## Qué cargar por tipo de tarea
+## What to load by task type
 
-### Implementar una spec
+### Implement a spec
 
-| Cargar | No cargar |
+| Load | Do not load |
 |--------|-----------|
-| Solo el archivo `SPEC-XXX.md` (autocontenida) | `sdd/theory/SDD-theory.md`, `Architecture.md` completo |
-| Contrato de spec dependiente si `Depends on` lo exige | `progress.md`, todas las HUs |
-| — | `vision/` completo |
+| Only the `SPEC-XXX.md` file (self-contained) | `sdd/theory/SDD-theory.md`, full `Architecture.md` |
+| Dependent spec contract if `Depends on` requires it | `progress.md`, all HUs |
+| — | Full `vision/` |
 
 **Skill:** [`.cursor/skills/implement-spec.md`](.cursor/skills/implement-spec.md)
 
-### Escribir una spec
+### Write a spec
 
-| Cargar | No cargar |
+| Load | Do not load |
 |--------|-----------|
-| Tarea en `phaseX.md` | `Architecture.md` completo |
-| Sección relevante de `design/Architecture.md` | `sdd/theory/SDD-theory.md` |
-| HU referenciada (`vision/HU/HU-XX.md`) | Specs no relacionadas |
+| Task in `phaseX.md` | Full `Architecture.md` |
+| Relevant section of `design/Architecture.md` | `sdd/theory/SDD-theory.md` |
+| Referenced HU (`vision/HU/HU-XX.md`) | Unrelated specs |
 | `technologies/{area}.md` | |
-| `sdd/domain/ContextMap.md` (solo sección del BC) | |
-| `sdd/domain/schemas/{bc}.schema.json` si existe | |
-| `sdd/domain/features/{bc}/` si existe | |
+| `sdd/domain/ContextMap.md` (BC section only) | |
+| `sdd/domain/schemas/{bc}.schema.json` if it exists | |
+| `sdd/domain/features/{bc}/` if it exists | |
 | `sdd/templates/SPEC-TEMPLATE.md` | |
 
 **Skill:** [`.cursor/skills/write-spec.md`](.cursor/skills/write-spec.md)
 
-### Revisar código
+### Review code
 
-| Cargar | No cargar |
+| Load | Do not load |
 |--------|-----------|
-| Spec contra la que se revisa | Arquitectura completa |
+| Spec being reviewed against | Full architecture |
 | `technologies/testing.md` | |
 
 **Skill:** [`.cursor/skills/review-code.md`](.cursor/skills/review-code.md)
 
-### Trabajo ADD / arquitectura
+### ADD / architecture work
 
-| Cargar | No cargar |
+| Load | Do not load |
 |--------|-----------|
-| `ArchitecturalDrivers.md` | Specs individuales |
-| `design/IterationPlan.md` | Código fuente |
-| Secciones relevantes de `design/Architecture.md` | |
-| `ADD.md` o skill `arquitecture-add` | |
+| `ArchitecturalDrivers.md` | Individual specs |
+| `design/IterationPlan.md` | Source code |
+| Relevant sections of `design/Architecture.md` | |
+| `ADD.md` or skill `arquitecture-add` | |
 
-## Memoria: Git vs Engram
+## Memory: Git vs Engram
 
-| Tipo | Dónde |
+| Type | Where |
 |------|-------|
-| Decisiones duraderas (D-xxx) | `implementation/decisions/D-NNN-slug.md` (Git, un archivo por decisión) |
-| Estado global de fase (dashboard) | `implementation/progress.md` (Git — coordinador) |
-| Notas de sesión | `implementation/sessions/YYYY-MM-DD-nombre.md` (Git) |
-| Specs, dominio DDD, arquitectura | Este repo (Git) |
-| Continuidad de sesión, bugs en curso, "siguiente paso" | Engram MCP |
-| Índice de rutas | [`CANONICAL.md`](CANONICAL.md) |
+| Durable decisions (D-xxx) | `implementation/decisions/D-NNN-slug.md` (Git, one file per decision) |
+| Global phase status (dashboard) | `implementation/progress.md` (Git — coordinator) |
+| Session notes | `implementation/sessions/YYYY-MM-DD-nombre.md` (Git) |
+| Specs, DDD domain, architecture | This repo (Git) |
+| Session continuity, bugs in progress, "next step" | Engram MCP |
+| Path index | [`CANONICAL.md`](CANONICAL.md) |
 
-## Orden de lectura (inicio de sesión implementación)
+## Reading order (implementation session start)
 
-1. [`implementation/progress.md`](implementation/progress.md) — dashboard (fase actual; solo lectura salvo coordinador)
-2. Spec asignada — único documento obligatorio para codificar
-3. On-demand solo si la spec lo indica
-4. Al cerrar sesión: crear `sessions/` y `decisions/` según [`onboarding/05-trabajo-en-equipo.md`](onboarding/05-trabajo-en-equipo.md)
+1. [`implementation/progress.md`](implementation/progress.md) — dashboard (current phase; read-only except coordinator)
+2. Assigned spec — sole mandatory document for coding
+3. On-demand only if the spec indicates it
+4. On session close: create `sessions/` and `decisions/` per [`onboarding/05-trabajo-en-equipo.md`](onboarding/05-trabajo-en-equipo.md)
 
-## Enlaces rápidos
+## Quick links
 
-- [Banco de memoria](README.md)
-- [Rutas canónicas](CANONICAL.md)
-- [Teoría SDD](sdd/theory/SDD-theory.md)
-- [Índice de specs](sdd/SPEC_INDEX.md)
+- [Memory bank](README.md)
+- [Canonical paths](CANONICAL.md)
+- [SDD theory](sdd/theory/SDD-theory.md)
+- [Spec index](sdd/SPEC_INDEX.md)
 - [Onboarding](onboarding/README.md)
-- [Plantillas SDD](sdd/templates/README.md) · [Plantillas operativas](implementation/templates/README.md)
+- [SDD templates](sdd/templates/README.md) · [Operational templates](implementation/templates/README.md)

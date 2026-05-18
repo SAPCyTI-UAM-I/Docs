@@ -1,8 +1,8 @@
-# Estructura de carpetas — SAPCyTI Docs
+# Folder structure — SAPCyTI Docs
 
-**Estado:** Ejecutado (2026-05-17) en rama `docs/reorganize-memory-bank`.
+**Status:** Executed (2026-05-17) on branch `docs/reorganize-memory-bank`.
 
-## Árbol final
+## Final tree
 
 ```text
 Docs/
@@ -20,19 +20,19 @@ Docs/
     └── specs/
 ```
 
-## Changelog de rutas
+## Route changelog
 
 
-| Ruta anterior                                           | Ruta nueva                |
+| Previous path                                           | New path                |
 | ------------------------------------------------------- | ------------------------- |
 | `vision/`                                               | `vision/`                 |
 | `requirements/`                                         | `requirements/`           |
-| `design/` + `ADD.md` + `ArchitecturalDrivers.md` (raíz) | `design/`                 |
+| `design/` + `ADD.md` + `ArchitecturalDrivers.md` (root) | `design/`                 |
 | `technologies/`                                         | `technologies/`           |
 | `implementation/`                                       | `implementation/`         |
 | `SDD/`                                                  | `sdd/`                    |
-| `sdd/theory/`                                           | `sdd/theory/` (fusionado) |
-| `specifications/` (legacy)                              | Eliminado → `sdd/domain/` |
+| `sdd/theory/`                                           | `sdd/theory/` (merged) |
+| `specifications/` (legacy)                              | Removed → `sdd/domain/` |
 
 
-Ver `[CANONICAL.md](CANONICAL.md)` para fuente de verdad actualizada.
+See `[CANONICAL.md](CANONICAL.md)` for updated source of truth.

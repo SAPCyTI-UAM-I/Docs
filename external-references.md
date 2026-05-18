@@ -1,18 +1,18 @@
-# Referencias externas — SAPCyTI
+# External references — SAPCyTI
 
-Documentos citados en el repo. Los que **no** están versionados aquí deben obtenerse por otra vía (wiki, drive, coordinador).
+Documents cited in the repo. Those **not** versioned here must be obtained elsewhere (wiki, drive, coordinator).
 
 
-| Referencia                                                   | Citado en                                                                  | Estado en repo | Acción                                                   |
+| Reference                                                   | Cited in                                                                  | Status in repo | Action                                                   |
 | ------------------------------------------------------------ | -------------------------------------------------------------------------- | -------------- | -------------------------------------------------------- |
-| `[vision/diagramaContexto.PNG](vision/diagramaContexto.PNG)` | `vision/Vision.md`, `estructura-propuesta.md`                              | **Presente**   | Mantener en `vision/`                                    |
-| `Context/Junta-17-02-2026.md`                                | `requirements/Atributos_y_Restricciones.md`, `Reporte_Ejecucion_Agente.md` | Fuera de repo  | Subir a `vision/context/` o enlace externo en esta tabla |
-| `Context/Manual de usuario SAPCyTI.md`                       | `requirements/Atributos_y_Restricciones.md`                                | Fuera de repo  | Subir a `vision/context/` o wiki institucional           |
+| `[vision/diagramaContexto.PNG](vision/diagramaContexto.PNG)` | `vision/Vision.md`, `estructura-propuesta.md`                              | **Present**   | Keep in `vision/`                                    |
+| `Context/Junta-17-02-2026.md`                                | `requirements/Atributos_y_Restricciones.md`, `Reporte_Ejecucion_Agente.md` | Outside repo  | Upload to `vision/context/` or external link in this table |
+| `Context/Manual de usuario SAPCyTI.md`                       | `requirements/Atributos_y_Restricciones.md`                                | Outside repo  | Upload to `vision/context/` or institutional wiki           |
 
 
-## Cómo citar fuentes externas en nuevos documentos
+## How to cite external sources in new documents
 
-- Si el archivo **está en este repo:** usar ruta relativa (ej. `vision/Vision.md`).
-- Si **no está en el repo:** citar como `Context/...` o `Manual...` y añadir una fila en esta tabla con enlace o ubicación real.
+- If the file **is in this repo:** use a relative path (e.g. `vision/Vision.md`).
+- If **not in the repo:** cite as `Context/...` or `Manual...` and add a row in this table with link or actual location.
 
-Al incorporar un documento al repo, actualizar esta tabla y sustituir referencias `Context/...` por la ruta canónica.
+When incorporating a document into the repo, update this table and replace `Context/...` references with the canonical path.

@@ -1,119 +1,119 @@
-# Banco de Memoria — SAPCyTI
+# Memory Bank — SAPCyTI
 
-Índice de toda la documentación del proyecto. Estos documentos son la **base de conocimiento** que alimenta el desarrollo guiado por especificaciones (SDD).
+Index of all project documentation. These documents are the **knowledge base** that powers specification-driven development (SDD).
 
 
-| Guía                                                                       | Contenido                                           |
+| Guide                                                                       | Content                                           |
 | -------------------------------------------------------------------------- | --------------------------------------------------- |
-| `[AGENTS.md](AGENTS.md)`                                                   | Protocolo de carga de contexto para LLM             |
-| `[CANONICAL.md](CANONICAL.md)`                                             | Rutas canónicas y deprecadas                        |
-| `[onboarding/](onboarding/)`                                               | Guía para integrantes nuevos                        |
-| `[MERGE-GUIDE.md](MERGE-GUIDE.md)`                                         | Guía para revisores del PR de reorganización        |
-| `[sdd/templates/README.md](sdd/templates/README.md)`                       | Índice maestro de plantillas (spec, fase, plan, BC) |
-| `[implementation/templates/README.md](implementation/templates/README.md)` | Plantillas operativas (sesión, decisión, blocker)   |
+| `[AGENTS.md](AGENTS.md)`                                                   | Context loading protocol for LLM             |
+| `[CANONICAL.md](CANONICAL.md)`                                             | Canonical and deprecated paths                        |
+| `[onboarding/](onboarding/)`                                               | Guide for new team members                        |
+| `[MERGE-GUIDE.md](MERGE-GUIDE.md)`                                         | Guide for reorganization PR reviewers        |
+| `[sdd/templates/README.md](sdd/templates/README.md)`                       | Master template index (spec, phase, plan, BC) |
+| `[implementation/templates/README.md](implementation/templates/README.md)` | Operational templates (session, decision, blocker)   |
 
 
 ---
 
-## Visión y Requerimientos
+## Vision and Requirements
 
 
-| Documento                                                                                | Contenido                                                  |
+| Document                                                                                | Content                                                  |
 | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| `[vision/Vision.md](vision/Vision.md)`                                                   | Visión general del sistema, alcance y stakeholders         |
-| `[vision/HU/](vision/HU/)`                                                               | 35 historias de usuario ([índice](vision/HU/00-INDICE.md)) |
-| `[requirements/Atributos_y_Restricciones.md](requirements/Atributos_y_Restricciones.md)` | Atributos de calidad y restricciones del sistema           |
-| `[requirements/Concerns.md](requirements/Concerns.md)`                                   | Concerns arquitectónicos identificados                     |
+| `[vision/Vision.md](vision/Vision.md)`                                                   | System overview, scope, and stakeholders         |
+| `[vision/HU/](vision/HU/)`                                                               | 35 user stories ([index](vision/HU/00-INDICE.md)) |
+| `[requirements/Atributos_y_Restricciones.md](requirements/Atributos_y_Restricciones.md)` | System quality attributes and constraints           |
+| `[requirements/Concerns.md](requirements/Concerns.md)`                                   | Identified architectural concerns                     |
 
 
-## Diseño Arquitectónico
+## Architectural Design
 
 
-| Documento                                                   | Contenido                                                             |
+| Document                                                   | Content                                                             |
 | ----------------------------------------------------------- | --------------------------------------------------------------------- |
-| `[ArchitecturalDrivers.md](design/ArchitecturalDrivers.md)` | Drivers: HU-XX (funcionales), QA-X (calidad), CON-X (restricciones)   |
-| `[ADD.md](design/ADD.md)`                                   | Proceso Attribute-Driven Design aplicado al proyecto                  |
-| `[design/Architecture.md](design/Architecture.md)`          | Decisiones arquitectónicas, modelo de dominio, estructura de paquetes |
-| `[design/IterationPlan.md](design/IterationPlan.md)`        | Plan de iteraciones ADD y drivers asignados a cada una                |
+| `[ArchitecturalDrivers.md](design/ArchitecturalDrivers.md)` | Drivers: HU-XX (functional), QA-X (quality), CON-X (constraints)   |
+| `[ADD.md](design/ADD.md)`                                   | Attribute-Driven Design process applied to the project                  |
+| `[design/Architecture.md](design/Architecture.md)`          | Architectural decisions, domain model, package structure |
+| `[design/IterationPlan.md](design/IterationPlan.md)`        | ADD iteration plan and drivers assigned to each one                |
 
 
-## Tecnologías
+## Technologies
 
 
-| Documento                                              | Contenido                                                          |
+| Document                                              | Content                                                          |
 | ------------------------------------------------------ | ------------------------------------------------------------------ |
-| `[technologies/backend.md](technologies/backend.md)`   | Java 21, Spring Boot 3.x, dependencias, reglas de paquetes, naming |
-| `[technologies/frontend.md](technologies/frontend.md)` | Angular, TypeScript, módulos, interceptors, i18n                   |
-| `[technologies/testing.md](technologies/testing.md)`   | Pirámide de testing, frameworks, convenciones de naming, CI        |
+| `[technologies/backend.md](technologies/backend.md)`   | Java 21, Spring Boot 3.x, dependencies, package rules, naming |
+| `[technologies/frontend.md](technologies/frontend.md)` | Angular, TypeScript, modules, interceptors, i18n                   |
+| `[technologies/testing.md](technologies/testing.md)`   | Testing pyramid, frameworks, naming conventions, CI        |
 | `[technologies/devops.md](technologies/devops.md)`     | GitFlow, CI/CD, Docker, environments, secrets                      |
 
 
-## Implementación (operativo)
+## Implementation (operational)
 
 
-| Documento                                                                                        | Contenido                                                                           |
+| Document                                                                                        | Content                                                                           |
 | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| `[implementation/implementationPlan.md](implementation/implementationPlan.md)`                   | Fases, dependencias, criterios de transición                                        |
-| `[implementation/progress.md](implementation/progress.md)`                                       | Dashboard: estado global y fase actual                                              |
-| `[implementation/sessions/](implementation/sessions/README.md)`                                  | Notas por sesión (un archivo por integrante/sesión)                                 |
-| `[implementation/decisions/](implementation/decisions/README.md)`                                | Decisiones D-xxx (un archivo por decisión)                                          |
-| `[implementation/phase0.md](implementation/phase0.md)` … `[phase9.md](implementation/phase9.md)` | Tareas por fase con links a specs (incl. `[phase4a.md](implementation/phase4a.md)`) |
+| `[implementation/implementationPlan.md](implementation/implementationPlan.md)`                   | Phases, dependencies, transition criteria                                        |
+| `[implementation/progress.md](implementation/progress.md)`                                       | Dashboard: global status and current phase                                              |
+| `[implementation/sessions/](implementation/sessions/README.md)`                                  | Notes per session (one file per member/session)                                 |
+| `[implementation/decisions/](implementation/decisions/README.md)`                                | D-xxx decisions (one file per decision)                                          |
+| `[implementation/phase0.md](implementation/phase0.md)` … `[phase9.md](implementation/phase9.md)` | Tasks per phase with links to specs (incl. `[phase4a.md](implementation/phase4a.md)`) |
 
 
-## Dominio DDD (machine-readable)
+## DDD Domain (machine-readable)
 
 
-| Documento                                              | Contenido                               |
+| Document                                              | Content                               |
 | ------------------------------------------------------ | --------------------------------------- |
-| `[sdd/domain/ContextMap.md](sdd/domain/ContextMap.md)` | Bounded Contexts y relaciones           |
-| `[sdd/domain/schemas/](sdd/domain/schemas/)`           | Contratos JSON Schema por BC            |
-| `[sdd/domain/features/](sdd/domain/features/)`         | Escenarios Gherkin por BC               |
-| `[sdd/domain/Summary.md](sdd/domain/Summary.md)`       | Resumen de sesión de especificación DDD |
+| `[sdd/domain/ContextMap.md](sdd/domain/ContextMap.md)` | Bounded Contexts and relationships           |
+| `[sdd/domain/schemas/](sdd/domain/schemas/)`           | JSON Schema contracts per BC            |
+| `[sdd/domain/features/](sdd/domain/features/)`         | Gherkin scenarios per BC               |
+| `[sdd/domain/Summary.md](sdd/domain/Summary.md)`       | DDD specification session summary |
 
 
-> Ver `[CANONICAL.md](CANONICAL.md)` y `[external-references.md](external-references.md)` para rutas y documentos fuera del repo.
+> See `[CANONICAL.md](CANONICAL.md)` and `[external-references.md](external-references.md)` for paths and documents outside the repo.
 
 ## SDD (Spec-Driven Development)
 
 
-| Documento                                              | Contenido                                                         |
+| Document                                              | Content                                                         |
 | ------------------------------------------------------ | ----------------------------------------------------------------- |
-| `[sdd/theory/SDD-theory.md](sdd/theory/SDD-theory.md)` | Teoría y reglas de SDD para el proyecto                           |
-| `[sdd/README.md](sdd/README.md)`                       | Guía operativa: cómo crear y usar specs                           |
-| `[sdd/SPEC_INDEX.md](sdd/SPEC_INDEX.md)`               | Índice maestro de specs                                           |
-| `[sdd/templates/README.md](sdd/templates/README.md)`   | Índice de plantillas (SPEC, PHASE, sesión, decisión, BC, blocker) |
+| `[sdd/theory/SDD-theory.md](sdd/theory/SDD-theory.md)` | SDD theory and rules for the project                           |
+| `[sdd/README.md](sdd/README.md)`                       | Operational guide: how to create and use specs                           |
+| `[sdd/SPEC_INDEX.md](sdd/SPEC_INDEX.md)`               | Master spec index                                           |
+| `[sdd/templates/README.md](sdd/templates/README.md)`   | Template index (SPEC, PHASE, session, decision, BC, blocker) |
 
 
-## Herramientas y Contexto entre Agentes
+## Tools and Cross-Agent Context
 
-El proyecto utiliza agentes IA (Cursor) para asistir en la redacción de specs, implementación y revisión de código. Para mantener continuidad entre sesiones se emplean las siguientes herramientas:
+The project uses AI agents (Cursor) to assist with spec writing, implementation, and code review. The following tools maintain continuity across sessions:
 
 
-| Herramienta                    | Propósito                                                                                                                                                                                                                                      |
+| Tool                    | Purpose                                                                                                                                                                                                                                      |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Engram** (MCP server)        | Memoria persistente compartida entre agentes. Almacena decisiones arquitectónicas, convenciones, bugs resueltos, progreso y próximos pasos. Organizada por proyecto: `plan-sdd-arc` (planificación/arquitectura) y `sapcyti` (implementación). |
-| **Rules** (`.cursor/rules/`)   | Reglas cargadas automáticamente en cada sesión: convenciones del proyecto (`sapcyti`), protocolo de memoria (`engram`), y ejecución atómica de tareas (`task_execution`).                                                                      |
-| **Skills** (`.cursor/skills/`) | Flujos paso a paso para tareas específicas: `implement-spec`, `write-spec`, `review-code`.                                                                                                                                                     |
+| **Engram** (MCP server)        | Persistent memory shared across agents. Stores architectural decisions, conventions, resolved bugs, progress, and next steps. Organized by project: `plan-sdd-arc` (planning/architecture) and `sapcyti` (implementation). |
+| **Rules** (`.cursor/rules/`)   | Rules loaded automatically in each session: project conventions (`sapcyti`), memory protocol (`engram`), and atomic task execution (`task_execution`).                                                                      |
+| **Skills** (`.cursor/skills/`) | Step-by-step flows for specific tasks: `implement-spec`, `write-spec`, `review-code`.                                                                                                                                                     |
 
 
-### ¿Cómo funciona Engram?
+### How does Engram work?
 
-Engram es un servidor MCP (Model Context Protocol) que provee memoria persistente a los agentes. Al inicio de cada sesión, el agente recupera contexto previo (`mem_context` / `mem_search`). Tras trabajo significativo, guarda la información (`mem_save`). Al cerrar sesión, genera un resumen (`mem_session_summary`). Esto permite que sesiones futuras arranquen con conocimiento de lo ya decidido.
+Engram is an MCP (Model Context Protocol) server that provides persistent memory to agents. At the start of each session, the agent retrieves prior context (`mem_context` / `mem_search`). After significant work, it saves information (`mem_save`). On session close, it generates a summary (`mem_session_summary`). This lets future sessions start with knowledge of what was already decided.
 
-### Resumen de sesiones
+### Session summaries
 
 
-| Documento                                      | Contenido                                                                |
+| Document                                      | Content                                                                |
 | ---------------------------------------------- | ------------------------------------------------------------------------ |
-| `[resumen-propuesta.md](resumen-propuesta.md)` | Síntesis de decisiones, artefactos creados y cambios al marco documental |
+| `[resumen-propuesta.md](resumen-propuesta.md)` | Summary of decisions, artifacts created, and changes to the documentation framework |
 
 
 ---
 
-## Orden de lectura por rol
+## Reading order by role
 
-**Estudiante nuevo:** Vision.md → este README → `progress.md` (dashboard) → `[05-trabajo-en-equipo.md](onboarding/05-trabajo-en-equipo.md)` si hay equipo → spec asignada
+**New student:** Vision.md → this README → `progress.md` (dashboard) → `[05-trabajo-en-equipo.md](onboarding/05-trabajo-en-equipo.md)` if on a team → assigned spec
 
-**LLM (inicio de sesión):** `[AGENTS.md](AGENTS.md)` → `progress.md` (dashboard) → la spec a implementar (autocontenida)
+**LLM (session start):** `[AGENTS.md](AGENTS.md)` → `progress.md` (dashboard) → spec to implement (self-contained)
 
-**Arquitecto:** `ArchitecturalDrivers.md` → `Architecture.md` → `IterationPlan.md` → `sdd/domain/ContextMap.md` → `implementationPlan.md`
+**Architect:** `ArchitecturalDrivers.md` → `Architecture.md` → `IterationPlan.md` → `sdd/domain/ContextMap.md` → `implementationPlan.md`
