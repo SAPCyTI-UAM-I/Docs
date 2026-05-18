@@ -1,6 +1,15 @@
+---
+spec_id: SPEC-001
+status: implemented
+phase: 1
+bounded_context: platform
+drivers: [CON-1, CON-6]
+depends_on: []
+---
+
 # SPEC-001: Proyecto Spring Boot y build Maven
 
-> **Status:** ✅ Implemented | 🔲 Draft | 🔵 Approved | ⛔ Blocked | 🔄 Amended
+> **Status:** ✅ Implemented
 > **Author:** SAPCyTI SDD
 > **Date:** 2026-05-12
 > **Phase:** 1 | **ADD Iteration:** 1

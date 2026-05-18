@@ -10,7 +10,7 @@
 
 | Total Specs | 🔲 Draft | 🔵 Approved | ✅ Implemented | ⛔ Blocked |
 |-------------|----------|-------------|----------------|-----------|
-| 9 | 2 | 0 | 7 | 0 |
+| 9 | 1 | 0 | 8 | 0 |
 
 ---
 
@@ -30,7 +30,7 @@
 
 | Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
 |---------|-------|-------|----|---------|------------|--------|
-| [SPEC-008A](specs/iteration-1/SPEC-008A_angular-project-scaffold-tooling.md) | Angular Project Scaffold & Tooling | 4A | — | CON-7, CON-6 | — | 🔲 Draft |
+| [SPEC-008A](specs/iteration-1/SPEC-008A_angular-project-scaffold-tooling.md) | Angular Project Scaffold & Tooling | 4A | — | CON-7, CON-6 | — | ✅ Implemented |
 | [SPEC-008B](specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md) | SPA Core Providers, Shell & i18n | 4 | — | CON-7, CON-6, QA-4, QA-6 | SPEC-008A | 🔲 Draft |
 
 <!-- Example:

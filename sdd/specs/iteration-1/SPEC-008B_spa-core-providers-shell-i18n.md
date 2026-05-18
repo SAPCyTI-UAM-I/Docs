@@ -1,3 +1,12 @@
+---
+spec_id: SPEC-008B
+status: draft
+phase: 4
+bounded_context: spa-platform
+drivers: [CON-7, CON-6, QA-4, QA-6]
+depends_on: [SPEC-008A]
+---
+
 # SPEC-008B: SPA Core Providers, Shell & i18n Infrastructure
 
 > **Status:** 🔲 Draft

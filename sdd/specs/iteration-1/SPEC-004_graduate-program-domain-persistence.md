@@ -1,3 +1,12 @@
+---
+spec_id: SPEC-004
+status: implemented
+phase: 2
+bounded_context: program-configuration
+drivers: [QA-3, QA-4]
+depends_on: [SPEC-003]
+---
+
 # SPEC-004: GraduateProgram — modelo de dominio y persistencia JPA
 
 > **Status:** ✅ Implemented

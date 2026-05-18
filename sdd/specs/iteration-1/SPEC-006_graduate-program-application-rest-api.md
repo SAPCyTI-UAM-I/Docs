@@ -1,3 +1,12 @@
+---
+spec_id: SPEC-006
+status: implemented
+phase: 3
+bounded_context: program-configuration
+drivers: [QA-3, QA-4, CON-5]
+depends_on: [SPEC-004, SPEC-005]
+---
+
 # SPEC-006: GraduateProgram — Application Layer, Use Cases, and REST API
 
 > **Status:** ✅ Implemented

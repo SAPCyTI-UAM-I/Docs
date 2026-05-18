@@ -1,6 +1,15 @@
+---
+spec_id: SPEC-003
+status: implemented
+phase: 1
+bounded_context: platform
+drivers: [QA-4, CON-6, QA-3]
+depends_on: [SPEC-001, SPEC-002]
+---
+
 # SPEC-003: Paquetes hexagonales, TenantFilter y CORS
 
-> **Status:** ✅ Implemented | 🔲 Draft | 🔵 Approved | ⛔ Blocked | 🔄 Amended
+> **Status:** ✅ Implemented
 > **Author:** SAPCyTI SDD
 > **Date:** 2026-05-12
 > **Phase:** 1 | **ADD Iteration:** 1

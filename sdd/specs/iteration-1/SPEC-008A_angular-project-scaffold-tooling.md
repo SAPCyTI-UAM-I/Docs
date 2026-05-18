@@ -1,6 +1,15 @@
+---
+spec_id: SPEC-008A
+status: implemented
+phase: 4A
+bounded_context: spa-platform
+drivers: [CON-7, CON-6]
+depends_on: []
+---
+
 # SPEC-008A: Angular Project Scaffold & Tooling Configuration
 
-> **Status:** 🔲 Draft
+> **Status:** ✅ Implemented
 > **Author:** Antigravity (AI Architect)
 > **Date:** 2026-05-12
 > **Phase:** 4A | **ADD Iteration:** 1

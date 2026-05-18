@@ -1,3 +1,12 @@
+---
+spec_id: SPEC-007
+status: implemented
+phase: 3
+bounded_context: program-configuration
+drivers: [QA-3, QA-4, CON-5]
+depends_on: [SPEC-005, SPEC-006]
+---
+
 # SPEC-007: ConfigurationParameter — Application Layer, Nested REST API, and Global Error Handling
 
 > **Status:** ✅ Implemented

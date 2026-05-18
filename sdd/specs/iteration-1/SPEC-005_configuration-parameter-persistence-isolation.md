@@ -1,3 +1,12 @@
+---
+spec_id: SPEC-005
+status: implemented
+phase: 2
+bounded_context: program-configuration
+drivers: [QA-3, QA-4]
+depends_on: [SPEC-004]
+---
+
 # SPEC-005: ConfigurationParameter — persistencia, CRUD y aislamiento por programa
 
 > **Status:** ✅ Implemented
