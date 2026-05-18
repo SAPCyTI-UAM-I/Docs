@@ -18,13 +18,17 @@ All specs are derived from the machine-readable artifacts in [`SDD/domain/`](../
 
 ### Current Status
 
+> **Estado fino:** ver [`progress.md`](progress.md) § General Status y § Current Phase.
+
 | Phase | Status | Notes |
 |-------|--------|-------|
 | **0** — Project Setup | 🔵 In progress | 34/40 tasks done; 6 manual pending |
-| **1** — Backend Init | 🔲 Pending | Requires recreation — no source code in repo |
-| **2–3** | 🔲 Not started | Defined below |
-| **4A** — SPA Scaffold & Tooling | 🔲 Not started | New — project creation, dependencies, tooling |
-| **4–9** | 🔲 Not started | Defined below |
+| **1** — Backend Init | ✅ Completed | SPEC-001–003 |
+| **2** — Domain model | ✅ Completed | SPEC-004–005 |
+| **3** — REST API | ✅ Completed | SPEC-006–007 |
+| **4A** — SPA Scaffold & Tooling | ✅ Completed | SPEC-008A |
+| **4** — SPA Core | 🔲 Not started | SPEC-008B Draft |
+| **5–9** | 🔲 Not started | Defined below |
 
 ---
 
@@ -160,7 +164,7 @@ graph LR
 | R-003 | LLM hallucinates cross-module imports | Medio | Media | Spec Out of Scope + Conventions Checklist restrict scope; schema enforcement | Spec author |
 | R-004 | Domain model drift from JSON Schema | Alto | Media | SPEC-TEMPLATE §4.1 mandates "Source of truth: derive from schema" | Spec author |
 | R-005 | Feature scenarios not covered by tests | Alto | Media | Phase transition criterion: "Feature coverage" must be verified | Reviewer |
-| R-006 | SDD_fusion residual directory causes confusion | Bajo | Alta | Delete `SDD_fusion/` once all references are updated to `SDD/` | Team |
+| R-006 | ~~SDD_fusion residual directory~~ | Bajo | Alta | Resuelto: referencias actualizadas a `SDD/` | Team |
 
 ---
 
