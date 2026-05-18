@@ -8,7 +8,7 @@ globs:
 ## Context to load
 
 1. The task description from the relevant `phaseX.md`.
-2. The relevant section(s) of `design/Architecture.md` — only the section referenced by the task, not the whole file.
+2. Use `design/Architecture-INDEX.md` to identify sections, then read only those sections of `design/Architecture.md` — not the whole file.
 3. The relevant HU from `vision/HU/HU-XX.md`.
 4. `technologies/{area}.md` for the area being specified (backend, frontend, testing).
 5. The template: `sdd/templates/SPEC-TEMPLATE.md`.

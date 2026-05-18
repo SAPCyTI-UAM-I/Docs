@@ -48,8 +48,19 @@ You are working on SAPCyTI, a system for postgraduate administration at UAM Izta
 
 ## What to load per task type
 
+| Task | Load | Do NOT load |
+|------|------|-------------|
+| Implement spec | Only `sdd/specs/.../SPEC-XXX.md` | Architecture.md full, sdd/theory, all HUs |
+| Write spec | phase task + `design/Architecture-INDEX.md` section + HU + `technologies/{area}.md` + `sdd/domain/` BC artifacts + SPEC-TEMPLATE | Full Architecture.md, unrelated specs |
+| Review code | Spec + `technologies/testing.md` | Architecture.md full |
+| ADD / architecture | `design/ArchitecturalDrivers.md`, `IterationPlan.md`, Architecture sections | Individual specs |
+
+See [`AGENTS.md`](../../AGENTS.md) for full protocol.
+
+## What to load (legacy short form)
+
 - **Implementing a spec:** Read ONLY the spec file. It is self-contained.
-- **Writing a spec:** Read `design/Architecture.md` (relevant sections) + the HU + `technologies/{area}.md` + `sdd/domain/` artifacts (ContextMap, schema, features)
+- **Writing a spec:** Use `design/Architecture-INDEX.md` to pick sections, then read those sections of `design/Architecture.md` + HU + `technologies/{area}.md` + `sdd/domain/`
 - **Reviewing code:** Read the spec + `technologies/testing.md`
 
 ## Do NOT
