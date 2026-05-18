@@ -70,7 +70,7 @@ Se crearon **20 registros en Engram** organizados por categoría:
 
 **Justificación**: El Context Map es el artefacto central de DDD estratégico. Define las fronteras de cada módulo, sus relaciones de dependencia y los contratos de comunicación. Sin este documento, un agente de IA no puede saber qué módulo es responsable de qué, ni cómo los módulos se comunican entre sí.
 
-**Archivo generado**: [`Docs/specifications/ContextMap.md`](ContextMap.md)
+**Archivo generado**: [`SDD/domain/ContextMap.md`](ContextMap.md)
 
 #### 2.2.1 Bounded Contexts identificados
 
@@ -133,7 +133,7 @@ flowchart TB
 
 **Justificación**: El JSON Schema actúa como el **contrato de datos** entre la especificación (.feature) y la implementación (Java). Define los tipos exactos, campos requeridos, enums de estado, y la estructura de los commands. Sin este contrato, los escenarios Gherkin usarían tipos ambiguos y el código generado podría no coincidir con el modelo de dominio.
 
-**Archivo generado**: [`Docs/specifications/schemas/enrollment.schema.json`](schemas/enrollment.schema.json)
+**Archivo generado**: [`SDD/domain/schemas/enrollment.schema.json`](schemas/enrollment.schema.json)
 
 | Definición | Tipo DDD | Propósito |
 |:-----------|:---------|:----------|
@@ -156,12 +156,12 @@ flowchart TB
 2. Puede ser ejecutado como test automatizado
 3. Puede ser consumido por un agente de IA para generar implementación alineada
 
-**Directorio**: `Docs/specifications/features/enrollment/`
+**Directorio**: `SDD/domain/features/enrollment/`
 
 #### Estructura de carpetas por Bounded Context (DDD)
 
 ```
-Docs/specifications/
+SDD/domain/
 ├── ContextMap.md
 ├── Summary.md                          ← Este documento
 ├── schemas/
@@ -290,7 +290,7 @@ Todos los artefactos generados están persistidos en Engram para consumo cross-s
 | `architecture/shared-kernel` | architecture | ID-references y contratos |
 | `architecture/context-relations` | architecture | 12 relaciones DDD |
 | `architecture/external-integrations` | architecture | Integraciones externas |
-| `specifications/enrollment-features` | architecture | 3 features con 32 escenarios |
+| `sdd/domain/enrollment-features` | architecture | 3 features con 32 escenarios |
 
 **Total**: 26 registros en Engram + 63 relaciones juzgadas.
 
@@ -378,10 +378,10 @@ Antes de generar especificaciones para el siguiente Bounded Context, verificar:
 
 | Documento | Ruta | Propósito |
 |:----------|:-----|:----------|
-| Architectural Drivers | [`Docs/ArchitecturalDrivers.md`](../ArchitecturalDrivers.md) | Drivers QA, HU, CON |
-| Architecture | [`Docs/Design/Architecture.md`](../Design/Architecture.md) | Modelo de dominio, componentes, decisiones |
-| Context Map | [`Docs/specifications/ContextMap.md`](ContextMap.md) | Bounded Contexts y relaciones DDD |
-| Enrollment Schema | [`Docs/specifications/schemas/enrollment.schema.json`](schemas/enrollment.schema.json) | Contrato de datos BC-01 |
+| Architectural Drivers | [`ArchitecturalDrivers.md`](../../ArchitecturalDrivers.md) | Drivers QA, HU, CON |
+| Architecture | [`Design/Architecture.md`](../../Design/Architecture.md) | Modelo de dominio, componentes, decisiones |
+| Context Map | [`SDD/domain/ContextMap.md`](ContextMap.md) | Bounded Contexts y relaciones DDD |
+| Enrollment Schema | [`SDD/domain/schemas/enrollment.schema.json`](schemas/enrollment.schema.json) | Contrato de datos BC-01 |
 | Vision | [`Docs/visionDocs/Vision.md`](../visionDocs/Vision.md) | Alcance y características del sistema |
 | Atributos y Restricciones | [`Docs/Analisis_Requerimientos/Atributos_y_Restricciones.md`](../Analisis_Requerimientos/Atributos_y_Restricciones.md) | Restricciones técnicas UAM |
 | HU-07 | [`Docs/visionDocs/HU/HU-07.md`](../visionDocs/HU/HU-07.md) | Selección de UEAs |
