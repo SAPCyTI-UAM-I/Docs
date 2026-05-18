@@ -118,7 +118,7 @@ To move from one phase to the next, **all** of the following must hold:
 | **Backend — OpenAPI** | springdoc-openapi 2.x | Auto-generated OpenAPI 3.0 documentation |
 | **Backend — testing** | JUnit 5, Mockito, Spring Boot Test, Testcontainers, ArchUnit | Unit, integration with real PostgreSQL, architecture tests |
 | **Backend — observability** | Spring Boot Actuator, Micrometer | Health checks, metrics, monitoring |
-| **Frontend — core** | React 18+, TypeScript 5.x, Vite | SPA, static typing, build tool |
+| **Frontend — core** | Angular, TypeScript, Vite | SPA, static typing, build tool |
 | **Frontend — state** | Zustand | Lightweight state for ClinicalStateManager and SessionManager |
 | **Frontend — PWA** | Workbox (precaching, routing, background-sync), vite-plugin-pwa | Service worker, cache strategies, Background Sync |
 | **Frontend — storage** | Dexie.js | Typed IndexedDB with sync queue and branch_id isolation |

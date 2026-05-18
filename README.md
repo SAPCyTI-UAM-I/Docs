@@ -27,7 +27,7 @@
 | Documento | Contenido |
 |-----------|-----------|
 | [`SDD/technologies/backend.md`](SDD/technologies/backend.md) | Java 21, Spring Boot 3.x, dependencias, reglas de paquetes, naming |
-| [`SDD/technologies/frontend.md`](SDD/technologies/frontend.md) | Angular 17+, TypeScript, módulos, interceptors, i18n |
+| [`SDD/technologies/frontend.md`](SDD/technologies/frontend.md) | Angular, TypeScript, módulos, interceptors, i18n |
 | [`SDD/technologies/testing.md`](SDD/technologies/testing.md) | Pirámide de testing, frameworks, convenciones de naming, CI |
 | [`SDD/technologies/devops.md`](SDD/technologies/devops.md) | GitFlow, CI/CD, Docker, environments, secrets |
 

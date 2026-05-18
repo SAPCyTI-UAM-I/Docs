@@ -21,6 +21,9 @@
 
 ## Current Phase
 
+**Phase:** 4A — SPA Scaffold & Tooling ✅ COMPLETED  
+**Next phase:** 4 — SPA Core Architecture (SPEC-008B)  
+**Next step:** Begin [`phase4.md`](phase4.md) — SPEC-008B (Core Providers, Shell, i18n)
 **Phase:** 3 — Program Configuration REST API ✅ COMPLETED  
 **Next phase:** 4 — SPA initialization  
 **Next step:** Begin [`phase4.md`](phase4.md) — Angular project and shell layout
@@ -52,6 +55,10 @@
 | D-007 | 2026-04-24 | Project created manually (no Spring Initializr) | `start.spring.io` unreachable from dev environment; `pom.xml` written manually | Spring Initializr download |
 | D-008 | 2026-04-24 | `TenantFilter` and `TenantContext` placed in `shared/tenant` | Cross-cutting concern not owned by any bounded context | Inside `configuration` module |
 | D-009 | 2026-04-24 | `checkstyle.xml`: `LineLength` moved to `Checker` level | Checkstyle 10.x (maven-checkstyle-plugin 3.6.0) requires it outside `TreeWalker` | No change (broke build) |
+| D-010 | 2026-05-12 | ESLint flat config (`eslint.config.mjs`) en lugar de `.eslintrc.json` | Angular 21 genera flat config por defecto; esquema más moderno y oficial | `.eslintrc.json` (legado, deprecado en ESLint 9+) |
+| D-011 | 2026-05-12 | `eslint.config.mjs` (extensión `.mjs`) en lugar de `.js` | `commitlint.config.js` usa CJS; agregar `"type":"module"` al `package.json` lo rompería; `.mjs` fuerza ESM por archivo sin afectar el resto | Agregar `"type":"module"` al `package.json` |
+| D-012 | 2026-05-12 | Vitest vía `@angular/build:unit-test` (integración nativa Angular 21) | Angular 21 incluye soporte Vitest nativo; `@analogjs/vitest-angular` no es necesario y genera conflictos de módulos ESM | `@analogjs/vitest-angular` |
+| D-013 | 2026-05-12 | PostCSS configurado en `.postcssrc.json` en lugar de `postcss.config.js` | Formato JSON equivalente, ya existía en el proyecto; sin impacto funcional | `postcss.config.js` (especificado en SPEC-008A) |
 | D-010 | 2026-05-12 | Dev PostgreSQL published on host **port 5433** (`docker-compose.dev.yml`); default `DB_URL` uses `localhost:5433` | Another PostgreSQL on Windows often owns **5432**, causing authentication failures when the app connected to the wrong instance | Keep **5432** inside the container only; document override via `DB_URL` |
 | D-011 | 2026-05-17 | Phase 3: `MethodSecurityConfig` enables `@PreAuthorize` with `permitAll()` HTTP until Phase 6 | Full Spring Security deferred per `phase3.md` risk R-3.1 | Block all endpoints in Phase 6 |
 | D-012 | 2026-05-17 | JaCoCo excludes `*MapperImpl` (MapStruct generated) from coverage gate | Generated mapper bytecode is exercised via integration paths; unit tests mock mappers in `@WebMvcTest` | Add dedicated mapper integration tests if policy changes |
@@ -62,7 +69,7 @@
 
 | # | Date | Description | Status | Resolution |
 |---|------|-------------|--------|------------|
-| B-001 | 2026-04-19 | `npm` not available in current environment | ⚠️ Tracked | Configuration files created manually; user must run `npm install` on local machine |
+| B-001 | 2026-04-19 | `npm` not available in current environment | ✅ Resolved | `pnpm` disponible y usado como package manager en `sapcyti-spa` |
 
 ---
 
@@ -82,7 +89,7 @@
 - Created implementation plan with 6 phases (0–5) for Iteration 1
 - Structured all documents following project template conventions
 - Phase dependencies defined: P0 → P1 → P2 → P3 → P5; P0 → P4 → P5
-- Technology stack confirmed: Spring Boot 3.x (Java 21) + Angular 17+ + PostgreSQL
+- Technology stack confirmed: Spring Boot 3.x (Java 21) + Angular + PostgreSQL
 - Deployment strategy: local Docker first, on-premise server after Iteration 2
 
 ### Session — 2026-05-17 (Phases 2–3 — BC-04 domain + REST API)
@@ -125,6 +132,19 @@
 - **All deliverables met:** E1.1 (`mvn clean compile` ✅), E1.2 (package structure ✅), E1.3 (7/7 tests ✅), E1.4 (profiles ✅)
 - Next: Phase 2 — Domain model and persistence (GraduateProgram, ConfigurationParameter, JPA adapters, Flyway migrations)
 
+### Session — 2026-05-12 (Phase 4A — SPA Scaffold & Tooling)
+
+- **Completado A4A.1**: Angular 21.2.10 con strict mode, routing, CSS puro, standalone components, pnpm
+- **Completado A4A.2**: Dependencias instaladas — Tailwind CSS 4 (PostCSS), PrimeNG 21 + @primeuix/themes + primeicons, @ngx-translate/core + http-loader
+- **Completado A4A.3**: Tooling configurado
+  - ESLint: `ng add @angular-eslint/schematics` → `eslint.config.mjs` (flat config ESM) — D-010, D-011
+  - Prettier: `.prettierrc` completo + `prettier-plugin-tailwindcss` + `.prettierignore` + scripts `lint`/`format`
+  - Vitest: `@angular/build:unit-test` (nativo Angular 21, sin `@analogjs`) — D-012; 2/2 tests pasan
+- **Completado A4A.4**: Carpetas `core/`, `shared/`, `features/`, `models/`, `assets/i18n/` con `.gitkeep`; archivos `environment.ts` / `environment.prod.ts`
+- **Verificaciones**: `ng serve` → HTTP 200 ✅ | `ng build --configuration production` → sin errores ✅ | `pnpm run lint` → ESLint + Prettier ✅ | `ng test` → Vitest 2/2 ✅
+- Decisiones D-010 a D-013 registradas; B-001 resuelto
+- **Siguiente:** Phase 4 — SPEC-008B (Core Providers, Shell & i18n)
+
 ### Session — 2026-04-19 (Phase 0 Implementation)
 
 - **Completed A0.1** (5/7 tasks): Repository configuration
@@ -141,7 +161,7 @@
   - `PREREQUISITES.md` with required tools and versions
   - `docker-compose.dev.yml` (PostgreSQL 16, persistent volume, health check)
   - `setup.sh` + `setup.ps1` (prerequisite check → PostgreSQL → npm install → build)
-  - `.env.example` in both repos, `.editorconfig` (4sp Java, 2sp TS/HTML/SCSS)
+  - `.env.example` in both repos, `.editorconfig` (4sp Java, 2sp TS/HTML/CSS)
 - **Completed A0.5** (4/5 tasks): CI/CD pipelines
   - PR Validation: Backend (3 jobs: lint/build-test/security), SPA (4 jobs: lint/test/audit/build)
   - Merge & Deploy: Both repos (build-test → Docker GHCR push → deploy stub)

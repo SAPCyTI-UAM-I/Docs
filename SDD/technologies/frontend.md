@@ -1,45 +1,49 @@
 # Frontend Technology Stack — SAPCyTI
 
-> **Fuente de verdad** para versiones, librerías y reglas del frontend (SPA).
-> Referenciado desde specs y [`progress.md`](../../implementations/progress.md).
+> **Source of truth** for frontend (SPA) versions, libraries, and rules.
+> Referenced from specs and [`progress.md`](../../implementations/progress.md).
 
 ---
 
 ## Runtime
 
-| Component | Version | Notes |
-|-----------|---------|-------|
-| **Angular** | 17+ | Angular CLI for scaffolding |
-| **TypeScript** | 5.x | Strict mode enabled |
-| **Node.js** | 20 LTS | Required for build tooling |
-| **npm** | 10+ | Package manager |
+| Component      | Version | Notes                                   |
+| -------------- | ------- | --------------------------------------- |
+| **Angular**    | 21      | Angular CLI + ESBuild/Vite build system |
+| **TypeScript** | 5.x     | Strict mode enabled                     |
+| **Node.js**    | 22.12.0 | Required for build tooling              |
+| **yarn**       | 1.22    | Package manager                         |
 
 ## Core Dependencies
 
-| Library | Purpose |
-|---------|---------|
-| Angular CLI | Project scaffolding, build, serve |
-| Angular HttpClient | REST client with interceptors |
-| Angular Router | SPA routing, lazy loading |
-| Angular Forms (Reactive) | Form handling, validation |
-| `@ngx-translate/core` | Internationalization (QA-6) |
-| `@ngx-translate/http-loader` | Load translation files from `assets/i18n/` |
+| Library                      | Purpose                                                   |
+| ---------------------------- | --------------------------------------------------------- |
+| Angular CLI                  | Project scaffolding, build, serve                         |
+| Angular HttpClient           | REST client with interceptors                             |
+| Angular Router               | SPA routing, lazy loading                                 |
+| Angular Forms (Reactive)     | Form handling, validation                                 |
+| PrimeNG                      | Component library (preferred over custom implementations) |
+| `@ngx-translate/core`        | Internationalization (QA-6)                               |
+| `@ngx-translate/http-loader` | Load translation files from `assets/i18n/`                |
 
-## Styling
+## Styling & UI Components
 
-| Tool | Purpose |
-|------|---------|
-| SCSS | CSS preprocessor |
-| BEM naming | CSS class naming convention |
-| Responsive-first | Mobile-first media queries (CON-7) |
+> **Rule:** Use pre-built **PrimeNG** components (_unstyled_ mode). Create base UI components from scratch only if they don't exist in PrimeNG. Angular Material is discarded to avoid conflicts with Tailwind.
+
+| Tool             | Purpose                                                                       |
+| ---------------- | ----------------------------------------------------------------------------- |
+| Tailwind CSS     | Utility-first CSS framework (without using BEM conventions).                      |
+| PrimeNG          | Base UI components and directives.                                             |
+| CSS Base         | Pure CSS for exceptional overrides. No SCSS.                              |
+| Responsive-first | Mobile-first media queries via Tailwind modifiers (`md:`, `lg:`). (CON-7) |
 
 ## Browser Support (CON-7)
 
 | Browser | Minimum Version |
-|---------|----------------|
-| Chrome | 130+ |
-| Safari | 22+ |
-| Firefox | 129+ |
+| ------- | --------------- |
+| Chrome  | 130+            |
+| Safari  | 22+             |
+| Firefox | 129+            |
 
 ---
 
@@ -47,33 +51,32 @@
 
 > Ref: [`Architecture.md §6.2`](../../Design/Architecture.md) — SPA component diagram
 
-### Module Structure
+### Folder Structure (Standalone Components)
+
+Architecture based exclusively on Standalone Components (no `NgModules`).
 
 ```text
 src/app/
-├── core/                    # Singleton services, guards, interceptors
-│   ├── services/
+├── core/                    # Singleton services, guards, interceptors (providedIn: 'root')
+│   ├── auth/
 │   │   ├── auth.service.ts
-│   │   ├── tenant.service.ts
-│   │   └── http-error.interceptor.ts
-│   ├── guards/
 │   │   ├── auth.guard.ts
-│   │   └── role.guard.ts
-│   └── core.module.ts
-├── shared/                  # Reusable components, pipes, directives
+│   │   └── jwt.interceptor.ts
+│   └── http/
+│       ├── http-error.interceptor.ts
+│       └── tenant.interceptor.ts
+├── shared/                  # Reusable standalone components, pipes, directives
 │   ├── components/
-│   ├── pipes/
-│   └── shared.module.ts
-├── features/                # Lazy-loaded feature modules
-│   ├── login/
+│   │   └── data-table/
+│   └── pipes/
+├── features/                # Domain-driven feature folders (Lazy loaded routes)
+│   ├── auth/                # Login, password recovery (HU-01, HU-02)
 │   ├── dashboard/
-│   ├── enrollment/
-│   │   ├── coordinator/
-│   │   ├── student/
-│   │   └── advisor/
-│   └── entity-management/
-│       ├── students/
-│       └── professors/
+│   ├── enrollment/          # Course selection, approval (HU-06 to HU-10)
+│   │   ├── components/
+│   │   ├── services/
+│   │   └── enrollment.routes.ts
+│   └── academic-catalog/    # Students, Professors CRUD (HU-15, HU-21)
 ├── models/                  # TypeScript interfaces (mirror backend DTOs)
 ├── assets/
 │   └── i18n/
@@ -86,22 +89,21 @@ src/app/
 
 ### Dependency Rules
 
-- **core/** — imported ONCE in `AppModule`; never in feature modules
-- **shared/** — imported by any module that needs reusable components
-- **features/** — lazy-loaded; each feature has its own module and routing
-- **models/** — pure TypeScript interfaces; no Angular dependencies
+- **core/** — Not imported as a module. Its services use `providedIn: 'root'` and interceptors are registered in `app.config.ts`.
+- **shared/** — _Standalone_ components are imported directly into the `imports: []` array of the target component only when needed.
+- **features/** — Lazy-loaded routes using `loadChildren: () => import('./features/enrollment/enrollment.routes').then(m => m.ENROLLMENT_ROUTES)`. No feature folder should cross-import from another feature folder.
+- **models/** — Pure TypeScript interfaces; no Angular dependencies.
 
 ### Naming Conventions
 
-| Artifact | Convention | Example |
-|----------|-----------|---------|
-| Component | `{name}.component.ts` | `course-selection.component.ts` |
-| Service | `{name}.service.ts` | `enrollment.service.ts` |
-| Guard | `{name}.guard.ts` | `auth.guard.ts` |
-| Interceptor | `{name}.interceptor.ts` | `jwt.interceptor.ts` |
-| Model | `{name}.model.ts` | `student.model.ts` |
-| Module | `{name}.module.ts` | `enrollment.module.ts` |
-| Routing | `{name}-routing.module.ts` | `enrollment-routing.module.ts` |
+| Artifact    | Convention              | Example                         |
+| ----------- | ----------------------- | ------------------------------- |
+| Component   | `{name}.component.ts`   | `course-selection.component.ts` |
+| Service     | `{name}.service.ts`     | `enrollment.service.ts`         |
+| Guard       | `{name}.guard.ts`       | `auth.guard.ts`                 |
+| Interceptor | `{name}.interceptor.ts` | `jwt.interceptor.ts`            |
+| Model       | `{name}.model.ts`       | `student.model.ts`              |
+| Routing     | `{name}.routes.ts`      | `enrollment.routes.ts`          |
 
 ### HTTP & Authentication
 
@@ -113,7 +115,7 @@ src/app/
 
 ### Internationalization (QA-6)
 
-- `@ngx-translate` configured in `CoreModule`
+- `@ngx-translate` configured via `provideTranslateService` in `app.config.ts`.
 - Translation files: `assets/i18n/{lang}.json`
 - Default language: `es` (Spanish)
 - Key format: `{MODULE}.{COMPONENT}.{KEY}` — e.g., `ENROLLMENT.COURSE_SELECTION.TITLE`
@@ -124,10 +126,23 @@ src/app/
 - **No NgRx for MVP** — services with `BehaviorSubject` for reactive state
 - Consider NgRx if state complexity grows beyond 3 interacting stores
 
-### Linting
+### Testing
 
-| Tool | Purpose |
-|------|---------|
-| ESLint | Code quality |
-| `@angular-eslint` | Angular-specific rules |
-| Prettier (optional) | Code formatting |
+| Tool       | Purpose                                                 |
+| ---------- | ------------------------------------------------------- |
+| Vitest     | Unit Testing and Code Coverage (replaces Jasmine/Karma).|
+| Playwright | End-to-End (E2E) Testing.                               |
+
+### Deployment
+
+| Component | Purpose                                                                               |
+| --------- | ------------------------------------------------------------------------------------- |
+| Nginx     | HTTP web server in a Docker container. 404 fallback always routed to `index.html`.    |
+
+### Linting & Formatting (Mandatory)
+
+| Tool            | Purpose                                                                            |
+| --------------- | ---------------------------------------------------------------------------------- |
+| ESLint          | Code quality (with `@angular-eslint`).                                             |
+| Prettier        | Auto-formatting. Requires `prettier-plugin-tailwindcss` for class sorting.         |
+| `.editorconfig` | Unified indentation rules across the editor.                                       |

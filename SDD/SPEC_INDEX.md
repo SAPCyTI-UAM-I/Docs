@@ -10,7 +10,7 @@
 
 | Total Specs | 🔲 Draft | 🔵 Approved | ✅ Implemented | ⛔ Blocked |
 |-------------|----------|-------------|----------------|-----------|
-| 7 | 0 | 0 | 7 | 0 |
+| 2 | 2 | 0 | 0 | 0 |
 
 ---
 
@@ -22,6 +22,15 @@
 
 | Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
 |---------|-------|-------|----|---------|------------|--------|
+| [SPEC-008A](specs/iteration-1/SPEC-008A_angular-project-scaffold-tooling.md) | Angular Project Scaffold & Tooling | 4A | — | CON-7, CON-6 | — | 🔲 Draft |
+| [SPEC-008B](specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md) | SPA Core Providers, Shell & i18n | 4 | — | CON-7, CON-6, QA-4, QA-6 | SPEC-008A | 🔲 Draft |
+
+<!-- Example:
+| [SPEC-001](specs/iteration-1/SPEC-001_graduate-program-domain.md) | GraduateProgram Domain Model | 2 | Configuration | QA-3, QA-4 | — | 🔲 Draft |
+| [SPEC-002](specs/iteration-1/SPEC-002_configuration-parameter-persistence.md) | ConfigurationParameter VO & Persistence | 2 | Configuration | QA-3, QA-4 | SPEC-001 | 🔲 Draft |
+-->
+
+> **Note:** Phases 0 and 1 are ✅ Completed — no retroactive specs needed.
 | [SPEC-001](specs/iteration-1/SPEC-001_spring-boot-project-and-maven-build.md) | Spring Boot y build Maven | 1 | Plataforma | CON-1, CON-6 | — | ✅ Implemented |
 | [SPEC-002](specs/iteration-1/SPEC-002_application-configuration-profiles-logging.md) | Configuración, perfiles y logging | 1 | Plataforma | QA-3, QA-4, CON-6 | SPEC-001 | ✅ Implemented |
 | [SPEC-003](specs/iteration-1/SPEC-003_hexagonal-packages-tenant-filter-cors.md) | Paquetes hexagonales, tenant y CORS | 1 | Plataforma + layout BC | QA-4, CON-6, QA-3 | SPEC-001, SPEC-002 | ✅ Implemented |
