@@ -27,4 +27,4 @@
 
 ## Plantilla
 
-[`../templates/DECISION-TEMPLATE.md`](../templates/DECISION-TEMPLATE.md)
+[`../templates/DECISION-TEMPLATE.md`](../templates/DECISION-TEMPLATE.md) — índice completo: [`sdd/templates/README.md`](../../sdd/templates/README.md)

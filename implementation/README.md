@@ -20,10 +20,11 @@ Estado operativo del proyecto: dashboard (`progress.md`), plan de fases, mapas d
 | [decisions/](decisions/README.md) | Decisiones D-xxx (`D-NNN-slug.md`) | **Cada integrante** (archivo nuevo) |
 | [blockers/](blockers/) | Blockers B-xxx | Quien reporta |
 | [phase0.md](phase0.md) … [phase9.md](phase9.md) | Tareas y links a specs | Dueño de la fase |
-| [templates/](templates/) | SESSION, DECISION | — |
+| [templates/](templates/README.md) | SESSION, DECISION, BLOCKER — [índice](templates/README.md) | — |
 | [example/](example/) | Plantillas de ejemplo | No |
 
-> Flujo en equipo: [`onboarding/05-trabajo-en-equipo.md`](../onboarding/05-trabajo-en-equipo.md)
+> Flujo en equipo: [`onboarding/05-trabajo-en-equipo.md`](../onboarding/05-trabajo-en-equipo.md)  
+> Plantillas: [`templates/README.md`](templates/README.md) (operativas) · [`sdd/templates/README.md`](../sdd/templates/README.md) (specs y fases)
 
 ## Rutas canónicas
 

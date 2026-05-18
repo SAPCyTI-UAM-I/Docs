@@ -25,6 +25,8 @@ Guía paso a paso para integrantes nuevos del equipo (estudiantes, arquitectos, 
 - Índice general: [`../README.md`](../README.md)
 - Protocolo LLM: [`../AGENTS.md`](../AGENTS.md)
 - Rutas de archivos: [`../CANONICAL.md`](../CANONICAL.md)
+- Plantillas SDD: [`../sdd/templates/README.md`](../sdd/templates/README.md)
+- Plantillas operativas: [`../implementation/templates/README.md`](../implementation/templates/README.md)
 
 ## Qué NO cargar desde aquí
 

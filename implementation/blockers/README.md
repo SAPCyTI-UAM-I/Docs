@@ -1,6 +1,6 @@
 # Blockers — SAPCyTI
 
-Un archivo por blocker: `B-NNN-descripcion-corta.md`.
+Un archivo por blocker: `B-NNN-descripcion-corta.md`. Plantilla: [`../templates/BLOCKER-TEMPLATE.md`](../templates/BLOCKER-TEMPLATE.md).
 
 | ID | Archivo | Estado |
 |----|---------|--------|

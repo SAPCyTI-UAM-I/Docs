@@ -23,8 +23,9 @@
 
 ## Al cerrar tu sesión (antes del PR)
 
-- [ ] **Crear** `implementation/sessions/YYYY-MM-DD-tuNombre.md` ([plantilla](../implementation/templates/SESSION-TEMPLATE.md))
-- [ ] Decisiones nuevas → **crear** `implementation/decisions/D-NNN-slug.md` ([plantilla](../implementation/templates/DECISION-TEMPLATE.md))
+- [ ] **Crear** `implementation/sessions/YYYY-MM-DD-tema.md` — [`SESSION-TEMPLATE`](../implementation/templates/SESSION-TEMPLATE.md) ([`implementation/templates/`](../implementation/templates/README.md))
+- [ ] Decisiones nuevas → `implementation/decisions/D-NNN-slug.md` — [`DECISION-TEMPLATE`](../implementation/templates/DECISION-TEMPLATE.md)
+- [ ] Si hay impedimento → `implementation/blockers/B-NNN-slug.md` — [`BLOCKER-TEMPLATE`](../implementation/templates/BLOCKER-TEMPLATE.md)
 
 ## Después del merge
 
@@ -36,3 +37,5 @@
 
 - Convenciones código: `.cursor/rules/sapcyti.mdc`
 - Revisión: skill `review-code` + spec + `technologies/testing.md`
+- Plantillas SDD (spec, fase): [`sdd/templates/README.md`](../sdd/templates/README.md)
+- Plantillas operativas (sesión, decisión, blocker): [`implementation/templates/README.md`](../implementation/templates/README.md)

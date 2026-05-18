@@ -4,7 +4,7 @@
 
 This document is the **central index** for the implementation plan. Per-phase task detail and checkboxes live in separate `phaseX.md` files. Each task in those files references a **Spec** from [`sdd/specs/`](../sdd/specs/).
 
-The [`progress.md`](progress.md) file is the **project memory**: decisions, blockers, conventions, and session notes — no task tracking.
+The [`progress.md`](../../implementation/progress.md) file is the **dashboard** (global status only). Decisions → [`implementation/decisions/`](../../implementation/decisions/README.md); sessions → [`implementation/sessions/`](../../implementation/sessions/README.md); blockers → [`implementation/blockers/`](../../implementation/blockers/README.md). Task tracking lives in `phaseX.md`.
 
 ---
 
@@ -89,11 +89,12 @@ graph LR
 |------|----------|---------|------|
 | 1 | [`sdd/theory/SDD-theory.md`](../theory/SDD-theory.md) | Entender cómo trabajamos | 15 min |
 | 2 | This file (`implementationPlan.md`) | Visión general de fases y stack | 10 min |
-| 3 | [`progress.md`](progress.md) → Active Conventions | Reglas obligatorias de código | 10 min |
-| 4 | [`technologies/{area}.md`](../technologies/) | Stack del área que vas a trabajar | 10 min |
-| 5 | [`SPEC_INDEX.md`](../sdd/SPEC_INDEX.md) | Ubicar la spec asignada | 5 min |
-| 6 | La spec específica `SPEC-XXX.md` | Contrato técnico a implementar | 15 min |
-| 7 | [`Architecture.md`](../design/Architecture.md) — solo las secciones referenciadas | Contexto arquitectónico | 10 min |
+| 3 | [`progress.md`](progress.md) | Fase actual (dashboard) | 5 min |
+| 3b | [`technologies/{area}.md`](../technologies/) + [`.cursor/rules/sapcyti.mdc`](../../.cursor/rules/sapcyti.mdc) | Convenciones de código | 10 min |
+| 4 | [`SPEC_INDEX.md`](../sdd/SPEC_INDEX.md) | Ubicar la spec asignada | 5 min |
+| 5 | La spec específica `SPEC-XXX.md` | Contrato técnico a implementar | 15 min |
+| 6 | [`Architecture.md`](../design/Architecture.md) — solo secciones referenciadas en la spec | Contexto arquitectónico | 10 min |
+| 7 | [`onboarding/05-trabajo-en-equipo.md`](../onboarding/05-trabajo-en-equipo.md) | Sesiones/decisiones por archivo (equipo ≥2) | 5 min |
 
 **Total onboarding:** ~75 min hasta ser productivo.
 
@@ -115,7 +116,7 @@ graph LR
 | {N} | {count} | {count} | {status} |
 
 ### Reference Documents
-- Spec templates: [`sdd/templates/`](../sdd/templates/)
+- Plantillas (índice): [`sdd/templates/README.md`](../sdd/templates/README.md)
 - Spec index: [`sdd/SPEC_INDEX.md`](../sdd/SPEC_INDEX.md)
 - SDD theory: [`sdd/theory/SDD-theory.md`](../theory/SDD-theory.md)
-- Technical debt: [`progress.md` → Technical Debt Registry](progress.md)
+- Technical debt: `TECH_DEBT.md` en cada repo de código (`sapcyti-api`, `sapcyti-spa`)

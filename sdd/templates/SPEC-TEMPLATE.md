@@ -61,6 +61,9 @@ Máximo 3-4 oraciones.}
 | `infrastructure/adapter/out` | `{Clase}JpaAdapter.java` | CREATE | {breve nota} |
 | `db/migration` | `V{N}__{description}.sql` | CREATE | {breve nota} |
 
+> **Archivos a crear/modificar:** listar aquí (tabla *Affected Layers*) y/o rutas completas en §4 *Technical Design*.  
+> Las specs de iteración 1 usan este esquema de **12 secciones** (sin sección Files separada).
+
 ### Package Location
 
 ```text
@@ -95,21 +98,9 @@ invariantes, o decisiones que aplican a esta spec. Incluir la sección de origen
 
 ---
 
-## 4. Files to Create/Modify
+## 4. Technical Design
 
-| Path | Action | Notes |
-|------|--------|-------|
-| `sapcyti-api/src/main/java/mx/uam/sapcyti/{modulo}/domain/model/{Clase}.java` | CREATE | |
-| `sapcyti-api/src/main/java/mx/uam/sapcyti/{modulo}/domain/port/out/{Interface}Port.java` | CREATE | |
-| `sapcyti-api/src/main/resources/db/migration/V{N}__{description}.sql` | CREATE | |
-
-> Lista exhaustiva de rutas relativas al repo `sapcyti-api` o `sapcyti-spa`. El implementador no debe crear archivos fuera de esta tabla.
-
----
-
-## 5. Technical Design
-
-### 5.1 Domain Model
+### 4.1 Domain Model
 
 > **Source of truth:** Field names, types, and constraints MUST match the definitions in
 > [`{bc-name}.schema.json`](../domain/schemas/{bc-name}.schema.json). Do NOT invent fields — derive them from the schema.
@@ -128,7 +119,7 @@ public class {Clase} {
 - {Invariante 1 — e.g., "`name` must not be blank, max 200 characters"}
 - {Invariante 2}
 
-### 5.2 Port Contracts
+### 4.2 Port Contracts
 
 ```java
 // {referencia a capa: domain/port/in o domain/port/out}
@@ -137,12 +128,12 @@ public interface {Nombre}Port {
 }
 ```
 
-### 5.3 Infrastructure
+### 4.3 Infrastructure
 
 {MapStruct mappers (DTO ↔ Domain), Flyway migrations, repository adapters, etc.
 Referencia a convenciones en [technologies/backend.md](../../technologies/backend.md)}
 
-### 5.4 API Contract (si aplica)
+### 4.4 API Contract (si aplica)
 
 ```
 {METHOD} /api/{recurso}/{id}
@@ -154,13 +145,13 @@ Response 4XX: { "error": "...", "message": "..." }
 
 > **Referencia:** Formato de error definido en `GlobalExceptionHandler` — Phase 3
 
-### 5.5 Frontend Contract (si aplica)
+### 4.5 Frontend Contract (si aplica)
 
 {Angular component, service, routing — referencia a [technologies/frontend.md](../../technologies/frontend.md)}
 
 ---
 
-## 6. Security Considerations
+## 5. Security Considerations
 
 > Evaluar si esta spec tiene implicaciones de seguridad. Referencia: [CWE Top 25](https://cwe.mitre.org/top25/), QA-1, QA-2.
 > Si no aplica, escribir "No security impact" y justificar brevemente.
@@ -176,7 +167,7 @@ Response 4XX: { "error": "...", "message": "..." }
 
 ---
 
-## 7. Edge Cases & Error Handling
+## 6. Edge Cases & Error Handling
 
 > **Source:** Derive edge cases from the `@BadPath` and error flow scenarios in
 > [`domain/features/{bc-name}/`](../domain/features/{bc-name}/). Each error scenario in a `.feature` file
@@ -189,7 +180,7 @@ Response 4XX: { "error": "...", "message": "..." }
 
 ---
 
-## 8. Performance & Scalability Notes
+## 7. Performance & Scalability Notes
 
 > Si no aplica, escribir "No performance concerns" y justificar.
 
@@ -200,7 +191,7 @@ Response 4XX: { "error": "...", "message": "..." }
 
 ---
 
-## 9. Migration & Rollback Strategy
+## 8. Migration & Rollback Strategy
 
 > Qué pasa si hay que revertir este cambio después de desplegado.
 
@@ -210,7 +201,7 @@ Response 4XX: { "error": "...", "message": "..." }
 
 ---
 
-## 10. Testing Strategy
+## 9. Testing Strategy
 
 | Test Type | Class | Scope | Framework |
 |-----------|-------|-------|-----------|
@@ -223,7 +214,7 @@ Response 4XX: { "error": "...", "message": "..." }
 
 ---
 
-## 11. Conventions Checklist
+## 10. Conventions Checklist
 
 - [ ] Domain model uses JPA annotations directly (no separate Entity class)
 - [ ] MapStruct mapper is compile-time, for DTO ↔ Domain mapping only
@@ -235,11 +226,11 @@ Response 4XX: { "error": "...", "message": "..." }
 - [ ] Tests follow naming: `{Class}Test` (unit), `{Class}IT` (integration)
 - [ ] Tenant scoping applied where required (QA-4)
 
-> **Referencia completa de convenciones:** [`progress.md` → Active Conventions](../../implementation/progress.md)
+> **Convenciones:** [`technologies/backend.md`](../../technologies/backend.md) | [`technologies/frontend.md`](../../technologies/frontend.md) | [`.cursor/rules/sapcyti.mdc`](../../.cursor/rules/sapcyti.mdc)
 
 ---
 
-## 12. References
+## 11. References
 
 - **Architecture:** [`Architecture.md §{N}`](../../design/Architecture.md) — {sección relevante}
 - **Context Map:** [`ContextMap.md`](../domain/ContextMap.md) — {BC section and relevant relationships}
@@ -253,10 +244,10 @@ Response 4XX: { "error": "...", "message": "..." }
 
 ---
 
-## 13. Review Log
+## 12. Review Log
 
 | Date | Reviewer | Action | Notes |
 |------|----------|--------|-------|
 | {YYYY-MM-DD} | {nombre} | 🔲→🔵 Approved | {comentarios o "No issues"} |
-| {YYYY-MM-DD} | {nombre} | 🔵→🔄 Amended | {razón del cambio — registrar también en [progress.md](../../implementation/progress.md)} |
+| {YYYY-MM-DD} | {nombre} | 🔵→🔄 Amended | {razón — si hay decisión durable, crear [D-{NNN}](../../implementation/decisions/D-{NNN}-slug.md)} |
 | {YYYY-MM-DD} | {nombre} | 🔄→🔵 Re-approved | {confirmación} |

@@ -58,5 +58,22 @@ Acordar en el equipo quién es dueño de cada `phase6.md`, `phase4.md`, etc.
 
 ## Plantillas
 
-- Sesión: [`implementation/templates/SESSION-TEMPLATE.md`](../implementation/templates/SESSION-TEMPLATE.md)
-- Decisión: [`implementation/templates/DECISION-TEMPLATE.md`](../implementation/templates/DECISION-TEMPLATE.md)
+> **Índice maestro:** [`sdd/templates/README.md`](../sdd/templates/README.md) · **Operativas:** [`implementation/templates/README.md`](../implementation/templates/README.md)
+
+### `implementation/templates/` (esta guía — evitar conflictos)
+
+| Plantilla | Destino |
+|-----------|---------|
+| [SESSION-TEMPLATE.md](../implementation/templates/SESSION-TEMPLATE.md) | `sessions/YYYY-MM-DD-tema.md` |
+| [DECISION-TEMPLATE.md](../implementation/templates/DECISION-TEMPLATE.md) | `decisions/D-{NNN}-slug.md` |
+| [BLOCKER-TEMPLATE.md](../implementation/templates/BLOCKER-TEMPLATE.md) | `blockers/B-{NNN}-slug.md` |
+
+### `sdd/templates/` (specs y fases — ver también [`01-como-trabajamos.md`](01-como-trabajamos.md))
+
+| Plantilla | Destino |
+|-----------|---------|
+| [SPEC-TEMPLATE.md](../sdd/templates/SPEC-TEMPLATE.md) | `sdd/specs/iteration-{N}/SPEC-{NNN}_….md` |
+| [PHASE-TEMPLATE.md](../sdd/templates/PHASE-TEMPLATE.md) | `implementation/phaseX.md` |
+| [PROGRESS-TEMPLATE.md](../sdd/templates/PROGRESS-TEMPLATE.md) | `progress.md` (coordinador) |
+| [DOMAIN-BC-TEMPLATE.md](../sdd/templates/DOMAIN-BC-TEMPLATE.md) | `sdd/domain/` |
+| [IMPLEMENTATION-PLAN-TEMPLATE.md](../sdd/templates/IMPLEMENTATION-PLAN-TEMPLATE.md) | `implementationPlan.md` |

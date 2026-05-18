@@ -22,7 +22,9 @@
 | Teoría SDD | [`sdd/theory/SDD-theory.md`](sdd/theory/SDD-theory.md) | |
 | Índice de specs | [`sdd/SPEC_INDEX.md`](sdd/SPEC_INDEX.md) | |
 | Specs de implementación | [`sdd/specs/`](sdd/specs/) | |
+| Índice de plantillas | [`sdd/templates/README.md`](sdd/templates/README.md) | Spec, phase, sesión, decisión, BC, blocker |
 | Plantillas SDD | [`sdd/templates/`](sdd/templates/) | |
+| Plantillas operativas | [`implementation/templates/`](implementation/templates/) | Sesión, decisión, blocker |
 | Guía operativa SDD | [`sdd/README.md`](sdd/README.md) | |
 | Plan de implementación | [`implementation/implementationPlan.md`](implementation/implementationPlan.md) | Vista macro |
 | Dashboard operativo | [`implementation/progress.md`](implementation/progress.md) | Estado global, fase actual |

@@ -15,7 +15,7 @@
 
 ## Plantilla
 
-[`../templates/SESSION-TEMPLATE.md`](../templates/SESSION-TEMPLATE.md)
+[`../templates/SESSION-TEMPLATE.md`](../templates/SESSION-TEMPLATE.md) — índice completo: [`sdd/templates/README.md`](../../sdd/templates/README.md)
 
 ## Reglas
 

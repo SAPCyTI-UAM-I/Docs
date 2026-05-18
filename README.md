@@ -8,6 +8,8 @@
 | [`CANONICAL.md`](CANONICAL.md) | Rutas canónicas y deprecadas |
 | [`onboarding/`](onboarding/) | Guía para integrantes nuevos |
 | [`MERGE-GUIDE.md`](MERGE-GUIDE.md) | Guía para revisores del PR de reorganización |
+| [`sdd/templates/README.md`](sdd/templates/README.md) | Índice maestro de plantillas (spec, fase, plan, BC) |
+| [`implementation/templates/README.md`](implementation/templates/README.md) | Plantillas operativas (sesión, decisión, blocker) |
 
 ---
 
@@ -66,7 +68,7 @@
 | [`sdd/theory/SDD-theory.md`](sdd/theory/SDD-theory.md) | Teoría y reglas de SDD para el proyecto |
 | [`sdd/README.md`](sdd/README.md) | Guía operativa: cómo crear y usar specs |
 | [`sdd/SPEC_INDEX.md`](sdd/SPEC_INDEX.md) | Índice maestro de specs |
-| [`sdd/templates/`](sdd/templates/) | Plantillas: SPEC, PHASE, PROGRESS, IMPLEMENTATION-PLAN |
+| [`sdd/templates/README.md`](sdd/templates/README.md) | Índice de plantillas (SPEC, PHASE, sesión, decisión, BC, blocker) |
 
 ## Herramientas y Contexto entre Agentes
 

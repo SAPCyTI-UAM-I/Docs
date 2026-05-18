@@ -1,12 +1,17 @@
-# Phase {N} — {Nombre del Phase}
+# Phase {N}{sub?} — {Nombre del Phase}
 
 > **ADD Iteration:** {N}
 > **Drivers:** {lista de drivers — referencia a [ArchitecturalDrivers.md](../../design/ArchitecturalDrivers.md)}
-> **Status:** 🔲 Not started | 🔵 In progress | ✅ Completed
+> **Status:** 🔲 Not started | 🔵 In progress | ✅ Completed | ✅ Complete
 
 **Goal:** {Objetivo del phase en una oración}
 
+> **Sub-fase:** opcional — ej. `4A` scaffold, `4` core (`phase4a.md` vs `phase4.md`).
 > **Environment:** {Cómo se ejecuta — e.g., "Backend contra PostgreSQL de docker-compose.dev.yml"}
+
+### User Stories (HU) — opcional
+
+> **No user stories apply directly to this phase.** {Motivo — ej. scaffolding, BC supporting sub-domain.}
 
 ## Domain Artifacts (obligatorio si el phase toca un BC)
 

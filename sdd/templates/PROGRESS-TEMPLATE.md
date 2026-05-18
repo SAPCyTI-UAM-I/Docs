@@ -42,6 +42,24 @@
 
 ---
 
+## Pending Manual Tasks (opcional)
+
+> Tareas fuera del código (GitHub, secrets, entorno). Solo coordinador.
+
+| Task | Action Required |
+|------|-----------------|
+| ❌ T0.x.x | {descripción} |
+
+---
+
+## Future Iterations (opcional)
+
+| Iteration | Goal | Drivers |
+|-----------|------|---------|
+| **{N}** | {goal} | {drivers} |
+
+---
+
 ## Índices
 
 | Tipo | Índice |

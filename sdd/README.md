@@ -25,11 +25,13 @@ SDD/
 ├── SPEC_INDEX.md                     ← Índice maestro de todas las specs
 ├── theory/
 │   └── SDD-theory.md                ← Fundamentos teóricos y pipeline SDD
-├── templates/                        ← Plantillas para crear nuevos artefactos
+├── templates/                        ← Plantillas (índice: templates/README.md)
+│   ├── README.md                     ← Índice maestro de todas las plantillas
 │   ├── SPEC-TEMPLATE.md
 │   ├── PHASE-TEMPLATE.md
 │   ├── PROGRESS-TEMPLATE.md
-│   └── IMPLEMENTATION-PLAN-TEMPLATE.md
+│   ├── IMPLEMENTATION-PLAN-TEMPLATE.md
+│   └── DOMAIN-BC-TEMPLATE.md
 ├── technologies/                     ← Stack técnico de referencia
 │   ├── backend.md
 │   ├── frontend.md
@@ -66,12 +68,14 @@ SDD/
 ### Crear una nueva Spec de implementación
 
 1. Verifica que los artefactos de dominio (Context Map, Schema, Features) existan en `domain/`
-2. Copia `templates/SPEC-TEMPLATE.md` a `specs/iteration-{N}/SPEC-{NNN}_{nombre}.md`
+2. Copia [`templates/SPEC-TEMPLATE.md`](templates/SPEC-TEMPLATE.md) a `specs/iteration-{N}/SPEC-{NNN}_{nombre}.md` (ver [`templates/README.md`](templates/README.md))
 3. Llena todas las secciones — **referencia, no dupliques**
 4. Agrega la spec al `SPEC_INDEX.md`
 5. Vincula la spec desde el `phaseX.md` correspondiente
 
 ### Crear especificaciones de dominio para un nuevo BC
+
+Usar checklist [`templates/DOMAIN-BC-TEMPLATE.md`](templates/DOMAIN-BC-TEMPLATE.md):
 
 1. Actualizar `domain/ContextMap.md` con el nuevo BC y relaciones
 2. Crear `domain/schemas/{bc-name}.schema.json` con aggregates y commands
@@ -85,6 +89,15 @@ SDD/
                 ↓
             ⛔ Blocked | 🔄 Amended
 ```
+
+### Plantillas
+
+| Carpeta | Contenido | Índice |
+|---------|-----------|--------|
+| `sdd/templates/` | SPEC, PHASE, PLAN, PROGRESS, DOMAIN-BC | [`templates/README.md`](templates/README.md) |
+| `implementation/templates/` | SESSION, DECISION, BLOCKER | [`../implementation/templates/README.md`](../implementation/templates/README.md) |
+
+Guía resumida: [`onboarding/01-como-trabajamos.md`](../onboarding/01-como-trabajamos.md) § Plantillas.
 
 ### Documentos relacionados
 

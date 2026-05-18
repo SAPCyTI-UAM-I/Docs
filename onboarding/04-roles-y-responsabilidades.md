@@ -3,9 +3,9 @@
 ## Arquitecto
 
 - Mantiene `design/Architecture.md`, `IterationPlan.md`, `ArchitecturalDrivers.md`
-- Descompone fases en `phaseX.md` y redacta o aprueba specs
+- Descompone fases en `phaseX.md` ([`PHASE-TEMPLATE`](../sdd/templates/PHASE-TEMPLATE.md)) y redacta o aprueba specs ([`SPEC-TEMPLATE`](../sdd/templates/SPEC-TEMPLATE.md))
 - Aprueba specs (🔲 → 🔵); para BC nuevos: arquitecto + peer review
-- Actualiza artefactos `sdd/domain/` al definir nuevos bounded contexts
+- Actualiza artefactos `sdd/domain/` al definir nuevos bounded contexts ([`DOMAIN-BC-TEMPLATE`](../sdd/templates/DOMAIN-BC-TEMPLATE.md))
 
 ## Implementador (estudiante o LLM)
 
@@ -30,3 +30,4 @@
 - Sigue [`AGENTS.md`](../AGENTS.md) y skills en `.cursor/skills/`
 - Proyecto Engram `sapcyti` para código; `plan-sdd-arc` para este repo Docs
 - No sustituye `implementation/decisions/` para decisiones duraderas ni `progress.md` para el dashboard global
+- Plantillas: [`sdd/templates/README.md`](../sdd/templates/README.md) y [`implementation/templates/README.md`](../implementation/templates/README.md)

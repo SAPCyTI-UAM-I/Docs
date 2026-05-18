@@ -81,3 +81,4 @@ Confirmar proyecto con el usuario al inicio de sesión si hay duda.
 - [Teoría SDD](sdd/theory/SDD-theory.md)
 - [Índice de specs](sdd/SPEC_INDEX.md)
 - [Onboarding](onboarding/README.md)
+- [Plantillas SDD](sdd/templates/README.md) · [Plantillas operativas](implementation/templates/README.md)

@@ -11,11 +11,12 @@ Docs/
 ├── design/              ← ADD, arquitectura, drivers
 ├── technologies/        ← Stack backend, frontend, testing, devops
 ├── implementation/      ← Plan, dashboard, phaseX, sessions/, decisions/
+│   └── templates/       ← Plantillas: sesión, decisión, blocker
 └── sdd/
     ├── theory/          ← Teoría SDD
     ├── domain/          ← DDD: Context Map, schemas, Gherkin
     ├── specs/           ← Specs de implementación
-    └── templates/
+    └── templates/       ← Plantillas: spec, fase, plan, dominio BC
 ```
 
 ## Qué pregunta responde cada carpeta
@@ -30,6 +31,8 @@ Docs/
 | `sdd/domain/` | ¿Cuáles son los bounded contexts y contratos de datos? |
 | `sdd/specs/` | ¿Qué implementar exactamente en código? |
 | `.cursor/` | Reglas y skills para agentes Cursor |
+| `sdd/templates/` | Plantillas de spec, fase, plan, BC — [índice](../sdd/templates/README.md) |
+| `implementation/templates/` | Plantillas de sesión, decisión, blocker — [índice](../implementation/templates/README.md) |
 
 ## Siguiente paso
 

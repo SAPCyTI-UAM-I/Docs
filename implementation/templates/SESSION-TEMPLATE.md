@@ -1,8 +1,16 @@
-# Sesión — {YYYY-MM-DD} — {Nombre integrante}
+---
+date: {YYYY-MM-DD}
+topic: {tema corto — ej. Phase 4 core, SPEC-008B}
+author: {nombre}
+phase: {N}
+spec: SPEC-{NNN}
+repos: [sapcyti-api, sapcyti-spa, Docs]
+---
 
-> **Autor:** {nombre}
-> **Fase / Spec:** Phase {N} | [SPEC-{NNN}](../sdd/specs/iteration-{X}/SPEC-{NNN}_{nombre}.md)
-> **Repos tocados:** `sapcyti-api` | `sapcyti-spa` | `Docs`
+# Sesión — {YYYY-MM-DD} ({tema})
+
+> Convención de archivo: `sessions/YYYY-MM-DD-{tema}.md` (minúsculas, sin espacios).  
+> Índice: [`sessions/README.md`](../sessions/README.md)
 
 ## Qué hice
 
@@ -12,19 +20,20 @@
 ## Verificaciones
 
 - [ ] Build / tests locales OK
-- [ ] Spec AC cumplidos (listar IDs si aplica)
+- [ ] Acceptance Criteria de la spec cumplidos (listar AC-1, AC-2… si aplica)
 
 ## Decisiones nuevas
 
-- {ninguna | crear `decisions/D-0xx-*.md` y enlazar aquí}
+- {ninguna | enlazar `decisions/D-0xx-slug.md` creados en esta sesión}
 
 ## Próximo paso
 
-- {qué sigue para ti o para el equipo}
+- {qué sigue para ti o el equipo}
 
 ## Notas para el coordinador
 
-> Solo si el merge a `develop` debe actualizar `progress.md` o `SPEC_INDEX`.
+> Opcional — solo si tras merge a `develop` hay que actualizar dashboard o índice.
 
-- Actualizar estado de spec: {SPEC-NNN → ✅}
-- Actualizar checkbox en: `phaseX.md` T{x}.{y}
+- Actualizar `progress.md` § General Status / Current Phase: {sí/no}
+- Actualizar `sdd/SPEC_INDEX.md`: {SPEC-NNN → ✅}
+- Checkboxes en: `phaseX.md` T{x}.{y}
