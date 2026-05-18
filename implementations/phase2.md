@@ -2,7 +2,7 @@
 
 > **ADD Iteration:** 1
 > **Drivers:** QA-3 (parameterization without code changes), QA-4 (multi-graduate program support)
-> **Status:** 🔲 Not started
+> **Status:** ✅ Completed
 
 **Goal:** Implement the GraduateProgram aggregate root and ConfigurationParameter value object with JPA persistence, Flyway migrations, and repository adapters.
 
@@ -16,43 +16,43 @@
 
 ---
 
-## A2.1 — GraduateProgram Aggregate Root 🔲
+## A2.1 — GraduateProgram Aggregate Root ✅
 
-> Specs: SPEC-004 (TBD — GraduateProgram domain model and persistence)
+> Specs: [SPEC-004](../SDD/specs/iteration-1/SPEC-004_graduate-program-domain-persistence.md) — GraduateProgram domain model and persistence
 
-- [ ] **T2.1.1** Create `GraduateProgram.java` — `@Entity`, fields from `program-configuration.schema.json#/definitions/GraduateProgram`: `id`, `name`, `division`; invariants: name not blank max 200, division not blank → SPEC-004
-- [ ] **T2.1.2** Create `GraduateProgramRepositoryPort.java` — output port interface in `domain/port/out/` → SPEC-004
-- [ ] **T2.1.3** Create `GraduateProgramJpaAdapter.java` — implements repository port; `@Repository`; queries scoped by tenant where applicable → SPEC-004
-- [ ] **T2.1.4** Create Flyway migration `V1__create_graduate_programs.sql` → SPEC-004
+- [x] **T2.1.1** Create `GraduateProgram.java` — `@Entity`, fields from `program-configuration.schema.json#/definitions/GraduateProgram`: `id`, `name`, `division`; invariants: name not blank max 200, division not blank → SPEC-004
+- [x] **T2.1.2** Create `GraduateProgramRepositoryPort.java` — output port interface in `domain/port/out/` → SPEC-004
+- [x] **T2.1.3** Create `GraduateProgramJpaAdapter.java` — implements repository port; `@Repository`; queries scoped by tenant where applicable → SPEC-004
+- [x] **T2.1.4** Create Flyway migration `V1__create_graduate_programs.sql` → SPEC-004
 
-## A2.2 — ConfigurationParameter Value Object 🔲
+## A2.2 — ConfigurationParameter Value Object ✅
 
-> Specs: SPEC-005 (TBD — ConfigurationParameter persistence and isolation)
+> Specs: [SPEC-005](../SDD/specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md) — ConfigurationParameter persistence and isolation
 
-- [ ] **T2.2.1** Create `ConfigurationParameter.java` — `@Embeddable` or `@Entity` composed by GraduateProgram; fields from schema: `key` (UPPER_SNAKE_CASE), `value`, `description` → SPEC-005
-- [ ] **T2.2.2** Create `ConfigurationParameterRepositoryPort.java` — output port for parameter CRUD scoped by `graduateProgramId` → SPEC-005
-- [ ] **T2.2.3** Create `ConfigurationParameterJpaAdapter.java` — implements port → SPEC-005
-- [ ] **T2.2.4** Create Flyway migration `V2__create_configuration_parameters.sql` → SPEC-005
+- [x] **T2.2.1** Create `ConfigurationParameter.java` — `@Embeddable` or `@Entity` composed by GraduateProgram; fields from schema: `key` (UPPER_SNAKE_CASE), `value`, `description` → SPEC-005
+- [x] **T2.2.2** Create `ConfigurationParameterRepositoryPort.java` — output port for parameter CRUD scoped by `graduateProgramId` → SPEC-005
+- [x] **T2.2.3** Create `ConfigurationParameterJpaAdapter.java` — implements port → SPEC-005
+- [x] **T2.2.4** Create Flyway migration `V2__create_configuration_parameters.sql` → SPEC-005
 
 ---
 
 ## Deliverables
 
-- [ ] **E2.1** GraduateProgram entity persists and retrieves from PostgreSQL — Specs: SPEC-004
-- [ ] **E2.2** ConfigurationParameter CRUD works scoped by `graduateProgramId` — Specs: SPEC-005
-- [ ] **E2.3** Flyway migrations run clean on empty database — Specs: SPEC-004, SPEC-005
-- [ ] **E2.4** Multi-tenant isolation: parameters from program 1 never visible to program 2 — Specs: SPEC-005
+- [x] **E2.1** GraduateProgram entity persists and retrieves from PostgreSQL — Specs: [SPEC-004](../SDD/specs/iteration-1/SPEC-004_graduate-program-domain-persistence.md)
+- [x] **E2.2** ConfigurationParameter CRUD works scoped by `graduateProgramId` — Specs: [SPEC-005](../SDD/specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md)
+- [x] **E2.3** Flyway migrations run clean on empty database — Specs: [SPEC-004](../SDD/specs/iteration-1/SPEC-004_graduate-program-domain-persistence.md), [SPEC-005](../SDD/specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md)
+- [x] **E2.4** Multi-tenant isolation: parameters from program 1 never visible to program 2 — Specs: [SPEC-005](../SDD/specs/iteration-1/SPEC-005_configuration-parameter-persistence-isolation.md)
 
 ---
 
 ## Transition Criteria
 
-- [ ] `mvn clean verify` passes with ≥80% coverage on new code
-- [ ] GraduateProgram CRUD verified via repository adapter tests (`@DataJpaTest`)
-- [ ] Parameter isolation test: 2 programs with different MAX_COURSES_PER_TERM values return correct results
-- [ ] Flyway migrations run on empty DB without errors
-- [ ] All linked specs are ✅ Implemented
-- [ ] No regressions from Phase 1
+- [x] `mvn clean verify` passes with ≥80% coverage on new code
+- [x] GraduateProgram CRUD verified via repository adapter tests (`@DataJpaTest`)
+- [x] Parameter isolation test: 2 programs with different MAX_COURSES_PER_TERM values return correct results
+- [x] Flyway migrations run on empty DB without errors
+- [x] All linked specs are ✅ Implemented
+- [x] No regressions from Phase 1
 
 ---
 

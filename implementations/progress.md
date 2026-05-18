@@ -9,11 +9,10 @@
 | Phase | Status | Progress | Last Updated |
 |-------|--------|----------|--------------|
 | 0 — Project setup | 🔵 In progress | 34/40 tasks (6 manual) | 2026-04-19 |
-| 1 — Backend init | ✅ Completed | 10/10 tasks | 2026-04-24 |
-| 2 — Domain model | 🔲 Not started | 0/10 tasks | — |
-| 3 — REST API | 🔲 Not started | 0/12 tasks | — |
-| 4A — SPA scaffold | ✅ Completed | 8/8 tasks | 2026-05-12 |
-| 4 — SPA core arch | 🔲 Not started | 0/? tasks | — |
+| 1 — Backend init | ✅ Completed | 17/17 checklist items | 2026-05-12 |
+| 2 — Domain model | ✅ Completed | 10/10 tasks | 2026-05-17 |
+| 3 — REST API | ✅ Completed | 12/12 tasks | 2026-05-17 |
+| 4 — SPA init | 🔲 Not started | 0/16 tasks | — |
 | 5 — Integration | 🔲 Not started | 0/17 tasks | — |
 
 **Legend:** 🔲 Not started | 🔵 In progress | ✅ Completed | ⛔ Blocked
@@ -25,6 +24,9 @@
 **Phase:** 4A — SPA Scaffold & Tooling ✅ COMPLETED  
 **Next phase:** 4 — SPA Core Architecture (SPEC-008B)  
 **Next step:** Begin [`phase4.md`](phase4.md) — SPEC-008B (Core Providers, Shell, i18n)
+**Phase:** 3 — Program Configuration REST API ✅ COMPLETED  
+**Next phase:** 4 — SPA initialization  
+**Next step:** Begin [`phase4.md`](phase4.md) — Angular project and shell layout
 
 ### Pending Manual Tasks (Phase 0)
 
@@ -57,6 +59,9 @@
 | D-011 | 2026-05-12 | `eslint.config.mjs` (extensión `.mjs`) en lugar de `.js` | `commitlint.config.js` usa CJS; agregar `"type":"module"` al `package.json` lo rompería; `.mjs` fuerza ESM por archivo sin afectar el resto | Agregar `"type":"module"` al `package.json` |
 | D-012 | 2026-05-12 | Vitest vía `@angular/build:unit-test` (integración nativa Angular 21) | Angular 21 incluye soporte Vitest nativo; `@analogjs/vitest-angular` no es necesario y genera conflictos de módulos ESM | `@analogjs/vitest-angular` |
 | D-013 | 2026-05-12 | PostCSS configurado en `.postcssrc.json` en lugar de `postcss.config.js` | Formato JSON equivalente, ya existía en el proyecto; sin impacto funcional | `postcss.config.js` (especificado en SPEC-008A) |
+| D-010 | 2026-05-12 | Dev PostgreSQL published on host **port 5433** (`docker-compose.dev.yml`); default `DB_URL` uses `localhost:5433` | Another PostgreSQL on Windows often owns **5432**, causing authentication failures when the app connected to the wrong instance | Keep **5432** inside the container only; document override via `DB_URL` |
+| D-011 | 2026-05-17 | Phase 3: `MethodSecurityConfig` enables `@PreAuthorize` with `permitAll()` HTTP until Phase 6 | Full Spring Security deferred per `phase3.md` risk R-3.1 | Block all endpoints in Phase 6 |
+| D-012 | 2026-05-17 | JaCoCo excludes `*MapperImpl` (MapStruct generated) from coverage gate | Generated mapper bytecode is exercised via integration paths; unit tests mock mappers in `@WebMvcTest` | Add dedicated mapper integration tests if policy changes |
 
 ---
 
@@ -86,6 +91,22 @@
 - Phase dependencies defined: P0 → P1 → P2 → P3 → P5; P0 → P4 → P5
 - Technology stack confirmed: Spring Boot 3.x (Java 21) + Angular + PostgreSQL
 - Deployment strategy: local Docker first, on-premise server after Iteration 2
+
+### Session — 2026-05-17 (Phases 2–3 — BC-04 domain + REST API)
+
+- **Phase 2** verificada en `sapcyti-api` (entidades, puertos, adaptadores JPA, Flyway V1/V2, tests `@DataJpaTest`); `phase2.md` y SPEC-004/005 → **✅ Implemented**.
+- **Phase 3** implementada según SPEC-006/007: casos de uso, controladores REST, MapStruct, `GlobalExceptionHandler`, `MethodSecurityConfig`, excepciones de dominio.
+- Endpoints: `POST/GET/PUT /api/programs`, rutas anidadas `/api/programs/{id}/parameters`.
+- `mvn clean verify` ✅ (57 tests, cobertura ≥80% con exclusión `*MapperImpl`).
+- Decisiones D-011, D-012 registradas.
+
+### Session — 2026-05-12 (Phase 1 — Docs checklist + specs + local run)
+
+- Cerrado el checklist completo en [`phase1.md`](phase1.md) (A1.1–A1.3, entregables, criterios de transición); fase marcada **✅ Completed**.
+- [`SPEC_INDEX.md`](../SDD/SPEC_INDEX.md): **SPEC-001**, **SPEC-002**, **SPEC-003** → **✅ Implemented**; SPEC-004/005 siguen en borrador (Phase 2).
+- Cabeceras de SPEC-001–003 alineadas con estado **Implemented**.
+- Implementación y arranque local verificados en repo **`sapcyti-api`**: `mvn verify`, `spring-boot:run` con perfil `dev` y PostgreSQL vía Docker; decisión **D-010** (puerto host **5433**).
+- **README** de `sapcyti-api`: sección explícita *Run locally* (PowerShell, variables, health check).
 
 ### Session — 2026-04-24 (Phase 1 Implementation)
 
