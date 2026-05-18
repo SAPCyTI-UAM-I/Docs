@@ -1,7 +1,19 @@
 # SDD — Spec-Driven Development for SAPCyTI
 
-> **Propuesta fusionada.** Integra la estructura operativa SDD con los artefactos de dominio DDD.
-> Para la teoría y fundamentación ver [`theory/SDD-theory.md`](theory/SDD-theory.md).
+## Propósito
+
+Metodología operativa: dominio DDD, specs de implementación, plantillas e índice maestro.
+
+## Cuándo leer esto
+
+- Al crear o usar specs
+- Al entender el flujo dominio → código
+- Teoría detallada: [`theory/SDD-theory.md`](theory/SDD-theory.md)
+
+## Qué NO cargar al implementar
+
+- Este README completo si ya tienes la spec asignada
+- `theory/SDD-theory.md` durante implementación de código
 
 ---
 
