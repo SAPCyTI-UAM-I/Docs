@@ -87,7 +87,7 @@ graph LR
 
 | Step | Document | Purpose | Time |
 |------|----------|---------|------|
-| 1 | [`SDD-theory/SDD-theory.md`](../SDD-theory/SDD-theory.md) | Entender cómo trabajamos | 15 min |
+| 1 | [`SDD/theory/SDD-theory.md`](../theory/SDD-theory.md) | Entender cómo trabajamos | 15 min |
 | 2 | This file (`implementationPlan.md`) | Visión general de fases y stack | 10 min |
 | 3 | [`progress.md`](progress.md) → Active Conventions | Reglas obligatorias de código | 10 min |
 | 4 | [`technologies/{area}.md`](../SDD/technologies/) | Stack del área que vas a trabajar | 10 min |
@@ -117,5 +117,5 @@ graph LR
 ### Reference Documents
 - Spec templates: [`SDD/templates/`](../SDD/templates/)
 - Spec index: [`SDD/SPEC_INDEX.md`](../SDD/SPEC_INDEX.md)
-- SDD theory: [`SDD-theory/SDD-theory.md`](../SDD-theory/SDD-theory.md)
+- SDD theory: [`SDD/theory/SDD-theory.md`](../theory/SDD-theory.md)
 - Technical debt: [`progress.md` → Technical Debt Registry](progress.md)

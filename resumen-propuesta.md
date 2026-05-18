@@ -60,7 +60,7 @@ Para T2.1.1 se genera **SPEC-001** con: bounded context (Configuration), drivers
 - Diagramas ASCII reemplazados por listas y tablas.
 - Coordinador removido como actor técnico (es usuario del sistema).
 
-**Referencia completa:** [`SDD-theory/SDD-theory.md`](SDD-theory/SDD-theory.md)
+**Referencia completa:** [`SDD/theory/SDD-theory.md`](SDD/theory/SDD-theory.md)
 
 ---
 
@@ -162,7 +162,7 @@ Otros documentos se consultan solo cuando la tarea lo requiere, nunca preventiva
 - **write-spec** — Qué cargar y qué pasos seguir para redactar una spec nueva
 - **review-code** — Qué cargar y cómo revisar código contra una spec
 
-**Referencia:** [`SDD-theory/SDD-theory.md` §8](SDD-theory/SDD-theory.md) (Prompt Protocol actualizado)
+**Referencia:** [`SDD/theory/SDD-theory.md` §8](SDD/theory/SDD-theory.md) (Prompt Protocol actualizado)
 
 ---
 
@@ -192,7 +192,7 @@ A lo largo de las sesiones de planificación y diseño se generaron los siguient
 
 | Artefacto | Ubicación | Propósito |
 |-----------|-----------|-----------|
-| SDD-theory | [`SDD-theory/SDD-theory.md`](SDD-theory/SDD-theory.md) | Teoría y reglas de SDD (10 secciones) |
+| SDD-theory | [`SDD/theory/SDD-theory.md`](SDD/theory/SDD-theory.md) | Teoría y reglas de SDD (10 secciones) |
 | Banco de memoria | [`README.md`](README.md) | Índice general de toda la documentación |
 | Resumen de propuesta | [`resumen-propuesta.md`](resumen-propuesta.md) | Este documento — síntesis de decisiones y cambios |
 | Estructura propuesta | [`estructura-propuesta.md`](estructura-propuesta.md) | Reorganización de carpetas (pendiente de ejecutar) |

@@ -136,4 +136,4 @@
 - **Phase guides:** [`phase0.md`](phase0.md) … [`phase5.md`](phase5.md)
 - **Spec index:** [`SPEC_INDEX.md`](../SDD/SPEC_INDEX.md)
 - **Technologies:** [`SDD/technologies/`](../SDD/technologies/)
-- **SDD theory:** [`SDD-theory/SDD-theory.md`](../SDD-theory/SDD-theory.md)
+- **SDD theory:** [`SDD/theory/SDD-theory.md`](../theory/SDD-theory.md)

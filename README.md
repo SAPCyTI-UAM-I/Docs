@@ -2,6 +2,12 @@
 
 Índice de toda la documentación del proyecto. Estos documentos son la **base de conocimiento** que alimenta el desarrollo guiado por especificaciones (SDD).
 
+| Guía | Contenido |
+|------|-----------|
+| [`AGENTS.md`](AGENTS.md) | Protocolo de carga de contexto para LLM |
+| [`CANONICAL.md`](CANONICAL.md) | Rutas canónicas y deprecadas |
+| [`onboarding/`](onboarding/) | Guía para integrantes nuevos |
+
 ---
 
 ## Visión y Requerimientos
@@ -37,13 +43,24 @@
 |-----------|-----------|
 | [`implementations/implementationPlan.md`](implementations/implementationPlan.md) | Fases, dependencias, criterios de transición |
 | [`implementations/progress.md`](implementations/progress.md) | Estado actual, decisiones, blockers, sesiones |
-| [`implementations/phase0.md`](implementations/phase0.md) … [`phase5.md`](implementations/phase5.md) | Tareas por fase con links a specs |
+| [`implementations/phase0.md`](implementations/phase0.md) … [`phase9.md`](implementations/phase9.md) | Tareas por fase con links a specs (incl. [`phase4a.md`](implementations/phase4a.md)) |
+
+## Dominio DDD (machine-readable)
+
+| Documento | Contenido |
+|-----------|-----------|
+| [`SDD/domain/ContextMap.md`](SDD/domain/ContextMap.md) | Bounded Contexts y relaciones |
+| [`SDD/domain/schemas/`](SDD/domain/schemas/) | Contratos JSON Schema por BC |
+| [`SDD/domain/features/`](SDD/domain/features/) | Escenarios Gherkin por BC |
+| [`SDD/domain/Summary.md`](SDD/domain/Summary.md) | Resumen de sesión de especificación DDD |
+
+> **Nota:** La carpeta [`specifications/`](specifications/) está **deprecada** — usar `SDD/domain/`. Ver [`CANONICAL.md`](CANONICAL.md).
 
 ## SDD (Spec-Driven Development)
 
 | Documento | Contenido |
 |-----------|-----------|
-| [`SDD-theory/SDD-theory.md`](SDD-theory/SDD-theory.md) | Teoría y reglas de SDD para el proyecto |
+| [`SDD/theory/SDD-theory.md`](SDD/theory/SDD-theory.md) | Teoría y reglas de SDD para el proyecto |
 | [`SDD/README.md`](SDD/README.md) | Guía operativa: cómo crear y usar specs |
 | [`SDD/SPEC_INDEX.md`](SDD/SPEC_INDEX.md) | Índice maestro de specs |
 | [`SDD/templates/`](SDD/templates/) | Plantillas: SPEC, PHASE, PROGRESS, IMPLEMENTATION-PLAN |
@@ -74,6 +91,6 @@ Engram es un servidor MCP (Model Context Protocol) que provee memoria persistent
 
 **Estudiante nuevo:** Vision.md → este README → `progress.md` → `technologies/{área}.md` → la spec asignada
 
-**LLM (inicio de sesión):** `progress.md` → `technologies/{área}.md` → la spec a implementar → secciones referenciadas de `Architecture.md`
+**LLM (inicio de sesión):** [`AGENTS.md`](AGENTS.md) → `progress.md` → la spec a implementar (autocontenida)
 
-**Arquitecto:** `ArchitecturalDrivers.md` → `Architecture.md` → `IterationPlan.md` → `implementationPlan.md`
+**Arquitecto:** `ArchitecturalDrivers.md` → `Architecture.md` → `IterationPlan.md` → `SDD/domain/ContextMap.md` → `implementationPlan.md`
