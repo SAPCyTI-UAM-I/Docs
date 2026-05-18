@@ -1,5 +1,7 @@
 # Reporte de Ejecución - Análisis de Requerimientos y Restricciones (Agente)
 
+> **Fuentes externas:** Referencias a `Context/Junta-17-02-2026.md` y documentos en `Context/` — ver [`external-references.md`](../external-references.md).
+
 ## 1. Tiempos Estimados
 * **Tiempo de lectura e indexación del Entorno (FS):** ~30 segundos (Vistas previas de los documentos y listado exhaustivo).
 * **Tiempo de razonamiento cruzado inter-documental:** ~45-60 segundos (Interpretación de Minutas versus Visión versus grep-search a Historias de Usuario).

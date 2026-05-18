@@ -12,10 +12,17 @@
 | 1 — Backend init | ✅ Completed | 17/17 checklist items | 2026-05-12 |
 | 2 — Domain model | ✅ Completed | 10/10 tasks | 2026-05-17 |
 | 3 — REST API | ✅ Completed | 12/12 tasks | 2026-05-17 |
-| 4 — SPA init | 🔲 Not started | 0/16 tasks | — |
-| 5 — Integration | 🔲 Not started | 0/17 tasks | — |
+| 4A — SPA scaffold & tooling | ✅ Completed | SPEC-008A | 2026-05-12 |
+| 4 — SPA core (shell, i18n) | 🔲 Not started | 0/16 tasks — SPEC-008B Draft | — |
+| 5 — Integration & Docker | 🔲 Not started | 0/17 tasks | — |
+| 6 — Security & auth | 🔲 Not started | Planificado — [`phase6.md`](phase6.md) | — |
+| 7 — Entity management | 🔲 Not started | Planificado — [`phase7.md`](phase7.md) | — |
+| 8 — Academic offering & CSV | 🔲 Not started | Planificado — [`phase8.md`](phase8.md) | — |
+| 9 — Enrollment workflow | 🔲 Not started | Planificado — [`phase9.md`](phase9.md) | — |
 
 **Legend:** 🔲 Not started | 🔵 In progress | ✅ Completed | ⛔ Blocked
+
+> **Vista macro:** [`implementationPlan.md`](implementationPlan.md). Esta tabla es la fuente fina de estado por fase.
 
 ---
 
@@ -23,13 +30,14 @@
 
 **Phase:** 4A — SPA Scaffold & Tooling ✅ COMPLETED  
 **Next phase:** 4 — SPA Core Architecture (SPEC-008B)  
-**Next step:** Begin [`phase4.md`](phase4.md) — SPEC-008B (Core Providers, Shell, i18n)
+**Next step:** Aprobar e implementar [`SPEC-008B`](../sdd/specs/iteration-1/SPEC-008B_spa-core-providers-shell-i18n.md) — [`phase4.md`](phase4.md)
 
 ## Phase History
 
 | Phase | Completed | Notes |
 |-------|-----------|-------|
 | 3 — Program Configuration REST API | 2026-05-17 | SPEC-006, SPEC-007 |
+| 4A — SPA Scaffold & Tooling | 2026-05-12 | SPEC-008A |
 
 ### Pending Manual Tasks (Phase 0)
 

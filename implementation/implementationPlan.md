@@ -164,7 +164,7 @@ graph LR
 | R-003 | LLM hallucinates cross-module imports | Medio | Media | Spec Out of Scope + Conventions Checklist restrict scope; schema enforcement | Spec author |
 | R-004 | Domain model drift from JSON Schema | Alto | Media | SPEC-TEMPLATE §4.1 mandates "Source of truth: derive from schema" | Spec author |
 | R-005 | Feature scenarios not covered by tests | Alto | Media | Phase transition criterion: "Feature coverage" must be verified | Reviewer |
-| R-006 | ~~SDD_fusion residual directory~~ | Bajo | Alta | Resuelto: referencias actualizadas a `SDD/` | Team |
+| R-006 | ~~Residual duplicate doc folders~~ | Bajo | Alta | Resuelto: estructura unificada en `sdd/` (ver [`CANONICAL.md`](../CANONICAL.md)) | Team |
 
 ---
 

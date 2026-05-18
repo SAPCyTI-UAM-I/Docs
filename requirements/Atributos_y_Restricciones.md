@@ -1,6 +1,8 @@
 # Análisis de Atributos de Calidad y Restricciones
 Proyecto: SAPCyTI
 
+> **Fuentes externas:** Las citas a `Context/...` o al manual de usuario apuntan a documentos **fuera de este repositorio**. Ver [`external-references.md`](../external-references.md) para ubicación y estado.
+
 ## 1. Atributos de Calidad (Basado en ISO 25010)
 
 ### 1.1 Seguridad (Security)
