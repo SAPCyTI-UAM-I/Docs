@@ -388,9 +388,9 @@ El objetivo es **minimizar los tokens consumidos** en cada sesión. Las convenci
 | # | Pregunta | Opciones | Decisión |
 |---|----------|----------|----------|
 | P-001 | ¿Las specs de Phases 0 y 1 se crean retroactivamente? | a) Sí, para completitud; b) No, ya están ✅ | Propuesta: No — no tiene valor post-facto |
-| P-002 | ¿Quién aprueba specs? | a) Solo arquitecto; b) Arquitecto + peer | Pendiente |
-| P-003 | ¿Se versionan las specs con Git tags? | a) Sí; b) No, basta con el estado | Pendiente |
-| P-004 | ¿Commit message incluye Spec ID? | a) `feat(config): SPEC-001 GraduateProgram`; b) Solo en PR description | Propuesta: En commit message |
+| P-002 | ¿Quién aprueba specs? | a) Solo arquitecto; b) Arquitecto + peer | **Decidido:** Arquitecto + peer para BC nuevos; solo arquitecto para specs dentro de BC ya establecido |
+| P-003 | ¿Se versionan las specs con Git tags? | a) Sí; b) No, basta con el estado | **Decidido:** No — estado en header de spec + `SPEC_INDEX.md` |
+| P-004 | ¿Commit message incluye Spec ID? | a) `feat(config): SPEC-001 GraduateProgram`; b) Solo en PR description | **Decidido:** Sí — en commit message (`feat(module): SPEC-NNN descripción`) |
 
 ---
 
