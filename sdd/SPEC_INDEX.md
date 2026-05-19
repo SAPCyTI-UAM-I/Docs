@@ -10,7 +10,7 @@
 
 | Total Specs | 🔲 Draft | 🔵 Approved | ✅ Implemented | ⛔ Blocked |
 |-------------|----------|-------------|----------------|-----------|
-| 9 | 1 | 0 | 8 | 0 |
+| 11 | 3 | 0 | 8 | 0 |
 
 ---
 
@@ -45,16 +45,29 @@
 
 ---
 
-## Iteration 2 — DevOps & Deployment
+## Iteration 1 (continued) — Phase 5 Integration & Docker
 
-> **Estado:** Planificado — sin specs redactadas aún.
-> **Goal:** Containerization strategy, CI/CD pipeline, deployment automation.
-> **Drivers:** QA-5, CON-2, CON-6
-> **Ref:** [`IterationPlan.md`](../design/IterationPlan.md) — Iteration 2 | Phase 5 en [`implementation/implementationPlan.md`](../implementation/implementationPlan.md)
+> **Goal:** Dockerize backend + SPA, full Compose stack, smoke verification.
+> **Drivers:** CON-2, QA-5, CON-3
+> **Ref:** [`phase5.md`](../implementation/phase5.md)
 
 | Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
 |---------|-------|-------|----|---------|------------|--------|
-| _TBD_ | Docker + E2E | 5 | — | QA-5 | SPEC-008B | Planificado |
+| [SPEC-009](specs/iteration-1/SPEC-009_backend-dockerization-env-templates.md) | Backend Dockerization & environment templates | 5 | Platform | CON-2, QA-5, CON-6 | SPEC-003, SPEC-007 | 🔲 Draft |
+| [SPEC-010](specs/iteration-1/SPEC-010_full-stack-compose-nginx-smoke.md) | Full Docker Compose stack, Nginx proxy & smoke verification | 5 | Platform | CON-2, QA-5, CON-3 | SPEC-008B, SPEC-009 | 🔲 Draft |
+
+---
+
+## Iteration 2 — DevOps & Deployment
+
+> **Estado:** Parcialmente cubierto por SPEC-009/010 (Phase 5 local stack). Despliegue on-premise y GHCR deploy siguen en workflows stub.
+> **Goal:** Containerization strategy, CI/CD pipeline, deployment automation.
+> **Drivers:** QA-5, CON-2, CON-6
+> **Ref:** [`IterationPlan.md`](../design/IterationPlan.md) — Iteration 2
+
+| Spec ID | Title | Phase | BC | Drivers | Depends On | Status |
+|---------|-------|-------|----|---------|------------|--------|
+| _TBD_ | On-premise deploy & monitoring stack | 2 | — | QA-5 | SPEC-010 | Planificado |
 
 ---
 
